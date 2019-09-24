@@ -6,65 +6,88 @@ using UnityEngine.UI;
 public class Player : MonoBehaviour
 {
 
+    //------------------------------------------------------------------------------------------VARIABLES
+
+    //The player's current speed value
     public float speed = 10f;
-    public Vector3 jump;
-    public float jumpStrength = 2f;
-    public float jumpDownWait = .4f;
-    public float gravityStr;
-    public float gravityNor;
-    public bool jumping = false;
-    public float hitWait = .3f;
-    public float health = 5;
-    public bool isShielding;
-    public float healthDecAmount = 5f;
-    public float healthShieldDecAmount = 2f;
-    public GameObject enemy1;
-
+    //The player's base speed value
     public float baseSpeed = 10f;
+    //The player's speed while in Utility stance
     public float utilitySpeed = 15f;
+    //IDK
+    public Vector3 jump;
+    //The strength of the player's jump
+    public float jumpStrength = 2f;
+    //Amount of time that passes until heavier gravity kicks in after jumping
+    public float jumpDownWait = .4f;
+    //The intense gravity value
+    public float gravityStr;
+    //The regular gravity value
+    public float gravityNor;
+    //How long the player must wait until their hit can register again
+    public float hitWait = .3f;
+    //The player's current health
+    public float health = 5;
+    //The amount of damage the player takes
+    public float healthDecAmount = 5f;
+    //The amount of damage the player takes WHEN SHIELDING
+    public float healthShieldDecAmount = 2f;
 
+
+    //If the player is jumping
+    public bool jumping = false;
+    //If the player is shielding
+    public bool isShielding;
+    //If utility stance is on
     public bool utilityOn = true;
+    //If Defence stance is on
     public bool defenceOn;
+    //If Attack stance is on
     public bool attackOn;
+    //If the player is hitting
     public bool hitting;
 
-    public GameObject hook;
-    public GameObject hookHolder;
 
-    public float hookTravelSpeed;
-    public float playerTravelSpeed;
-
-    public static bool fired;
-    public bool hooked;
-
-    public float maxDistance;
-    private float currentDistance;
-
+    //The shooter enemy
+    public GameObject enemy1;
+    //The player's healthbar
     public Image healthBar; 
+    //The player's sword
     public GameObject sword;
+    //The player's shield
     public GameObject shield;
-
+    //The player (IDK why I made this, but it might be required somewhere down there
     public GameObject player;
+    //The player's rigidbody (Also don't remember I did this)
     public Rigidbody rb;
+    //The player's current material
     private Material playerMat;
-
+    //The camera
     private GameObject cam;
 
-    // Start is called before the first frame update
+    //------------------------------------------------------------------------------------------CODE
+
+
+    //Upon start
     void Start()
     {
+        //Find the camera
         cam = GameObject.FindWithTag("MainCamera");
 
+        //Set the gravity of scene
         Physics.gravity = new Vector3(0, gravityNor, 0);
 
+        //I don't remember what this is
         jump = new Vector3(0.0f, jumpStrength, 0.0f);
 
+        //Set what variable 'playerMat' is
         playerMat = GetComponent<Renderer>().material;
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
+        //Call functions every 'FixedFrame'
         PlayerMovement();
         PlayerJump();
         Shielding();
@@ -74,37 +97,50 @@ public class Player : MonoBehaviour
         SpawningEnemy();
     }
 
+    //Spawning an enemy
     void SpawningEnemy()
     {
+        //If player is pressing K
         if (Input.GetKey(KeyCode.K))
         {
+            //Spawn enemy 1 at fixed location
             Instantiate(enemy1, new Vector3(0, 0, 0), Quaternion.identity);
         }
     }
 
+    //Player Attacking with sword
     void Attacking()
     {
+        //If:
+            //The player left clicks
+            //The player is not already hitting
+            //The player is not shielding
         if (Input.GetMouseButton(0) && !hitting && !isShielding)
         {
-            //sword.transform.Rotate(90, 0, 0);
+            //Rotate the sword
             sword.transform.localRotation = Quaternion.Euler(90, 0, 0);
             hitting = true;
         }
 
+        //If the player is NOT pressing left click, they are not attacking
         if (!Input.GetMouseButton(0))
         {
-            //sword.transform.Rotate(0, 0, 0);
+            //Rotate the sword
             sword.transform.localRotation = Quaternion.Euler(0, 0, 0);
             hitting = false;
         }
     }
     
+    //Shielding
     void Shielding()
     {
+        //If the player is NOT in utility stance
         if (!utilityOn)
         {
+            //If the player is pressing right click
             if (Input.GetMouseButton(1))
             {
+                //Set the rotation / position / scale to new fixed values
                 shield.transform.localRotation = Quaternion.Euler(355, 0, 0);
                 shield.transform.localPosition = new Vector3(-.2f, 0, .5f);
                 shield.transform.localScale = new Vector3(2.2f, 2.2f, 2.2f);
@@ -112,8 +148,10 @@ public class Player : MonoBehaviour
                 isShielding = true;
             }
 
+            //If the player is NOT pressing right click
             if (!Input.GetMouseButton(1))
             {
+                //Set the rotation / position / scale to it's original state
                 shield.transform.localRotation = Quaternion.Euler(0, 293, 0);
                 shield.transform.localPosition = new Vector3(-.5f, 0, .286f);
                 shield.transform.localScale = new Vector3(1.3f, 1.3f, 1.3f);
@@ -123,11 +161,13 @@ public class Player : MonoBehaviour
         }
     }
 
+    //When the player takes damage
     public void HealthDecrease()
     {
         //if player is shielding
         if (isShielding)
         {
+            //The player takes damage
             health -= healthShieldDecAmount;
 
             //Decrease health bar visual
@@ -137,6 +177,7 @@ public class Player : MonoBehaviour
         //if player is NOT shielding
         else
         {
+            //The player takes damage
             health -= healthDecAmount;
 
             //Decrease health bar visual
@@ -144,6 +185,7 @@ public class Player : MonoBehaviour
         }
     }
 
+    //The input to changing stances. This is only for changing variables to whatever is active
     void StanceChange()
     {
         //Utility on
@@ -154,7 +196,7 @@ public class Player : MonoBehaviour
             defenceOn = false;
             playerMat.color = Color.green;
 
-            shield.SetActive(false);
+
         }
 
         //Attack on
@@ -178,36 +220,40 @@ public class Player : MonoBehaviour
 
             shield.SetActive(true);
         }
-
-        //Upon starting, utility is already on, just make sure shield is disabled
-        if (utilityOn)
-        {
-            shield.SetActive(false);
-
-            RaycastHit hit;
-            if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit))
-            {
-                Debug.Log(hit.transform.name);
-            }
-        }
-
-
     }
 
+    //Everything that changes on the player when in particular stances
     void StanceStats()
     {
+        //If Utility stance is active
         if (utilityOn)
         {
+            //The player's current speed is set to variable 'utilitySpeed'
             speed = utilitySpeed;
+
+            shield.SetActive(false);
         }
 
+        //If Utility stance is not active
         if (!utilityOn)
         {
             speed = baseSpeed;
         }
 
+        //If Defence stance is active
+        if (defenceOn)
+        {
+            shield.SetActive(true);
+        }
+
+        //if attack stance is active
+        if (attackOn)
+        {
+            shield.SetActive(false);
+        }
     }
 
+    //Player movement
     void PlayerMovement()
     {
         float hor = Input.GetAxis("Horizontal");
@@ -216,6 +262,7 @@ public class Player : MonoBehaviour
         transform.Translate(playerMovement, Space.Self);
     }
 
+    //Player jump
     void PlayerJump()
     {
         if (Input.GetKeyDown("space") && !jumping)

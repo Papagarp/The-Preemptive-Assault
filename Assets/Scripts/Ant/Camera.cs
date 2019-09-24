@@ -7,7 +7,6 @@ public class Camera : MonoBehaviour
     public float rotationSpeed = 1;
     public Transform target, player;
     float mouseX, mouseY;
-    public Camera cam;
 
     // Start is called before the first frame update
     void Start()
@@ -24,8 +23,8 @@ public class Camera : MonoBehaviour
     void CamControl()
     {
         mouseX += Input.GetAxis("Mouse X") * rotationSpeed;
-        mouseY += Input.GetAxis("Mouse Y") * rotationSpeed;
-        mouseY = Mathf.Clamp(mouseY, -35, 60);
+        mouseY -= Input.GetAxis("Mouse Y") * rotationSpeed;
+        mouseY = Mathf.Clamp(mouseY, -50, 50);
 
         //transform.LookAt(target);
 

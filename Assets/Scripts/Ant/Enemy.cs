@@ -60,7 +60,6 @@ public class Enemy : MonoBehaviour
         {
             e_Health -= recievedDam;
             healthBar.fillAmount -= recievedDam / 100;
-            Debug.Log("hit ");
 
             if (healthBar.fillAmount <= 0)
             {
