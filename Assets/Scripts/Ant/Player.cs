@@ -16,6 +16,12 @@ public class Player : MonoBehaviour
     public float utilitySpeed = 15f;
     //IDK
     public Vector3 jump;
+    //The player's current damage
+    public float damage = 5f;
+    //The player's damage in Attack mode
+    public float OffenceDamage = 10f;
+    //The player's default damage value
+    public float baseDamage = 5f;
     //The strength of the player's jump
     public float jumpStrength = 2f;
     //Amount of time that passes until heavier gravity kicks in after jumping

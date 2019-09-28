@@ -24,7 +24,7 @@ public class Camera : MonoBehaviour
     {
         mouseX += Input.GetAxis("Mouse X") * rotationSpeed;
         mouseY -= Input.GetAxis("Mouse Y") * rotationSpeed;
-        mouseY = Mathf.Clamp(mouseY, -50, 50);
+        mouseY = Mathf.Clamp(mouseY, -80, 50);
 
         //transform.LookAt(target);
 

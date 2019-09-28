@@ -14,6 +14,7 @@ public class Enemy : MonoBehaviour
     public float recievedHitCD = 1f;
     public bool gettingHit;
     public Image healthBar;
+    public float MaxViewDistance = 40f;
 
     public float shootCooldown = 2f;
 
@@ -72,7 +73,7 @@ public class Enemy : MonoBehaviour
         float dist = Vector3.Distance(target.transform.position, transform.position);
 
         //If enemy is in shooting range, stop walking towards player
-        if (dist > shootRange)
+        if (dist > shootRange && dist < MaxViewDistance)
         {
             navAgent.SetDestination(target.transform.position);
         }

@@ -21,6 +21,10 @@ public class Hook : MonoBehaviour
 
     private void Update()
     {
+        //Constantly set the scale of the hook to 1,1,1
+        //when the hook becomes a child of the obstacle it connected it with, the scale goes nuts, this is a temporary fix
+        hook.transform.localScale = new Vector3(1, 1, 1);
+
         //Constantly check if the player is grounded. Used later during the script with variable 'grounded'
         CheckIfGround();
 
