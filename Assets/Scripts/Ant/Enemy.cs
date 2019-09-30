@@ -55,7 +55,7 @@ public class Enemy : MonoBehaviour
     {
         Player playerScript = target.GetComponent<Player>();
 
-        if (other.gameObject.tag == "Sword" && recievedHitTimer == 0 && playerScript.hitting)
+        if (other.gameObject.tag == "Sword" && recievedHitTimer == 0 && playerScript.hitIssued)
         {
             gettingHit = true;
 

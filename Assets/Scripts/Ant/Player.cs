@@ -30,18 +30,21 @@ public class Player : MonoBehaviour
     public float gravityStr;
     //The regular gravity value
     public float gravityNor;
-    //The current time the sword swings for
-    public float hitWait = .3f;
-    //How long the player must wait until their hit can register again
-    public float hitWaitMax = .5f;
+    //Whether or not the player has hit
+    public bool hitIssued;
+
     //The current time the player is waiting for the hit Cooldown
-    public float hitCooldown;
-    //The MAX  time the player must wait for, for hit cooldown
-    public float hitCooldownMax = 0.35f;
+    public float hitDuration;
     //
-    public bool hitCooldownOver;
+    public float hitCooldown = .4f;
+    //
+    public bool hitCooldownOver = true;
+    //
+    public bool justHit;
     //IF the player is holding the hit or not
     public bool holdingHit;
+    //Can hit
+    public bool canHit = true;
     //The player's current health
     public float health = 5;
     //The amount of damage the player takes
@@ -109,8 +112,12 @@ public class Player : MonoBehaviour
         Shielding();
         StanceChange();
         StanceStats();
-        Attacking();
+        PlayerAttack();
+        CanPlayerAttack();
+
         SpawningEnemy();
+        //HitSwingDuration();
+        //HitCooldown();
     }
 
     //Spawning an enemy
@@ -123,68 +130,50 @@ public class Player : MonoBehaviour
             Instantiate(enemy1, new Vector3(0, 0, 0), Quaternion.identity);
         }
     }
-    
-    void HitCooldown()
-    {
-        hitCooldown += Time.deltaTime;
-        if (hitCooldown > hitCooldownMax)
-        {
-            hitCooldownOver = true;
-        }
 
+    void CanPlayerAttack()
+    {
+        if (!hitting && !isShielding)
+        {
+            canHit = true;
+        }
         else
         {
+            canHit = false;
+        }
+    }
+
+    void PlayerAttack()
+    {
+        if (Input.GetMouseButton(0) && canHit && !hitIssued && hitCooldownOver)
+        {
+            StartCoroutine("Attacking");
+            StartCoroutine("HitCooldown");
+
+            hitIssued = true;
             hitCooldownOver = false;
         }
     }
 
-    void HitSwingDuration()
-    {
-        if (hitting)
-        {
-            hitWait += Time.deltaTime;
-
-            if (hitWait > hitWaitMax)
-            {
-                hitting = false;
-                hitWait = 0f;
-            }
-        }
-
-    }
-
     //Player Attacking with sword
-    void Attacking()
+    IEnumerator Attacking()
     {
-        //If:
-            //The player left clicks
-            //The player is not already hitting
-            //The player is not shielding
-        if (Input.GetMouseButton(0) && !hitting && !isShielding && !holdingHit)
-        {
-            //Rotate the sword
-            sword.transform.localRotation = Quaternion.Euler(90, 0, 0);
-            hitting = true;
-            holdingHit = true;
+        sword.transform.localRotation = Quaternion.Euler(90, 0, 0);
 
-            HitSwingDuration();
+        yield return new WaitForSeconds(hitDuration);
 
-        }
+        sword.transform.localRotation = Quaternion.Euler(0, 90, 0);
 
-        if (!Input.GetMouseButton(0) && holdingHit)
-        {
-            holdingHit = false;
-        }
-
-        //If hitting = false
-        if (!hitting)
-        {
-            //Rotate the sword
-            sword.transform.localRotation = Quaternion.Euler(0, 0, 0);
-            //HitCooldown();
-        }
+        hitIssued = false;
     }
-    
+
+    IEnumerator HitCooldown()
+    {
+        yield return new WaitForSeconds(hitCooldown);
+
+        hitCooldownOver = true;
+    }
+
     //Shielding
     void Shielding()
     {

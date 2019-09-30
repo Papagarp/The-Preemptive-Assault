@@ -12,4 +12,9 @@ public class Watch : MonoBehaviour
     {
         target = GameObject.FindWithTag("MainCamera");
     }
+
+    private void Update()
+    {
+        transform.LookAt(target.transform);
+    }
 }
