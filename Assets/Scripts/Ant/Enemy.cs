@@ -45,20 +45,20 @@ public class Enemy : MonoBehaviour
 
             if (recievedHitTimer >= recievedHitCD)
             {
-                gettingHit = false;
-
                 recievedHitTimer = 0;
+
+                gettingHit = false;
             }
         }   
     }
-    private void OnTriggerStay(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
-        gettingHit = true;
-
         Player playerScript = target.GetComponent<Player>();
 
         if (other.gameObject.tag == "Sword" && recievedHitTimer == 0 && playerScript.hitting)
         {
+            gettingHit = true;
+
             e_Health -= recievedDam;
             healthBar.fillAmount -= recievedDam / 100;
 
@@ -68,6 +68,19 @@ public class Enemy : MonoBehaviour
             }
         }
     }
+
+    void SethitFalse()
+    {
+        gettingHit = false;
+    }
+
+    void SethitTrue()
+    {
+        gettingHit = true;
+    }
+
+
+
     void Walk()
     {
         float dist = Vector3.Distance(target.transform.position, transform.position);
