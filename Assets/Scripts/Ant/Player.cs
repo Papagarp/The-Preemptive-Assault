@@ -45,6 +45,9 @@ public class Player : MonoBehaviour
     public bool holdingHit;
     //Can hit
     public bool canHit = true;
+
+    //dash time length
+    public float dashTime;
     //The player's current health
     public float health = 5;
     //The amount of damage the player takes
@@ -67,6 +70,8 @@ public class Player : MonoBehaviour
     public bool hitting;
 
 
+    //dash position
+    public GameObject dashPosition;
     //The shooter enemy
     public GameObject enemy1;
     //The player's healthbar
@@ -83,6 +88,10 @@ public class Player : MonoBehaviour
     private Material playerMat;
     //The camera
     private GameObject cam;
+
+    public GameObject[] enemies;
+
+    public GameObject enemyMan;
 
     //------------------------------------------------------------------------------------------CODE
 
@@ -101,6 +110,14 @@ public class Player : MonoBehaviour
 
         //Set what variable 'playerMat' is
         playerMat = GetComponent<Renderer>().material;
+
+        //enemies = GameObject.FindGameObjectsWithTag("Enemy");
+
+        //foreach (GameObject enemies in enemies)
+        //{
+        //    enemyMan = enemies;
+        //    Debug.Log(enemyMan.transform.position);
+        //}
     }
 
     // Update is called once per frame
@@ -112,12 +129,13 @@ public class Player : MonoBehaviour
         Shielding();
         StanceChange();
         StanceStats();
+
         PlayerAttack();
         CanPlayerAttack();
+        OffenceSkills();
+        IfTouchingEnemy();
 
         SpawningEnemy();
-        //HitSwingDuration();
-        //HitCooldown();
     }
 
     //Spawning an enemy
@@ -165,6 +183,36 @@ public class Player : MonoBehaviour
         sword.transform.localRotation = Quaternion.Euler(0, 90, 0);
 
         hitIssued = false;
+    }
+
+    //If player is touching enemy
+    void IfTouchingEnemy()
+    {
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+
+        for (int i = 0; i < enemies.Length; ++i)
+        {
+            float dist = Vector3.Distance(transform.position, enemies[i].transform.position);
+
+            //If player is touching enemy, stop dashing 
+            if (dist <= 2.5f)
+            {
+                iTween.Stop();
+            }
+        }
+    }
+
+    void OffenceSkills()
+    {
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            iTween.MoveTo(gameObject, iTween.Hash("Position", dashPosition.transform, "time", dashTime, "easetype", iTween.EaseType.easeInOutSine, "onComplete", "OffenceSingleTarget", "onCompleteTarget", gameObject));
+        }
+    }
+
+    void OffenceSingleTarget()
+    {
+        //
     }
 
     IEnumerator HitCooldown()
