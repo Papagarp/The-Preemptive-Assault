@@ -18,6 +18,7 @@ public class Hook : MonoBehaviour
     private float currentDistance;
 
     private bool grounded;
+    public bool flag;
 
     private void Update()
     {
@@ -63,6 +64,16 @@ public class Hook : MonoBehaviour
             rope.SetVertexCount(2);
             rope.SetPosition(0, hookHolder.transform.position);
             rope.SetPosition(1, hook.transform.position);
+
+            //Return the hook if the player presses right click while hook is flying
+
+            Invoke("RetractHook", 0.4f);
+
+        }
+
+        if (!fired)
+        {
+            flag = false;
         }
 
         //If the player's
@@ -128,6 +139,14 @@ public class Hook : MonoBehaviour
             
             //Make sure the player's gravity is on
             this.GetComponent<Rigidbody>().useGravity = true;
+        }
+    }
+
+    void RetractHook()
+    {
+        if (Input.GetMouseButtonDown(1))
+        {
+            ReturnHook();
         }
     }
 
