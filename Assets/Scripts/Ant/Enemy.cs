@@ -51,7 +51,7 @@ public class Enemy : MonoBehaviour
             }
         }   
     }
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerStay(Collider other)
     {
         Player playerScript = target.GetComponent<Player>();
 
