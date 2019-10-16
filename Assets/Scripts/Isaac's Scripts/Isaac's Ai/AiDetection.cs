@@ -11,6 +11,9 @@ public class AiDetection : MonoBehaviour
     public float viewRadius;
     [Range(0,360)]
     public float viewAngle;
+    public float distanceToPlayer;
+
+    public GameObject player;
 
     public LayerMask obstacleMask;
     public LayerMask targetMask;
@@ -20,6 +23,16 @@ public class AiDetection : MonoBehaviour
         StartCoroutine("FindTargetsWithDelay", .2f);
 
         aiMovementScript = GetComponent("AiMovement") as AiMovement;
+    }
+
+    void Update()
+    {
+        distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
+
+        if(distanceToPlayer > viewRadius)
+        {
+            aiMovementScript.foundPlayer = false;
+        }
     }
 
     IEnumerator FindTargetsWithDelay(float delay)
@@ -46,6 +59,10 @@ public class AiDetection : MonoBehaviour
                 if(!Physics.Raycast(transform.position, dirToTarget,disToTarget, obstacleMask))
                 {
                     aiMovementScript.foundPlayer = true;
+                }
+                else if(disToTarget >= viewRadius)
+                {
+                    aiMovementScript.foundPlayer = false;
                 }
             }
         }

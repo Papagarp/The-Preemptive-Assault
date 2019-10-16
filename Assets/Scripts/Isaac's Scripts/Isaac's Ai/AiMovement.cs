@@ -43,16 +43,19 @@ public class AiMovement : MonoBehaviour
             i = 0;
             nav.SetDestination(targets[i].transform.position);
         }
-
         else if (distanceToTarget <= 0.1f)
         {
             i++;
             nav.SetDestination(targets[i].transform.position);
         }
-
+        
         if (foundPlayer == true)
         {
             nav.SetDestination(player.transform.position);
+        }
+        else if (foundPlayer == false)
+        {
+            nav.SetDestination(targets[i].transform.position);
         }
 
         if (distanceToPlayer <= killDistance)

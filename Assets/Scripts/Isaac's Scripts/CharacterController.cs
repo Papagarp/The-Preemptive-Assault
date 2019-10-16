@@ -10,10 +10,10 @@ public class CharacterController : MonoBehaviour
     void Update()
     {
         float translation = Input.GetAxis("Vertical") * speed;
-        float rotation = Input.GetAxis("Horizontal") * rotationSpeed;
+        //float rotation = Input.GetAxis("Horizontal") * rotationSpeed;
         translation *= Time.deltaTime;
-        rotation *= Time.deltaTime;
+        //rotation *= Time.deltaTime;
         transform.Translate(0, 0, translation);
-        transform.Rotate(0, rotation, 0);
+        //transform.Rotate(0, rotation, 0);
     }
 }
