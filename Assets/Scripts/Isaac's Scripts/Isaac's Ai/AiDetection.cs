@@ -22,7 +22,7 @@ public class AiDetection : MonoBehaviour
     {
         StartCoroutine("FindTargetsWithDelay", .2f);
 
-        aiMovementScript = GetComponent("AiMovement") as AiMovement;
+        aiMovementScript = GetComponent<AiMovement>();
     }
 
     void Update()
