@@ -13,7 +13,7 @@ public class CharacterScript : MonoBehaviour
 
     public StanceState currentStanceState;
 
-    public float speed = 10.0f;
+    public float movementSpeed = 10.0f;
     public float rotationSpeed = 100.0f;
 
     private Material playerMat;
@@ -31,21 +31,21 @@ public class CharacterScript : MonoBehaviour
         {
             case (StanceState.ATTACK):
                 playerMat.color = Color.red;
-                //movement speed = 5
+                movementSpeed = 5;
                 //attack dmg = 10
                 //defence stat = 5
                 break;
 
             case (StanceState.DEFENCE):
                 playerMat.color = Color.blue;
-                //movement speed = 5
+                movementSpeed = 5;
                 //attack dmg = 5
                 //defence stat = 10
                 break;
 
             case (StanceState.UTILITY):
                 playerMat.color = Color.green;
-                //movement speed = 10
+                movementSpeed = 10;
                 //attack dmg = 5
                 //defence stat = 5
                 break;
@@ -64,7 +64,7 @@ public class CharacterScript : MonoBehaviour
             currentStanceState = StanceState.UTILITY;
         }
 
-        float translation = Input.GetAxis("Vertical") * speed;
+        float translation = Input.GetAxis("Vertical") * movementSpeed;
         //float rotation = Input.GetAxis("Horizontal") * rotationSpeed;
         translation *= Time.deltaTime;
         //rotation *= Time.deltaTime;
