@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class CharacterScript : MonoBehaviour
 {
+    ControllerInput controls;
+
     public enum StanceState
     {
         ATTACK,
@@ -16,7 +18,22 @@ public class CharacterScript : MonoBehaviour
     public float movementSpeed = 10.0f;
     public float rotationSpeed = 100.0f;
 
+    public int stateNo;
+
+    Vector2 move;
+
     private Material playerMat;
+
+    void Awake()
+    {
+        controls = new ControllerInput();
+
+        controls.Gameplay.SwitchStatesUp.performed += context => SwitchStateUp();
+        controls.Gameplay.SwitchStatesDown.performed += context => SwitchStateDown();
+
+        controls.Gameplay.Move.performed += context => move = context.ReadValue<Vector2>();
+        controls.Gameplay.Move.canceled += context => move = Vector2.zero;
+    }
 
     void Start()
     {
@@ -51,24 +68,59 @@ public class CharacterScript : MonoBehaviour
                 break;
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        if(stateNo == 4)
+        {
+            stateNo = 1;
+        }
+        else if(stateNo == 0)
+        {
+            stateNo = 3;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha1) || stateNo == 1)
         {
             currentStanceState = StanceState.ATTACK;
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha2))
+        else if (Input.GetKeyDown(KeyCode.Alpha2) || stateNo == 2)
         {
             currentStanceState = StanceState.DEFENCE;
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha3))
+        else if (Input.GetKeyDown(KeyCode.Alpha3) || stateNo == 3)
         {
             currentStanceState = StanceState.UTILITY;
         }
 
-        float translation = Input.GetAxis("Vertical") * movementSpeed;
+        Vector2 m = new Vector2(-move.x, move.y) * Time.deltaTime;
+        transform.Translate(m);
+
+
+
+
+        /*float translation = Input.GetAxis("Vertical") * movementSpeed;
         //float rotation = Input.GetAxis("Horizontal") * rotationSpeed;
         translation *= Time.deltaTime;
         //rotation *= Time.deltaTime;
         transform.Translate(0, 0, translation);
-        //transform.Rotate(0, rotation, 0);
+        //transform.Rotate(0, rotation, 0);*/
+    }
+
+    void SwitchStateUp()
+    {
+        stateNo++;
+    }
+
+    void SwitchStateDown()
+    {
+        stateNo--;
+    }
+
+    void OnEnable()
+    {
+        controls.Gameplay.Enable();
+    }
+
+    void OnDisable()
+    {
+        controls.Gameplay.Disable();
     }
 }

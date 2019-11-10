@@ -1,0 +1,90 @@
+{
+    "name": "ControllerInput",
+    "maps": [
+        {
+            "name": "Gameplay",
+            "id": "c5373d63-6025-46fc-a294-c94632d4405d",
+            "actions": [
+                {
+                    "name": "Switch States Up",
+                    "type": "Button",
+                    "id": "7df1d2d1-2a19-41ce-a9e8-f3a07fe990fc",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Switch States Down",
+                    "type": "Button",
+                    "id": "9f42cf7f-50b3-4cde-8093-cc07453841a8",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Move",
+                    "type": "Button",
+                    "id": "da8c2080-67a6-4be6-a418-8f20a9accb5e",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Camera",
+                    "type": "Button",
+                    "id": "66d050e4-be5a-404b-911e-b29b657ac222",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": ""
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "e50e8ffa-8db1-46f9-81a5-f7d5a70afa7e",
+                    "path": "<Gamepad>/leftStick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ae1b88ae-c293-4793-aedc-acdf11d0bf5f",
+                    "path": "<Gamepad>/rightStick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Camera",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "853be2cf-674e-43ae-9a68-cb174f4c2078",
+                    "path": "<Gamepad>/rightShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Switch States Down",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f8edbfa7-23df-4fb4-9c42-49ab31eebc98",
+                    "path": "<Gamepad>/leftShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Switch States Up",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
