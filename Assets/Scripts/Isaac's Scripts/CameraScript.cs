@@ -23,12 +23,26 @@ public class CameraScript : MonoBehaviour
     {
         MainCamera.transform.LookAt(transform);
 
-        Vector2 r = new Vector2(rotate.y, rotate.x) * Time.deltaTime;
-        transform.Rotate(r, Space.World);
+        Vector3 r = new Vector3(-rotate.x, rotate.y, 0) * 10 * Time.deltaTime;
+        MainCamera.transform.Translate(r);
+
+        Debug.Log(rotate.y);
+        Debug.Log(rotate.x);
 
 
         /*float speed = 1.0f;
         transform.Rotate(Vector3.up, Input.GetAxis("Joystick Hor Right") * speed);
         //transform.Rotate(Vector3.left, Input.GetAxis("Joystick Ver Right") * speed);*/
     }
+
+    void OnEnable()
+    {
+        controls.Gameplay.Enable();
+    }
+
+    void OnDisable()
+    {
+        controls.Gameplay.Disable();
+    }
+
 }

@@ -1,10 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class CharacterScript : MonoBehaviour
 {
     ControllerInput controls;
+
+    public GameObject theCamera;
+
+    public Rigidbody rb;
 
     public enum StanceState
     {
@@ -20,7 +25,7 @@ public class CharacterScript : MonoBehaviour
 
     public int stateNo;
 
-    Vector2 move;
+    Vector2 controllerInput;
 
     private Material playerMat;
 
@@ -31,8 +36,8 @@ public class CharacterScript : MonoBehaviour
         controls.Gameplay.SwitchStatesUp.performed += context => SwitchStateUp();
         controls.Gameplay.SwitchStatesDown.performed += context => SwitchStateDown();
 
-        controls.Gameplay.Move.performed += context => move = context.ReadValue<Vector2>();
-        controls.Gameplay.Move.canceled += context => move = Vector2.zero;
+        controls.Gameplay.Move.performed += context => controllerInput = context.ReadValue<Vector2>();
+        controls.Gameplay.Move.canceled += context => controllerInput = Vector2.zero;
     }
 
     void Start()
@@ -40,6 +45,8 @@ public class CharacterScript : MonoBehaviour
         currentStanceState = StanceState.ATTACK;
 
         playerMat = GetComponent<Renderer>().material;
+
+        rb = GetComponent<Rigidbody>();
     }
 
     void Update()
@@ -90,18 +97,17 @@ public class CharacterScript : MonoBehaviour
             currentStanceState = StanceState.UTILITY;
         }
 
-        Vector2 m = new Vector2(-move.x, move.y) * Time.deltaTime;
-        transform.Translate(m);
 
 
 
+        /*Vector3 cameraForward = theCamera.transform.forward;
 
-        /*float translation = Input.GetAxis("Vertical") * movementSpeed;
-        //float rotation = Input.GetAxis("Horizontal") * rotationSpeed;
-        translation *= Time.deltaTime;
-        //rotation *= Time.deltaTime;
-        transform.Translate(0, 0, translation);
-        //transform.Rotate(0, rotation, 0);*/
+        Vector3 left = Vector3.Cross(cameraForward, Vector3.up).normalized;
+
+        Vector3 movement = (left * controllerInput.x) + (cameraForward * controllerInput.y) * movementSpeed * Time.deltaTime;
+
+        transform.Translate(movement);*/
+
     }
 
     void SwitchStateUp()
