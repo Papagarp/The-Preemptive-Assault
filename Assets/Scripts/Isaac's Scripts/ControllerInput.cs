@@ -57,6 +57,14 @@ public class @ControllerInput : IInputActionCollection, IDisposable
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""Interact"",
+                    ""type"": ""Button"",
+                    ""id"": ""d0bc0e9d-91fa-429c-80c6-18bfcc746c67"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -114,6 +122,17 @@ public class @ControllerInput : IInputActionCollection, IDisposable
                     ""action"": ""Hook"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""11e3f245-020a-45da-96d8-1c3fb390d023"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Interact"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -127,6 +146,7 @@ public class @ControllerInput : IInputActionCollection, IDisposable
         m_Gameplay_Move = m_Gameplay.FindAction("Move", throwIfNotFound: true);
         m_Gameplay_Camera = m_Gameplay.FindAction("Camera", throwIfNotFound: true);
         m_Gameplay_Hook = m_Gameplay.FindAction("Hook", throwIfNotFound: true);
+        m_Gameplay_Interact = m_Gameplay.FindAction("Interact", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -181,6 +201,7 @@ public class @ControllerInput : IInputActionCollection, IDisposable
     private readonly InputAction m_Gameplay_Move;
     private readonly InputAction m_Gameplay_Camera;
     private readonly InputAction m_Gameplay_Hook;
+    private readonly InputAction m_Gameplay_Interact;
     public struct GameplayActions
     {
         private @ControllerInput m_Wrapper;
@@ -190,6 +211,7 @@ public class @ControllerInput : IInputActionCollection, IDisposable
         public InputAction @Move => m_Wrapper.m_Gameplay_Move;
         public InputAction @Camera => m_Wrapper.m_Gameplay_Camera;
         public InputAction @Hook => m_Wrapper.m_Gameplay_Hook;
+        public InputAction @Interact => m_Wrapper.m_Gameplay_Interact;
         public InputActionMap Get() { return m_Wrapper.m_Gameplay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -214,6 +236,9 @@ public class @ControllerInput : IInputActionCollection, IDisposable
                 @Hook.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnHook;
                 @Hook.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnHook;
                 @Hook.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnHook;
+                @Interact.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnInteract;
+                @Interact.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnInteract;
+                @Interact.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnInteract;
             }
             m_Wrapper.m_GameplayActionsCallbackInterface = instance;
             if (instance != null)
@@ -233,6 +258,9 @@ public class @ControllerInput : IInputActionCollection, IDisposable
                 @Hook.started += instance.OnHook;
                 @Hook.performed += instance.OnHook;
                 @Hook.canceled += instance.OnHook;
+                @Interact.started += instance.OnInteract;
+                @Interact.performed += instance.OnInteract;
+                @Interact.canceled += instance.OnInteract;
             }
         }
     }
@@ -244,5 +272,6 @@ public class @ControllerInput : IInputActionCollection, IDisposable
         void OnMove(InputAction.CallbackContext context);
         void OnCamera(InputAction.CallbackContext context);
         void OnHook(InputAction.CallbackContext context);
+        void OnInteract(InputAction.CallbackContext context);
     }
 }

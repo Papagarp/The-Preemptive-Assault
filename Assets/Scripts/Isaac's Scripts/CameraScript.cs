@@ -9,6 +9,8 @@ public class CameraScript : MonoBehaviour
 
     public GameObject MainCamera;
 
+    public GameObject player;
+
     Vector3 rotate;
 
     void Awake()
@@ -23,11 +25,8 @@ public class CameraScript : MonoBehaviour
     {
         MainCamera.transform.LookAt(transform);
 
-        Vector3 r = new Vector3(-rotate.x, rotate.y, 0) * 10 * Time.deltaTime;
-        MainCamera.transform.Translate(r);
-
-        Debug.Log(rotate.y);
-        Debug.Log(rotate.x);
+        Vector3 r = new Vector3(rotate.y, rotate.x, 0) * 50 * Time.deltaTime;
+        player.transform.Rotate(r);
 
 
         /*float speed = 1.0f;

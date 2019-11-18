@@ -25,6 +25,8 @@ public class CharacterScript : MonoBehaviour
 
     public int stateNo;
 
+    bool interact = false;
+
     Vector2 controllerInput;
 
     private Material playerMat;
@@ -38,6 +40,9 @@ public class CharacterScript : MonoBehaviour
 
         controls.Gameplay.Move.performed += context => controllerInput = context.ReadValue<Vector2>();
         controls.Gameplay.Move.canceled += context => controllerInput = Vector2.zero;
+
+        controls.Gameplay.Interact.performed += context => interact = true;
+        controls.Gameplay.Interact.canceled += context => interact = false;
     }
 
     void Start()
@@ -51,6 +56,9 @@ public class CharacterScript : MonoBehaviour
 
     void Update()
     {
+        //if the player is holding the interact key and within the collider then the box moves according to the joystick
+
+
         switch (currentStanceState)
         {
             case (StanceState.ATTACK):
@@ -97,16 +105,10 @@ public class CharacterScript : MonoBehaviour
             currentStanceState = StanceState.UTILITY;
         }
 
+        //Testing Version
+        Vector3 m = new Vector3(controllerInput.x, 0, controllerInput.y) * movementSpeed * Time.deltaTime;
+        transform.Translate(m);
 
-
-
-        /*Vector3 cameraForward = theCamera.transform.forward;
-
-        Vector3 left = Vector3.Cross(cameraForward, Vector3.up).normalized;
-
-        Vector3 movement = (left * controllerInput.x) + (cameraForward * controllerInput.y) * movementSpeed * Time.deltaTime;
-
-        transform.Translate(movement);*/
 
     }
 
