@@ -37,7 +37,8 @@ public class AiDetection : MonoBehaviour
 
     IEnumerator FindTargetsWithDelay(float delay)
     {
-        while (true){
+        while (true)
+        {
             yield return new WaitForSeconds(delay);
             FindVisibleTargets();
         }

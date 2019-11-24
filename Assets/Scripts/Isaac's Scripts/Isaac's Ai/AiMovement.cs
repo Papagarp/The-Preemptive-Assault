@@ -9,15 +9,19 @@ public class AiMovement : MonoBehaviour
 {
     public GameObject[] targets;
 
+    public GameObject weapon;
+
     GameObject player;
     
     NavMeshAgent nav;
 
     public bool foundPlayer = false;
 
-    public float killDistance = 1.5f;
-    public float runningSpeed = 10;
+    public float shootDistance = 1.5f;
+    public float runningSpeed = 10f;
     public float walkingSpeed = 3.5f;
+    public float firingSpeed = 1f;
+    public float reloadTime = 3.0f;
 
     int i = 0;
 
@@ -58,9 +62,28 @@ public class AiMovement : MonoBehaviour
             nav.speed = walkingSpeed;
         }
 
-        if (distanceToPlayer <= killDistance)
+        if (distanceToPlayer <= shootDistance)
         {
-            nav.SetDestination(transform.position);
+            nav.speed = firingSpeed;
+            reloadTime -= Time.deltaTime;
+
+            if(reloadTime < 0)
+            {
+                Shoot();
+            }
+        }
+        else
+        {
+            nav.speed = runningSpeed;
         }
     }
+
+    void Shoot()
+    {
+        GameObject spear = Instantiate(weapon, transform.position, Quaternion.identity) as GameObject;
+        spear.GetComponent<Rigidbody>().AddForce(transform.forward * 100);
+        reloadTime = 3;
+    }
+
+
 }
