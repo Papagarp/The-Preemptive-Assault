@@ -7,8 +7,6 @@ using System.Linq;
 
 public class AiMovement : MonoBehaviour
 {
-    //public PlayerMovement playerMovementScript;
-
     public GameObject[] targets;
 
     GameObject player;
@@ -18,6 +16,8 @@ public class AiMovement : MonoBehaviour
     public bool foundPlayer = false;
 
     public float killDistance = 1.5f;
+    public float runningSpeed = 10;
+    public float walkingSpeed = 3.5f;
 
     int i = 0;
 
@@ -26,8 +26,6 @@ public class AiMovement : MonoBehaviour
         nav = GetComponent<NavMeshAgent>();
 
         player = GameObject.FindGameObjectWithTag("Player");
-
-        //playerMovementScript = GetComponent("PlayerMovement") as PlayerMovement;
 
         nav.SetDestination(targets[i].transform.position);
     }
@@ -52,16 +50,17 @@ public class AiMovement : MonoBehaviour
         if (foundPlayer == true)
         {
             nav.SetDestination(player.transform.position);
+            nav.speed = runningSpeed;
         }
         else if (foundPlayer == false)
         {
             nav.SetDestination(targets[i].transform.position);
+            nav.speed = walkingSpeed;
         }
 
         if (distanceToPlayer <= killDistance)
         {
             nav.SetDestination(transform.position);
-            //playerMovementScript.playerCaught = true;
         }
     }
 }
