@@ -58,7 +58,6 @@ public class CharacterScript : MonoBehaviour
     {
         //if the player is holding the interact key and within the collider then the box moves according to the joystick
 
-
         switch (currentStanceState)
         {
             case (StanceState.ATTACK):
