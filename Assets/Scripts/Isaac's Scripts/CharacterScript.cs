@@ -25,7 +25,7 @@ public class CharacterScript : MonoBehaviour
 
     public int stateNo;
 
-    bool interact = false;
+    public bool interact = false;
 
     Vector2 controllerInput;
 

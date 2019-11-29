@@ -134,6 +134,4 @@ public class AiMovement : MonoBehaviour
         spear.GetComponent<Rigidbody>().AddForce(transform.forward * 100);
         reloadTime = 3;
     }
-
-
 }
