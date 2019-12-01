@@ -24,9 +24,9 @@ public class Button : MonoBehaviour
         {
             Debug.Log("open");
             //insert something opening desu
-            Vector3 pushed = new Vector3(0, 1, 0.1f);
+            Vector3 pushed = new Vector3(0, 1, 0.3f);
             gameObject.transform.position = pushed;
-            buttonReset = 3.0f;
+            buttonReset = 1.0f;
         }
 
         if (buttonReset < 0)
