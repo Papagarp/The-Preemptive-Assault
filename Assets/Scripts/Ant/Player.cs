@@ -5,7 +5,10 @@ using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
-
+    public ParticleSystem jumpCloud;
+    public ParticleSystem utility;
+    public ParticleSystem offence;
+    public ParticleSystem defence;
     //------------------------------------------------------------------------------------------VARIABLES
 
     //The player's current speed value
@@ -287,7 +290,7 @@ public class Player : MonoBehaviour
             defenceOn = false;
             playerMat.color = Color.green;
 
-
+            UtilityEffect();
         }
 
         //Attack on
@@ -299,6 +302,8 @@ public class Player : MonoBehaviour
             playerMat.color = Color.red;
 
             shield.SetActive(true);
+
+            OffenceEffect();
         }
 
         //Defence on
@@ -310,6 +315,8 @@ public class Player : MonoBehaviour
             playerMat.color = Color.blue;
 
             shield.SetActive(true);
+            
+            DefenceEffect();
         }
     }
 
@@ -323,6 +330,8 @@ public class Player : MonoBehaviour
             speed = utilitySpeed;
 
             shield.SetActive(false);
+
+            
         }
 
         //If Utility stance is not active
@@ -341,7 +350,8 @@ public class Player : MonoBehaviour
         if (attackOn)
         {
             shield.SetActive(false);
-        }
+            
+}
     }
 
     //Player movement
@@ -374,7 +384,10 @@ public class Player : MonoBehaviour
 
     void ResetJump()
     {
+        
         Physics.gravity = new Vector3(0, gravityNor, 0);
+        PlayerLand();
+        
     }
 
     void OnCollisionEnter(Collision col)
@@ -384,5 +397,24 @@ public class Player : MonoBehaviour
             //Set jumping to false if player collides with the floor
             jumping = false;
         }
+    }
+
+    void PlayerLand()
+    {
+        jumpCloud.Play();
+    }
+
+    void UtilityEffect()
+    {
+        utility.Play();
+    }
+    void OffenceEffect()
+    {
+        offence.Play();
+
+    }
+    void DefenceEffect()
+    {
+        defence.Play();
     }
 }
