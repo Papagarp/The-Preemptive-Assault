@@ -25,8 +25,10 @@ public class CameraScript : MonoBehaviour
     {
         MainCamera.transform.LookAt(transform);
 
-        Vector3 r = new Vector3(rotate.y, rotate.x, 0) * 50 * Time.deltaTime;
-        player.transform.Rotate(r);
+        Vector3 x = new Vector3(0, rotate.x, 0) * 50 * Time.deltaTime;
+        Vector3 y = new Vector3(rotate.y, 0, 0) * 50 * Time.deltaTime;
+        player.transform.Rotate(x);
+        player.transform.Rotate(y);
 
 
         /*float speed = 1.0f;
