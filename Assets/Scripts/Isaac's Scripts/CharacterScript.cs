@@ -61,21 +61,21 @@ public class CharacterScript : MonoBehaviour
         switch (currentStanceState)
         {
             case (StanceState.ATTACK):
-                playerMat.color = Color.red;
+                //playerMat.color = Color.red;
                 movementSpeed = 5;
                 //attack dmg = 10
                 //defence stat = 5
                 break;
 
             case (StanceState.DEFENCE):
-                playerMat.color = Color.blue;
+                //playerMat.color = Color.blue;
                 movementSpeed = 5;
                 //attack dmg = 5
                 //defence stat = 10
                 break;
 
             case (StanceState.UTILITY):
-                playerMat.color = Color.green;
+                //playerMat.color = Color.green;
                 movementSpeed = 10;
                 //attack dmg = 5
                 //defence stat = 5
