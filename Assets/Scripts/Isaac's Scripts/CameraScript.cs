@@ -29,11 +29,6 @@ public class CameraScript : MonoBehaviour
         Vector3 y = new Vector3(rotate.y, 0, 0) * 50 * Time.deltaTime;
         player.transform.Rotate(x);
         player.transform.Rotate(y);
-
-
-        /*float speed = 1.0f;
-        transform.Rotate(Vector3.up, Input.GetAxis("Joystick Hor Right") * speed);
-        //transform.Rotate(Vector3.left, Input.GetAxis("Joystick Ver Right") * speed);*/
     }
 
     void OnEnable()

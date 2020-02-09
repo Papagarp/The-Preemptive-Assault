@@ -29,8 +29,6 @@ public class CharacterScript : MonoBehaviour
 
     Vector2 controllerInput;
 
-    private Material playerMat;
-
     void Awake()
     {
         controls = new ControllerInput();
@@ -49,8 +47,6 @@ public class CharacterScript : MonoBehaviour
     {
         currentStanceState = StanceState.ATTACK;
 
-        playerMat = GetComponent<Renderer>().material;
-
         rb = GetComponent<Rigidbody>();
     }
 
@@ -61,21 +57,18 @@ public class CharacterScript : MonoBehaviour
         switch (currentStanceState)
         {
             case (StanceState.ATTACK):
-                //playerMat.color = Color.red;
                 movementSpeed = 5;
                 //attack dmg = 10
                 //defence stat = 5
                 break;
 
             case (StanceState.DEFENCE):
-                //playerMat.color = Color.blue;
                 movementSpeed = 5;
                 //attack dmg = 5
                 //defence stat = 10
                 break;
 
             case (StanceState.UTILITY):
-                //playerMat.color = Color.green;
                 movementSpeed = 10;
                 //attack dmg = 5
                 //defence stat = 5
@@ -105,8 +98,11 @@ public class CharacterScript : MonoBehaviour
         }
 
         //Testing Version
-        Vector3 m = new Vector3(controllerInput.x, 0, controllerInput.y) * movementSpeed * Time.deltaTime;
-        transform.Translate(m);
+        //Vector3 m = new Vector3(controllerInput.x, 0, controllerInput.y) * movementSpeed * Time.deltaTime;
+        //transform.Translate(m);
+
+        rb.AddForce(controllerInput.x, 0, controllerInput.y);
+
 
 
     }
