@@ -17,7 +17,7 @@ public class CharController : MonoBehaviour
     Vector2 controllerInputLeftStick;
     Vector3 controllerInputRightStick;
     
-    
+    float yRotation = 0f;
 
     public float controllerSensitivity = 50.0f;
 
@@ -32,18 +32,28 @@ public class CharController : MonoBehaviour
         controls.Gameplay.Camera.canceled += context => controllerInputRightStick = Vector2.zero;
     }
 
+    private void Start()
+    {
+        
+    }
+
     private void Update()
     {
         MainCamera.transform.LookAt(cameraFocus);
 
-        //Vector3 rightStickX = new Vector3(0, controllerInputRightStick.x, 0) * controllerSensitivity * Time.deltaTime;
-        //Vector3 rightStickY = new Vector3(controllerInputRightStick.y, 0, 0) * controllerSensitivity * Time.deltaTime;
-
         float rightStickX = controllerInputRightStick.x * controllerSensitivity * Time.deltaTime;
         float rightStickY = controllerInputRightStick.y * controllerSensitivity * Time.deltaTime;
 
-        cameraFocus.transform.Rotate(rightStickX * transform.up);
-        cameraFocus.transform.Rotate(rightStickY * transform.right);
+        yRotation -= rightStickY;
+        yRotation = Mathf.Clamp(yRotation, -25f, 25f);
+
+        cameraFocus.transform.localRotation = Quaternion.Euler(yRotation, 0f, 0f);
+        cameraFocus.Rotate(Vector3.right * rightStickY);
+
+        
+
+        //cameraFocus.transform.Rotate(rightStickX * transform.up);
+        //cameraFocus.transform.Rotate(rightStickY * transform.right);
     }
 
     void OnEnable()
