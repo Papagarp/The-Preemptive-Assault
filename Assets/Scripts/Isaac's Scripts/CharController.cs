@@ -3,24 +3,50 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-
-//TEST VERSION
-
-
 public class CharController : MonoBehaviour
 {
     ControllerInput controls;
 
-    public GameObject MainCamera;
-    public Transform cameraFocus;
+    CharacterController controller;
+
+    public enum StanceState
+    {
+        ATTACK,
+        DEFENCE,
+        UTILITY
+    }
+
+    public StanceState currentStanceState;
+
+    public GameObject mainCamera;
+
+    public Transform model;
+    public Transform cameraFocusX;
+    public Transform cameraFocusY;
+    public Transform groundCheck;
+
+    public float controllerSensitivity = 50.0f;
+    public float movementSpeed;
+    public float gravity = -9.81f;
+    public float groundDistance = 0.4f;
+    public float jumpHeight = 3f;
+
+    float xRotation = 0f;
+
+    bool isGrounded;
+    bool hasJumped;
+    public bool interact;
+
+    public int stateNo;
+
+    public LayerMask groundMask;
+
+    Vector3 velocity;
+    Vector3 lastPosition;
     
     Vector2 controllerInputLeftStick;
     Vector3 controllerInputRightStick;
     
-    float yRotation = 0f;
-
-    public float controllerSensitivity = 50.0f;
-
     private void Awake()
     {
         controls = new ControllerInput();
@@ -30,30 +56,122 @@ public class CharController : MonoBehaviour
 
         controls.Gameplay.Camera.performed += context => controllerInputRightStick = context.ReadValue<Vector2>();
         controls.Gameplay.Camera.canceled += context => controllerInputRightStick = Vector2.zero;
+
+        controls.Gameplay.Jump.performed += context => hasJumped = true;
+        controls.Gameplay.Jump.canceled += context => hasJumped = false;
+
+        controls.Gameplay.Interact.performed += context => interact = true;
+        controls.Gameplay.Interact.canceled += context => interact = false;
+
+        controls.Gameplay.SwitchStatesUp.performed += context => SwitchStateUp();
+        controls.Gameplay.SwitchStatesDown.performed += context => SwitchStateDown();
     }
 
     private void Start()
     {
-        
+        controller = GetComponent<CharacterController>();
+
+        currentStanceState = StanceState.ATTACK;
     }
 
     private void Update()
     {
-        MainCamera.transform.LookAt(cameraFocus);
+        if (stateNo == 4)
+        {
+            stateNo = 1;
+        }
+        else if (stateNo == 0)
+        {
+            stateNo = 3;
+        }
+
+        if (stateNo == 1)
+        {
+            currentStanceState = StanceState.ATTACK;
+        }
+        else if (stateNo == 2)
+        {
+            currentStanceState = StanceState.DEFENCE;
+        }
+        else if (stateNo == 3)
+        {
+            currentStanceState = StanceState.UTILITY;
+        }
+
+        switch (currentStanceState)
+        {
+            case (StanceState.ATTACK):
+                //stats
+                movementSpeed = 5;
+                break;
+
+            case (StanceState.DEFENCE):
+                //more stats
+                movementSpeed = 5;
+                break;
+
+            case (StanceState.UTILITY):
+                //even more stats
+                movementSpeed = 10;
+                break;
+        }
+
+        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+
+        if(isGrounded && velocity.y < 0)
+        {
+            velocity.y = -2f;
+        }
+
+        mainCamera.transform.LookAt(cameraFocusY);
 
         float rightStickX = controllerInputRightStick.x * controllerSensitivity * Time.deltaTime;
         float rightStickY = controllerInputRightStick.y * controllerSensitivity * Time.deltaTime;
 
-        yRotation -= rightStickY;
-        yRotation = Mathf.Clamp(yRotation, -25f, 25f);
+        xRotation -= rightStickY;
+        xRotation = Mathf.Clamp(xRotation, -25f, 25f);
 
-        cameraFocus.transform.localRotation = Quaternion.Euler(yRotation, 0f, 0f);
-        cameraFocus.Rotate(Vector3.right * rightStickY);
+        cameraFocusY.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+        cameraFocusX.Rotate(Vector3.up * rightStickX);
 
-        
+        Vector3 move = cameraFocusX.transform.right * controllerInputLeftStick.x + cameraFocusX.transform.forward * controllerInputLeftStick.y;
 
-        //cameraFocus.transform.Rotate(rightStickX * transform.up);
-        //cameraFocus.transform.Rotate(rightStickY * transform.right);
+        controller.Move(move * movementSpeed * Time.deltaTime);
+
+        if(lastPosition != gameObject.transform.position)
+        {
+            if(model.transform.rotation != cameraFocusX.transform.rotation)
+            {
+                model.transform.rotation = cameraFocusX.transform.rotation;
+            }
+            //animation
+        }
+
+        lastPosition = gameObject.transform.position;
+
+        if(hasJumped && isGrounded)
+        {
+            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity); 
+        }
+
+        velocity.y += gravity * Time.deltaTime;
+
+        controller.Move(velocity * Time.deltaTime);
+    }
+
+    void movement()
+    {
+
+    }
+
+    void SwitchStateUp()
+    {
+        stateNo++;
+    }
+
+    void SwitchStateDown()
+    {
+        stateNo--;
     }
 
     void OnEnable()

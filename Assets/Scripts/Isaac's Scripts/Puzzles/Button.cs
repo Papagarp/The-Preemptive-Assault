@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Button : MonoBehaviour
 {
-    CharacterScript characterScript;
+    CharController characterScript;
 
     public GameObject player;
 
@@ -14,7 +14,7 @@ public class Button : MonoBehaviour
 
     private void Start()
     {
-        characterScript = player.GetComponent<CharacterScript>();
+        characterScript = player.GetComponent<CharController>();
     }
 
     private void Update()

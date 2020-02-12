@@ -4,22 +4,42 @@ using UnityEngine;
 
 public class Boulder : MonoBehaviour
 {
-    CharacterScript characterScript;
+    CharController characterScript;
 
     public GameObject player;
 
+    float grab = 1.0f;
+
     bool inRange;
+    bool holding;
 
     private void Start()
     {
-        characterScript = player.GetComponent<CharacterScript>();
+        characterScript = player.GetComponent<CharController>();
     }
 
     private void Update()
     {
-        if (inRange == true && characterScript.interact == true)
-        {
+        grab -= Time.deltaTime;
 
+        if(grab <= 0.0f)
+        {
+            if (holding && characterScript.interact)
+            {
+                gameObject.transform.parent = null;
+                holding = false;
+                grab = 1.0f;
+            }
+        }
+
+        if (grab <= 0.0f)
+        {
+            if (inRange && characterScript.interact)
+            {
+                gameObject.transform.parent = player.transform;
+                holding = true;
+                grab = 1.0f;
+            }
         }
     }
 

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class HookScript : MonoBehaviour
 {
-    CharacterScript characterScript;
+    CharController characterScript;
 
     public GameObject player;
 
@@ -26,7 +26,7 @@ public class HookScript : MonoBehaviour
 
     void Start()
     {
-        characterScript = player.GetComponent<CharacterScript>();
+        characterScript = player.GetComponent<CharController>();
     }
 
     private void Update()
@@ -35,7 +35,7 @@ public class HookScript : MonoBehaviour
 
         CheckIfGround();
 
-        if (characterScript.currentStanceState != CharacterScript.StanceState.UTILITY)
+        if (characterScript.currentStanceState != CharController.StanceState.UTILITY)
         {
             hookHolder.SetActive(false);
         }
@@ -44,7 +44,7 @@ public class HookScript : MonoBehaviour
             hookHolder.SetActive(true);
         }
 
-        if (Input.GetMouseButtonDown(1) && !fired && characterScript.currentStanceState == CharacterScript.StanceState.UTILITY)
+        if (Input.GetMouseButtonDown(1) && !fired && characterScript.currentStanceState == CharController.StanceState.UTILITY)
         {
             fired = true;
         }
