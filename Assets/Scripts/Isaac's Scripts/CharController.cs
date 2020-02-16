@@ -41,6 +41,7 @@ public class CharController : MonoBehaviour
 
     bool isGrounded;
     bool hasJumped;
+	bool hasHooked;
 
     public bool interact;
 
@@ -72,6 +73,9 @@ public class CharController : MonoBehaviour
 
         controls.Gameplay.Interact.performed += context => interact = true;
         controls.Gameplay.Interact.canceled += context => interact = false;
+
+		controls.Gameplay.Hook.performed += context => hasHooked = true;
+        controls.Gameplay.Hook.canceled += context => hasHooked = false;
 
         controls.Gameplay.SwitchStatesUp.performed += context => SwitchStateUp();
         controls.Gameplay.SwitchStatesDown.performed += context => SwitchStateDown();
@@ -186,8 +190,29 @@ public class CharController : MonoBehaviour
 
         //Hook Function
 
+        if (hasHooked && hookFired == false)
+		{
+            hookFired = true;
+		}
 
+		if (hookFired)
+		{
+            hook.transform.Translate(Vector3.forward * Time.deltaTime * hookTravelSpeed);
+            currentHookDistance = Vector3.Distance(tranform.position, hook.transform.position);
+
+            if (currentHookDistance >= maxHookDistance)
+			{
+                ReturnHook();
+			}
+		}
     }
+
+    void ReturnHook()
+	{
+        hook.transform.position = hookHolder.transform.position;
+        hookFired = false;
+        hooked = false;
+	}
 
     void SwitchStateUp()
     {
