@@ -198,7 +198,7 @@ public class CharController : MonoBehaviour
 		if (hookFired)
 		{
             hook.transform.Translate(Vector3.forward * Time.deltaTime * hookTravelSpeed);
-            currentHookDistance = Vector3.Distance(tranform.position, hook.transform.position);
+            currentHookDistance = Vector3.Distance(transform.position, hook.transform.position);
 
             if (currentHookDistance >= maxHookDistance)
 			{
