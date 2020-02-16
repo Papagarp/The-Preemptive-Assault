@@ -19,6 +19,8 @@ public class CharController : MonoBehaviour
     public StanceState currentStanceState;
 
     public GameObject mainCamera;
+    public GameObject hook;
+    public GameObject hookHolder;
 
     public Transform model;
     public Transform cameraFocusX;
@@ -30,12 +32,20 @@ public class CharController : MonoBehaviour
     public float gravity = -9.81f;
     public float groundDistance = 0.4f;
     public float jumpHeight = 3f;
+    public float hookTravelSpeed = 15.0f;
+    public float playerHookSpeed = 15.0f;
+    public float maxHookDistance;
 
+    float currentHookDistance;
     float xRotation = 0f;
 
     bool isGrounded;
     bool hasJumped;
+
     public bool interact;
+
+    public static bool hookFired;
+    public static bool hooked;
 
     public int stateNo;
 
@@ -76,6 +86,8 @@ public class CharController : MonoBehaviour
 
     private void Update()
     {
+        //State Switching
+
         if (stateNo == 4)
         {
             stateNo = 1;
@@ -116,12 +128,9 @@ public class CharController : MonoBehaviour
                 break;
         }
 
-        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+        //------------------------------------------------------------------------------------------------------------------------------------
 
-        if(isGrounded && velocity.y < 0)
-        {
-            velocity.y = -2f;
-        }
+        //Joystick Controls
 
         mainCamera.transform.LookAt(cameraFocusY);
 
@@ -138,7 +147,11 @@ public class CharController : MonoBehaviour
 
         controller.Move(move * movementSpeed * Time.deltaTime);
 
-        if(lastPosition != gameObject.transform.position)
+        //------------------------------------------------------------------------------------------------------------------------------------
+
+        //Model Rotation
+
+        if (lastPosition != gameObject.transform.position)
         {
             if(model.transform.rotation != cameraFocusX.transform.rotation)
             {
@@ -149,7 +162,18 @@ public class CharController : MonoBehaviour
 
         lastPosition = gameObject.transform.position;
 
-        if(hasJumped && isGrounded)
+        //------------------------------------------------------------------------------------------------------------------------------------
+
+        //Jump Function
+
+        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+
+        if (isGrounded && velocity.y < 0)
+        {
+            velocity.y = -2f;
+        }
+
+        if (hasJumped && isGrounded)
         {
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity); 
         }
@@ -157,10 +181,11 @@ public class CharController : MonoBehaviour
         velocity.y += gravity * Time.deltaTime;
 
         controller.Move(velocity * Time.deltaTime);
-    }
 
-    void movement()
-    {
+        //------------------------------------------------------------------------------------------------------------------------------------
+
+        //Hook Function
+
 
     }
 

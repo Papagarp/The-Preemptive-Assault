@@ -123,7 +123,7 @@ public class @ControllerInput : IInputActionCollection, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""11840dac-97f2-4614-a072-d383fe655fed"",
-                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""path"": ""<Gamepad>/buttonWest"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -134,7 +134,7 @@ public class @ControllerInput : IInputActionCollection, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""11e3f245-020a-45da-96d8-1c3fb390d023"",
-                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
