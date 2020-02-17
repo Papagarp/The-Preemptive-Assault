@@ -211,7 +211,7 @@ public class CharController : MonoBehaviour
 			}
 		}
 
-        if (hooked)
+        if (hooked && hookFired)
         {
             hook.transform.parent = hookedObject.transform;
 
@@ -220,13 +220,28 @@ public class CharController : MonoBehaviour
 
             if (distanceToHook < 2)
             {
-                ReturnHook();
+                if (isGrounded == false)
+                {
+                    //personally i dont like this and it should be done better so i will come back to this later
+                    this.transform.Translate(Vector3.forward * Time.deltaTime * 13f);
+                    this.transform.Translate(Vector3.up * Time.deltaTime * 17f);
+                }
+
+                StartCoroutine("Climb");
             }
         }
         else
         {
             hook.transform.parent = hookHolder.transform;
         }
+
+        //------------------------------------------------------------------------------------------------------------------------------------
+    }
+
+    IEnumerator Climb()
+    {
+        yield return new WaitForSeconds(0.1f);
+        ReturnHook();
     }
 
     void ReturnHook()
