@@ -27,11 +27,14 @@ public class CharController : MonoBehaviour
     public Transform cameraFocusX;
     public Transform cameraFocusY;
     public Transform groundCheck;
+    public Transform grabCheck;
 
     public float controllerSensitivity = 50.0f;
     public float movementSpeed;
     public float gravity = -9.81f;
     public float groundDistance = 0.1f;
+    public float grabDistance = 0.1f;
+    public float grabTimer = 1.0f;
     public float jumpHeight = 3f;
     public float hookTravelSpeed = 15.0f;
     public float playerHookSpeed = 15.0f;
@@ -41,9 +44,11 @@ public class CharController : MonoBehaviour
     float xRotation = 0f;
 
     bool isGrounded;
+    bool canGrab;
     bool hasJumped;
 	bool hasHooked;
     bool isAimming;
+    bool holding;
 
     public bool interact;
     public bool hooked;
@@ -53,6 +58,7 @@ public class CharController : MonoBehaviour
     public int stateNo;
 
     public LayerMask groundMask;
+    public LayerMask grabbableMask;
 
     Vector3 velocity;
     Vector3 movement;
@@ -92,18 +98,21 @@ public class CharController : MonoBehaviour
     {
         controller = GetComponent<CharacterController>();
 
-        currentStanceState = StanceState.ATTACK;
+        stateNo = 1;
     }
 
     private void Update()
     {
         //State Switching
 
+        Debug.Log(currentStanceState);
+
         if (stateNo == 4)
         {
             stateNo = 1;
         }
-        else if (stateNo == 0)
+
+        if (stateNo == 0)
         {
             stateNo = 3;
         }
@@ -112,11 +121,11 @@ public class CharController : MonoBehaviour
         {
             currentStanceState = StanceState.ATTACK;
         }
-        else if (stateNo == 2)
+        if (stateNo == 2)
         {
             currentStanceState = StanceState.DEFENCE;
         }
-        else if (stateNo == 3)
+        if (stateNo == 3)
         {
             currentStanceState = StanceState.UTILITY;
         }
@@ -125,16 +134,19 @@ public class CharController : MonoBehaviour
         {
             case (StanceState.ATTACK):
                 //stats
+                hookHolder.SetActive(false);
                 movementSpeed = 5;
                 break;
 
             case (StanceState.DEFENCE):
                 //more stats
+                hookHolder.SetActive(false);
                 movementSpeed = 5;
                 break;
 
             case (StanceState.UTILITY):
                 //even more stats
+                hookHolder.SetActive(true);
                 movementSpeed = 10;
                 break;
         }
@@ -206,47 +218,71 @@ public class CharController : MonoBehaviour
 
         //Hook Function
 
-        if (hasHooked && !hookFired)
+        if (currentStanceState == StanceState.UTILITY)
         {
-            hookFired = true;
-        }
-
-        if (hookFired && !hooked)
-        {
-            hookHolder.transform.parent = null;
-            hook.transform.Translate(Vector3.forward * Time.deltaTime * hookTravelSpeed);
-            currentHookDistance = Vector3.Distance(transform.position, hook.transform.position);
-
-            if (currentHookDistance >= maxHookDistance)
+            if (hasHooked && !hookFired)
             {
-                ReturnHook();
+                hookFired = true;
             }
-        }
 
-        if (hooked && hookFired)
-        {
-            hook.transform.parent = hookedObject.transform;
-
-            transform.position = Vector3.MoveTowards(transform.position, hook.transform.position, Time.deltaTime * playerHookSpeed);
-            float distanceToHook = Vector3.Distance(transform.position, hook.transform.position);
-
-            if (distanceToHook < 2)
+            if (hookFired && !hooked)
             {
-                if (!isGrounded)
+                hookHolder.transform.parent = null;
+                hook.transform.Translate(Vector3.forward * Time.deltaTime * hookTravelSpeed);
+                currentHookDistance = Vector3.Distance(transform.position, hook.transform.position);
+
+                if (currentHookDistance >= maxHookDistance)
                 {
-                    //personally i dont like this and it should be done better so i will come back to this later
-                    this.transform.Translate(Vector3.forward * Time.deltaTime * 13f);
-                    this.transform.Translate(Vector3.up * Time.deltaTime * 17f);
+                    ReturnHook();
                 }
+            }
 
-                StartCoroutine("Climb");
+            if (hooked && hookFired)
+            {
+                hook.transform.parent = hookedObject.transform;
+
+                transform.position = Vector3.MoveTowards(transform.position, hook.transform.position, Time.deltaTime * playerHookSpeed);
+                float distanceToHook = Vector3.Distance(transform.position, hook.transform.position);
+
+                if (distanceToHook < 2)
+                {
+                    if (!isGrounded)
+                    {
+                        //personally i dont like this and it should be done better so i will come back to this later
+                        this.transform.Translate(Vector3.forward * Time.deltaTime * 13f);
+                        this.transform.Translate(Vector3.up * Time.deltaTime * 17f);
+                    }
+
+                    StartCoroutine("Climb");
+                }
+            }
+            else
+            {
+                hook.transform.parent = hookHolder.transform;
             }
         }
-        else
+
+        //------------------------------------------------------------------------------------------------------------------------------------
+
+        //Push and Pull Function
+
+        canGrab = Physics.CheckSphere(grabCheck.position, grabDistance, grabbableMask);
+
+        grabTimer -= Time.deltaTime;
+
+        if (holding && interact && grabTimer <= 0.0f)
         {
-            hook.transform.parent = hookHolder.transform;
+            
+            holding = false;
+            grabTimer = 1.0f;
         }
-        
+
+        if (canGrab && interact && grabTimer <= 0.0f)
+        {
+            holding = true;
+            grabTimer = 1.0f;
+        }
+
         //------------------------------------------------------------------------------------------------------------------------------------
     }
 

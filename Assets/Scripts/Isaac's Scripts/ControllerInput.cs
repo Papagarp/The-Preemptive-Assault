@@ -131,7 +131,7 @@ public class @ControllerInput : IInputActionCollection, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""11840dac-97f2-4614-a072-d383fe655fed"",
-                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
