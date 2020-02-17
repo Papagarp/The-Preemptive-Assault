@@ -43,6 +43,7 @@ public class CharController : MonoBehaviour
     bool isGrounded;
     bool hasJumped;
 	bool hasHooked;
+    bool isAimming;
 
     public bool interact;
     public bool hooked;
@@ -54,6 +55,8 @@ public class CharController : MonoBehaviour
     public LayerMask groundMask;
 
     Vector3 velocity;
+    Vector3 movement;
+    Vector3 jumpMovement;
     Vector3 lastPosition;
     
     Vector2 controllerInputLeftStick;
@@ -77,6 +80,9 @@ public class CharController : MonoBehaviour
 
 		controls.Gameplay.Hook.performed += context => hasHooked = true;
         controls.Gameplay.Hook.canceled += context => hasHooked = false;
+
+        controls.Gameplay.Aim.performed += context => isAimming = true;
+        controls.Gameplay.Aim.canceled += context => isAimming = false;
 
         controls.Gameplay.SwitchStatesUp.performed += context => SwitchStateUp();
         controls.Gameplay.SwitchStatesDown.performed += context => SwitchStateDown();
@@ -148,21 +154,19 @@ public class CharController : MonoBehaviour
         cameraFocusY.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
         cameraFocusX.Rotate(Vector3.up * rightStickX);
 
-        Vector3 move = cameraFocusX.transform.right * controllerInputLeftStick.x + cameraFocusX.transform.forward * controllerInputLeftStick.y;
-
-        controller.Move(move * movementSpeed * Time.deltaTime);
+        if (isGrounded)
+        {
+            movement = cameraFocusX.transform.right * controllerInputLeftStick.x + cameraFocusX.transform.forward * controllerInputLeftStick.y;
+            controller.Move(movement * movementSpeed * Time.deltaTime);
+        }
 
         //------------------------------------------------------------------------------------------------------------------------------------
 
         //Model Rotation
 
-        if (lastPosition != gameObject.transform.position)
+        if (lastPosition != gameObject.transform.position && !hooked)
         {
-            if (model.transform.rotation != cameraFocusX.transform.rotation)
-            {
-                model.transform.rotation = cameraFocusX.transform.rotation;
-            }
-            //animation
+            model.transform.rotation = Quaternion.LookRotation(movement);
         }
 
         lastPosition = gameObject.transform.position;
@@ -180,11 +184,19 @@ public class CharController : MonoBehaviour
 
         if (hasJumped && isGrounded)
         {
-            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity); 
+            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+            
         }
-
-        if (hooked == false)
+        
+        if (!hooked)
         {
+            if (!isGrounded)
+            {
+                jumpMovement = new Vector3(movement.x, 0f, movement.z);
+
+                controller.Move(jumpMovement * movementSpeed * Time.deltaTime);
+            }
+
             velocity.y += gravity * Time.deltaTime;
 
             controller.Move(velocity * Time.deltaTime);
@@ -194,22 +206,22 @@ public class CharController : MonoBehaviour
 
         //Hook Function
 
-        if (hasHooked && hookFired == false)
-		{
+        if (hasHooked && !hookFired)
+        {
             hookFired = true;
-		}
+        }
 
-		if (hookFired && hooked == false)
-		{
+        if (hookFired && !hooked)
+        {
             hookHolder.transform.parent = null;
             hook.transform.Translate(Vector3.forward * Time.deltaTime * hookTravelSpeed);
             currentHookDistance = Vector3.Distance(transform.position, hook.transform.position);
 
             if (currentHookDistance >= maxHookDistance)
-			{
+            {
                 ReturnHook();
-			}
-		}
+            }
+        }
 
         if (hooked && hookFired)
         {
@@ -220,7 +232,7 @@ public class CharController : MonoBehaviour
 
             if (distanceToHook < 2)
             {
-                if (isGrounded == false)
+                if (!isGrounded)
                 {
                     //personally i dont like this and it should be done better so i will come back to this later
                     this.transform.Translate(Vector3.forward * Time.deltaTime * 13f);
@@ -234,7 +246,7 @@ public class CharController : MonoBehaviour
         {
             hook.transform.parent = hookHolder.transform;
         }
-
+        
         //------------------------------------------------------------------------------------------------------------------------------------
     }
 
@@ -255,7 +267,7 @@ public class CharController : MonoBehaviour
 
         hookFired = false;
         hooked = false;
-	}
+    }
 
     void SwitchStateUp()
     {
