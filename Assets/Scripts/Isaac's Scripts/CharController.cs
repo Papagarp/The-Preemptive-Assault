@@ -231,10 +231,11 @@ public class CharController : MonoBehaviour
 
     void ReturnHook()
 	{
-        hook.transform.rotation = cameraFocusY.transform.rotation;
-        hook.transform.position = hookHolder.transform.position;
-
         hookHolder.transform.position = cameraFocusY.transform.position;
+
+        hook.transform.position = hookHolder.transform.position;
+        hook.transform.rotation = cameraFocusY.transform.rotation;
+
         hookHolder.transform.parent = cameraFocusY.transform;
 
         hookFired = false;
