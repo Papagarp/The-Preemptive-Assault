@@ -21,6 +21,7 @@ public class CharController : MonoBehaviour
     public GameObject mainCamera;
     public GameObject hook;
     public GameObject hookHolder;
+    public GameObject hookedObject;
 
     public Transform model;
     public Transform cameraFocusX;
@@ -30,7 +31,7 @@ public class CharController : MonoBehaviour
     public float controllerSensitivity = 50.0f;
     public float movementSpeed;
     public float gravity = -9.81f;
-    public float groundDistance = 0.4f;
+    public float groundDistance = 0.1f;
     public float jumpHeight = 3f;
     public float hookTravelSpeed = 15.0f;
     public float playerHookSpeed = 15.0f;
@@ -44,9 +45,9 @@ public class CharController : MonoBehaviour
 	bool hasHooked;
 
     public bool interact;
+    public bool hooked;
 
     public static bool hookFired;
-    public static bool hooked;
 
     public int stateNo;
 
@@ -157,7 +158,7 @@ public class CharController : MonoBehaviour
 
         if (lastPosition != gameObject.transform.position)
         {
-            if(model.transform.rotation != cameraFocusX.transform.rotation)
+            if (model.transform.rotation != cameraFocusX.transform.rotation)
             {
                 model.transform.rotation = cameraFocusX.transform.rotation;
             }
@@ -168,7 +169,7 @@ public class CharController : MonoBehaviour
 
         //------------------------------------------------------------------------------------------------------------------------------------
 
-        //Jump Function
+        //Jump Function and Gravity
 
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
 
@@ -182,9 +183,12 @@ public class CharController : MonoBehaviour
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity); 
         }
 
-        velocity.y += gravity * Time.deltaTime;
+        if (hooked == false)
+        {
+            velocity.y += gravity * Time.deltaTime;
 
-        controller.Move(velocity * Time.deltaTime);
+            controller.Move(velocity * Time.deltaTime);
+        }
 
         //------------------------------------------------------------------------------------------------------------------------------------
 
@@ -195,8 +199,9 @@ public class CharController : MonoBehaviour
             hookFired = true;
 		}
 
-		if (hookFired)
+		if (hookFired && hooked == false)
 		{
+            hookHolder.transform.parent = null;
             hook.transform.Translate(Vector3.forward * Time.deltaTime * hookTravelSpeed);
             currentHookDistance = Vector3.Distance(transform.position, hook.transform.position);
 
@@ -205,11 +210,33 @@ public class CharController : MonoBehaviour
                 ReturnHook();
 			}
 		}
+
+        if (hooked)
+        {
+            hook.transform.parent = hookedObject.transform;
+
+            transform.position = Vector3.MoveTowards(transform.position, hook.transform.position, Time.deltaTime * playerHookSpeed);
+            float distanceToHook = Vector3.Distance(transform.position, hook.transform.position);
+
+            if (distanceToHook < 2)
+            {
+                ReturnHook();
+            }
+        }
+        else
+        {
+            hook.transform.parent = hookHolder.transform;
+        }
     }
 
     void ReturnHook()
 	{
+        hook.transform.rotation = cameraFocusY.transform.rotation;
         hook.transform.position = hookHolder.transform.position;
+
+        hookHolder.transform.position = cameraFocusY.transform.position;
+        hookHolder.transform.parent = cameraFocusY.transform;
+
         hookFired = false;
         hooked = false;
 	}
