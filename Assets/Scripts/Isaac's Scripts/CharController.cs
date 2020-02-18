@@ -44,13 +44,14 @@ public class CharController : MonoBehaviour
     float xRotation = 0f;
 
     bool isGrounded;
-    bool canGrab;
+    
     bool hasJumped;
 	bool hasHooked;
     bool isAimming;
-    bool holding;
 
     public bool interact;
+    public bool canGrab;
+    public bool holding;
     public bool hooked;
 
     public static bool hookFired;
@@ -59,6 +60,8 @@ public class CharController : MonoBehaviour
 
     public LayerMask groundMask;
     public LayerMask grabbableMask;
+
+    Quaternion lastRotation;
 
     Vector3 velocity;
     Vector3 movement;
@@ -176,9 +179,22 @@ public class CharController : MonoBehaviour
 
         //Model Rotation
 
-        if (lastPosition != gameObject.transform.position && !hooked)
+        if (lastPosition != gameObject.transform.position && !hooked && !holding)
         {
-            model.transform.rotation = Quaternion.LookRotation(movement);
+            if (!isGrounded)
+            {
+                lastRotation = model.transform.rotation;
+            }
+            
+            if (isGrounded)
+            {
+                if (movement == Vector3.zero)
+                {
+                    model.transform.rotation = lastRotation;
+                }
+                model.transform.rotation = Quaternion.LookRotation(movement);
+            }
+            //right here
         }
 
         lastPosition = gameObject.transform.position;
@@ -194,7 +210,7 @@ public class CharController : MonoBehaviour
             velocity.y = -2f;
         }
 
-        if (hasJumped && isGrounded)
+        if (hasJumped && isGrounded && !holding)
         {
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
             
@@ -218,7 +234,7 @@ public class CharController : MonoBehaviour
 
         //Hook Function
 
-        if (currentStanceState == StanceState.UTILITY)
+        if (currentStanceState == StanceState.UTILITY && !holding)
         {
             if (hasHooked && !hookFired)
             {
@@ -272,7 +288,6 @@ public class CharController : MonoBehaviour
 
         if (holding && interact && grabTimer <= 0.0f)
         {
-            
             holding = false;
             grabTimer = 1.0f;
         }

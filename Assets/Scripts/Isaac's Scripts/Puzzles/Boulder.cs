@@ -8,11 +8,6 @@ public class Boulder : MonoBehaviour
 
     public GameObject player;
 
-    float grab = 1.0f;
-
-    bool inRange;
-    bool holding;
-
     private void Start()
     {
         characterScript = player.GetComponent<CharController>();
@@ -20,35 +15,14 @@ public class Boulder : MonoBehaviour
 
     private void Update()
     {
-        grab -= Time.deltaTime;
-
-        if(grab <= 0.0f)
+        if (!characterScript.holding)
         {
-            if (holding && characterScript.interact)
-            {
-                gameObject.transform.parent = null;
-                holding = false;
-                grab = 1.0f;
-            }
+            gameObject.transform.parent = null;
         }
-
-        if (grab <= 0.0f)
+        
+        if (characterScript.holding)
         {
-            if (inRange && characterScript.interact)
-            {
-                gameObject.transform.parent = player.transform;
-                holding = true;
-                grab = 1.0f;
-            }
+            gameObject.transform.parent = player.transform;
         }
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        inRange = true;
-    }
-    private void OnTriggerExit(Collider other)
-    {
-        inRange = false;
     }
 }
