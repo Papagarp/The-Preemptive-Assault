@@ -108,13 +108,12 @@ public class CharController : MonoBehaviour
     {
         //State Switching
 
-        Debug.Log(currentStanceState);
+        //Debug.Log(currentStanceState);
 
         if (stateNo == 4)
         {
             stateNo = 1;
         }
-
         if (stateNo == 0)
         {
             stateNo = 3;

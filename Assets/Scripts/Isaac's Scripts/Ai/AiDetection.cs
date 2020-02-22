@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class AiDetection : MonoBehaviour
 {
-    public AiMovement aiMovementScript;
+    public AiController aiControllerScript;
 
     public float viewRadius;
     [Range(0,360)]
@@ -16,13 +16,13 @@ public class AiDetection : MonoBehaviour
     public GameObject player;
 
     public LayerMask obstacleMask;
-    public LayerMask targetMask;
+    public LayerMask playerMask;
 
     void Start()
     {
         StartCoroutine("FindTargetsWithDelay", .2f);
 
-        aiMovementScript = GetComponent<AiMovement>();
+        aiControllerScript = GetComponent<AiController>();
     }
 
     void Update()
@@ -31,7 +31,7 @@ public class AiDetection : MonoBehaviour
 
         if(distanceToPlayer > viewRadius)
         {
-            aiMovementScript.foundPlayer = false;
+            aiControllerScript.foundPlayer = false;
         }
     }
 
@@ -46,7 +46,7 @@ public class AiDetection : MonoBehaviour
 
     void FindVisibleTargets()
     {
-        Collider[] targetsInViewRadius = Physics.OverlapSphere(transform.position, viewRadius, targetMask);
+        Collider[] targetsInViewRadius = Physics.OverlapSphere(transform.position, viewRadius, playerMask);
 
         for (int i = 0; i < targetsInViewRadius.Length; i++)
         {
@@ -59,11 +59,11 @@ public class AiDetection : MonoBehaviour
 
                 if(!Physics.Raycast(transform.position, dirToTarget,disToTarget, obstacleMask))
                 {
-                    aiMovementScript.foundPlayer = true;
+                    aiControllerScript.foundPlayer = true;
                 }
                 else if(disToTarget >= viewRadius)
                 {
-                    aiMovementScript.foundPlayer = false;
+                    aiControllerScript.foundPlayer = false;
                 }
             }
         }
