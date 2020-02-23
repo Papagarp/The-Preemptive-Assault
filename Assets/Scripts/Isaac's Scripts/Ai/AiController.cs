@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.UI;
-using System.Linq;
 
 public class AiController : MonoBehaviour
 {
@@ -26,6 +24,7 @@ public class AiController : MonoBehaviour
 
     public bool foundPlayer;
     public bool patrollingAI;
+    public bool foundPlayerCheck;
 
     public float distanceToPlayer;
     public float distanceToPoint;
@@ -38,7 +37,6 @@ public class AiController : MonoBehaviour
     public float reloadTime = 3.0f;
 
     int i = 0;
-    int foundPlayerCheck = 0;
 
     public Vector3 lastKnownPosition;
     public Vector3 startAiPoint;
@@ -86,11 +84,11 @@ public class AiController : MonoBehaviour
 
         //------------------------------------------------------------------------------------------------------------------------------------
 
-        //Patrolling Function & reseting AI position
+        //Patrolling & Search Function & reseting AI position
 
         if (!foundPlayer)
         {
-            if (foundPlayerCheck == 1)
+            if (foundPlayerCheck)
             {
                 currentAIState = aiState.SEARCH;
             }
@@ -113,7 +111,7 @@ public class AiController : MonoBehaviour
                     if (searchTime <= 0)
                     {
                         currentAIState = aiState.PATROL;
-                        foundPlayerCheck = 0;
+                        foundPlayerCheck = false;
                     }
                 }
             }
@@ -159,7 +157,7 @@ public class AiController : MonoBehaviour
 
         if (foundPlayer)
         {
-            foundPlayerCheck = 1;
+            foundPlayerCheck = true;
             searchTime = 3.0f;
 
             nav.SetDestination(player.transform.position);
