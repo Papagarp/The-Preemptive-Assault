@@ -42,6 +42,8 @@ public class AiDogController : MonoBehaviour
     {
         //state switching
 
+        Debug.Log(currentAiDogState);
+
         switch (currentAiDogState)
         {
             case (aiDogState.ATTACK):
@@ -117,6 +119,8 @@ public class AiDogController : MonoBehaviour
 
         if (foundPlayer)
         {
+            currentAiDogState = aiDogState.ATTACK;
+
             foundPlayerCheck = true;
             searchTime = 3.0f;
 
