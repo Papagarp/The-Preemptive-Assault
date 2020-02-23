@@ -11,6 +11,7 @@ public class AiController : MonoBehaviour
     {
         MELEE,
         RANGED,
+        SEARCH,
         PATROL
     }
 
@@ -28,14 +29,18 @@ public class AiController : MonoBehaviour
 
     public float distanceToPlayer;
     public float distanceToPoint;
+    public float distanceToLastKnown;
     public float meleeRange = 5.0f;
     public float patrollingMovementSpeed = 3.0f;
     public float firingMovementSpeed = 0.2f;
     public float attackingMovementSpeed = 10.0f;
+    public float searchTime = 3.0f;
     public float reloadTime = 3.0f;
 
     int i = 0;
+    int foundPlayerCheck = 0;
 
+    public Vector3 lastKnownPosition;
     public Vector3 startAiPoint;
     public Quaternion startAiRotation;
 
@@ -47,11 +52,7 @@ public class AiController : MonoBehaviour
 
         boltScript = crossbowBolt.GetComponent<Bolt>();
 
-        if (patrollingAI)
-        {
-            nav.SetDestination(patrolPoints[i].transform.position);
-        }
-        else
+        if (!patrollingAI)
         {
             startAiPoint = gameObject.transform.position;
             startAiRotation = gameObject.transform.rotation;
@@ -74,6 +75,10 @@ public class AiController : MonoBehaviour
                 nav.speed = firingMovementSpeed;
                 break;
 
+            case (aiState.SEARCH):
+                nav.speed = patrollingMovementSpeed;
+                break;
+
             case (aiState.PATROL):
                 nav.speed = patrollingMovementSpeed;
                 break;
@@ -83,32 +88,68 @@ public class AiController : MonoBehaviour
 
         //Patrolling Function & reseting AI position
 
-        if (patrollingAI && !foundPlayer)
+        if (!foundPlayer)
         {
-            distanceToPoint = Vector3.Distance(new Vector3(transform.position.x, 0, transform.position.z),
-                new Vector3(patrolPoints[i].transform.position.x, 0, patrolPoints[i].transform.position.z));
-
-            if (i == (patrolPoints.Length - 1) && distanceToPoint <= 0.1f)
+            if (foundPlayerCheck == 1)
             {
-                i = 0;
-                nav.SetDestination(patrolPoints[i].transform.position);
+                currentAIState = aiState.SEARCH;
             }
-            else if (distanceToPoint <= 0.1f)
+            else
             {
-                i++;
-                nav.SetDestination(patrolPoints[i].transform.position);
+                currentAIState = aiState.PATROL;
             }
-        }
-        else if (!foundPlayer)
-        {
-            nav.SetDestination(startAiPoint);
 
-            float distanceToStart = Vector3.Distance(new Vector3(transform.position.x, 0, transform.position.z),
-                new Vector3(startAiPoint.x, 0, startAiPoint.z));
-
-            if (distanceToStart < 1.0f)
+            if (currentAIState == aiState.SEARCH)
             {
-                gameObject.transform.rotation = startAiRotation;
+                nav.SetDestination(lastKnownPosition);
+
+                distanceToLastKnown = Vector3.Distance(new Vector3(transform.position.x, 0, transform.position.z),
+                new Vector3(lastKnownPosition.x, 0, lastKnownPosition.z));
+
+                if(distanceToLastKnown < 0.1f)
+                {
+                    searchTime -= Time.deltaTime;
+
+                    if (searchTime <= 0)
+                    {
+                        currentAIState = aiState.PATROL;
+                        foundPlayerCheck = 0;
+                    }
+                }
+            }
+            
+            if(currentAIState == aiState.PATROL)
+            {
+                if (patrollingAI)
+                {
+                    nav.SetDestination(patrolPoints[i].transform.position);
+
+                    distanceToPoint = Vector3.Distance(new Vector3(transform.position.x, 0, transform.position.z),
+                    new Vector3(patrolPoints[i].transform.position.x, 0, patrolPoints[i].transform.position.z));
+
+                    if (i == (patrolPoints.Length - 1) && distanceToPoint <= 0.1f)
+                    {
+                        i = 0;
+                        nav.SetDestination(patrolPoints[i].transform.position);
+                    }
+                    else if (distanceToPoint <= 0.1f)
+                    {
+                        i++;
+                        nav.SetDestination(patrolPoints[i].transform.position);
+                    }
+                }
+                else
+                {
+                    nav.SetDestination(startAiPoint);
+
+                    float distanceToStart = Vector3.Distance(new Vector3(transform.position.x, 0, transform.position.z),
+                        new Vector3(startAiPoint.x, 0, startAiPoint.z));
+
+                    if (distanceToStart < 1.0f)
+                    {
+                        gameObject.transform.rotation = startAiRotation;
+                    }
+                }
             }
         }
 
@@ -118,7 +159,12 @@ public class AiController : MonoBehaviour
 
         if (foundPlayer)
         {
+            foundPlayerCheck = 1;
+            searchTime = 3.0f;
+
             nav.SetDestination(player.transform.position);
+
+            lastKnownPosition = player.transform.position;
 
             distanceToPlayer = Vector3.Distance(new Vector3(transform.position.x, 0, transform.position.z),
                 new Vector3(player.transform.position.x, 0, player.transform.position.z));
@@ -148,10 +194,6 @@ public class AiController : MonoBehaviour
                     }
                 }
             }
-        }
-        else
-        {
-            currentAIState = aiState.PATROL;
         }
     }
 
