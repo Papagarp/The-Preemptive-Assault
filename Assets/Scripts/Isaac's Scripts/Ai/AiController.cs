@@ -16,6 +16,9 @@ public class AiController : MonoBehaviour
 
     public aiState currentAIState;
 
+    public Bolt boltScript;
+
+    public GameObject crossbow;
     public GameObject crossbowBolt;
     public GameObject player;
     public GameObject[] patrolPoints;
@@ -27,18 +30,22 @@ public class AiController : MonoBehaviour
     public float distanceToPoint;
     public float meleeRange = 5.0f;
     public float patrollingMovementSpeed = 3.0f;
+    public float firingMovementSpeed = 0.2f;
     public float attackingMovementSpeed = 10.0f;
     public float reloadTime = 3.0f;
 
     int i = 0;
 
     public Vector3 startAiPoint;
+    public Quaternion startAiRotation;
 
     NavMeshAgent nav;
 
     private void Start()
     {
         nav = GetComponent<NavMeshAgent>();
+
+        boltScript = crossbowBolt.GetComponent<Bolt>();
 
         if (patrollingAI)
         {
@@ -47,6 +54,7 @@ public class AiController : MonoBehaviour
         else
         {
             startAiPoint = gameObject.transform.position;
+            startAiRotation = gameObject.transform.rotation;
         }
     }
 
@@ -57,11 +65,13 @@ public class AiController : MonoBehaviour
         switch (currentAIState)
         {
             case (aiState.MELEE):
+                crossbow.SetActive(false);
                 nav.speed = attackingMovementSpeed;
                 break;
 
             case (aiState.RANGED):
-                reloadTime -= Time.deltaTime;
+                crossbow.SetActive(true);
+                nav.speed = firingMovementSpeed;
                 break;
 
             case (aiState.PATROL):
@@ -71,7 +81,7 @@ public class AiController : MonoBehaviour
 
         //------------------------------------------------------------------------------------------------------------------------------------
 
-        //Patrolling Function
+        //Patrolling Function & reseting AI position
 
         if (patrollingAI && !foundPlayer)
         {
@@ -92,12 +102,23 @@ public class AiController : MonoBehaviour
         else if (!foundPlayer)
         {
             nav.SetDestination(startAiPoint);
+
+            float distanceToStart = Vector3.Distance(new Vector3(transform.position.x, 0, transform.position.z),
+                new Vector3(startAiPoint.x, 0, startAiPoint.z));
+
+            if (distanceToStart < 1.0f)
+            {
+                gameObject.transform.rotation = startAiRotation;
+            }
         }
 
         //------------------------------------------------------------------------------------------------------------------------------------
 
+        //Attacking the player
+
         if (foundPlayer)
         {
+            nav.SetDestination(player.transform.position);
 
             distanceToPlayer = Vector3.Distance(new Vector3(transform.position.x, 0, transform.position.z),
                 new Vector3(player.transform.position.x, 0, player.transform.position.z));
@@ -108,33 +129,35 @@ public class AiController : MonoBehaviour
 
                 if (distanceToPlayer < 2.0f)
                 {
+                    gameObject.transform.LookAt(player.transform);
                     Vector3 currentLocation = gameObject.transform.position;
                     nav.SetDestination(currentLocation);
                     MeleeAttack();
                 }
-                else
-                {
-                    nav.SetDestination(player.transform.position);
-                }
-                
             }
             else if (distanceToPlayer >= meleeRange)
             {
                 currentAIState = aiState.RANGED;
-                if (reloadTime < 0)
+
+                if (!boltScript.fired)
                 {
-                    ShootAtPlayer();
+                    reloadTime -= Time.deltaTime;
+                    if (reloadTime < 0)
+                    {
+                        ShootAtPlayer();
+                    }
                 }
             }
+        }
+        else
+        {
+            currentAIState = aiState.PATROL;
         }
     }
 
     void ShootAtPlayer()
     {
-        
-        //GameObject projectile = Instantiate(crossbowBolt, transform.position, Quaternion.identity) as GameObject;
-        //projectile.transform.Translate(Vector3.forward * Time.deltaTime * 10.0f);
-        reloadTime = 3;
+        crossbowBolt.GetComponent<Bolt>().fired = true;
     }
 
     void MeleeAttack()
