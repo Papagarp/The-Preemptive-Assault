@@ -16,7 +16,7 @@ public class Bolt : MonoBehaviour
     {
         if (fired)
         {
-            gameObject.transform.Translate(Vector3.forward * Time.deltaTime * 100.0f);
+            gameObject.transform.Translate(Vector3.forward * Time.deltaTime * 20.0f);
 
             boltFlyingTime -= Time.deltaTime;
 
@@ -28,9 +28,8 @@ public class Bolt : MonoBehaviour
         }
     }
 
-    private void OntriggerEnter (Collider other)
+    private void OnTriggerEnter (Collider other)
     {
-        Debug.Log(other.name);
         fired = false;
         ReturnBolt();
     }

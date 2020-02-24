@@ -42,8 +42,6 @@ public class AiDogController : MonoBehaviour
     {
         //state switching
 
-        Debug.Log(currentAiDogState);
-
         switch (currentAiDogState)
         {
             case (aiDogState.ATTACK):
