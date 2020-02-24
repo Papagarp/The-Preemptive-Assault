@@ -135,19 +135,16 @@ public class CharController : MonoBehaviour
         switch (currentStanceState)
         {
             case (StanceState.ATTACK):
-                //stats
                 hookHolder.SetActive(false);
                 movementSpeed = 5;
                 break;
 
             case (StanceState.DEFENCE):
-                //more stats
                 hookHolder.SetActive(false);
                 movementSpeed = 5;
                 break;
 
             case (StanceState.UTILITY):
-                //even more stats
                 hookHolder.SetActive(true);
                 movementSpeed = 10;
                 break;
