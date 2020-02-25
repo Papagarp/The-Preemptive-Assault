@@ -9,6 +9,8 @@ public class CharController : MonoBehaviour
 
     CharacterController controller;
 
+    Animator characterAnimator;
+
     public enum StanceState
     {
         ATTACK,
@@ -23,6 +25,7 @@ public class CharController : MonoBehaviour
     public GameObject hookHolder;
     public GameObject hookedObject;
 
+    [Header("helloworld")]
     public Transform model;
     public Transform cameraFocusX;
     public Transform cameraFocusY;
@@ -44,9 +47,9 @@ public class CharController : MonoBehaviour
     float xRotation = 0f;
 
     bool isGrounded;
-    
+
     bool hasJumped;
-	bool hasHooked;
+    bool hasHooked;
     bool isAimming;
 
     public bool interact;
@@ -67,10 +70,10 @@ public class CharController : MonoBehaviour
     Vector3 movement;
     Vector3 jumpMovement;
     Vector3 lastPosition;
-    
+
     Vector2 controllerInputLeftStick;
     Vector3 controllerInputRightStick;
-    
+
     private void Awake()
     {
         controls = new ControllerInput();
@@ -87,7 +90,7 @@ public class CharController : MonoBehaviour
         controls.Gameplay.Interact.performed += context => interact = true;
         controls.Gameplay.Interact.canceled += context => interact = false;
 
-		controls.Gameplay.Hook.performed += context => hasHooked = true;
+        controls.Gameplay.Hook.performed += context => hasHooked = true;
         controls.Gameplay.Hook.canceled += context => hasHooked = false;
 
         controls.Gameplay.Aim.performed += context => isAimming = true;
@@ -100,6 +103,8 @@ public class CharController : MonoBehaviour
     private void Start()
     {
         controller = GetComponent<CharacterController>();
+
+        characterAnimator = GetComponent<Animator>();
 
         stateNo = 1;
     }
@@ -173,7 +178,7 @@ public class CharController : MonoBehaviour
 
         //------------------------------------------------------------------------------------------------------------------------------------
 
-        //Model Rotation
+        #region Model Rotation
 
         if (lastPosition != gameObject.transform.position && !hooked && !holding)
         {
@@ -181,7 +186,7 @@ public class CharController : MonoBehaviour
             {
                 lastRotation = model.transform.rotation;
             }
-            
+
             if (isGrounded)
             {
                 if (movement == Vector3.zero)
@@ -190,14 +195,18 @@ public class CharController : MonoBehaviour
                 }
                 model.transform.rotation = Quaternion.LookRotation(movement);
             }
+
+            characterAnimator.SetTrigger("Walk");
             //right here
         }
 
         lastPosition = gameObject.transform.position;
 
+        #endregion
+
         //------------------------------------------------------------------------------------------------------------------------------------
 
-        //Jump Function and Gravity
+        #region Jump Function and Gravity
 
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
 
@@ -209,9 +218,9 @@ public class CharController : MonoBehaviour
         if (hasJumped && isGrounded && !holding)
         {
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
-            
+
         }
-        
+
         if (!hooked)
         {
             if (!isGrounded)
@@ -226,9 +235,11 @@ public class CharController : MonoBehaviour
             controller.Move(velocity * Time.deltaTime);
         }
 
+        #endregion
+
         //------------------------------------------------------------------------------------------------------------------------------------
 
-        //Hook Function
+        #region Hook Function
 
         if (currentStanceState == StanceState.UTILITY && !holding)
         {
@@ -294,6 +305,8 @@ public class CharController : MonoBehaviour
             grabTimer = 1.0f;
         }
 
+        #endregion
+
         //------------------------------------------------------------------------------------------------------------------------------------
     }
 
@@ -304,7 +317,7 @@ public class CharController : MonoBehaviour
     }
 
     void ReturnHook()
-	{
+    {
         hookHolder.transform.position = cameraFocusY.transform.position;
 
         hook.transform.position = hookHolder.transform.position;
