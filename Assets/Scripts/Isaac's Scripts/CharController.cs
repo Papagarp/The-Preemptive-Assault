@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 
 public class CharController : MonoBehaviour
 {
+    #region Variables
     ControllerInput controls;
 
     CharacterController controller;
@@ -20,59 +21,62 @@ public class CharController : MonoBehaviour
 
     public StanceState currentStanceState;
 
-    public GameObject mainCamera;
-    public GameObject hook;
-    public GameObject hookHolder;
-    public GameObject hookedObject;
-
-    [Header("helloworld")]
-    public Transform model;
+    [Header("Assign Transforms")]
     public Transform cameraFocusX;
     public Transform cameraFocusY;
     public Transform groundCheck;
     public Transform grabCheck;
+    public Transform model;
 
-    public float controllerSensitivity = 50.0f;
-    public float movementSpeed;
-    public float gravity = -9.81f;
-    public float groundDistance = 0.1f;
-    public float grabDistance = 0.1f;
-    public float grabTimer = 1.0f;
-    public float jumpHeight = 3f;
-    public float hookTravelSpeed = 15.0f;
-    public float playerHookSpeed = 15.0f;
-    public float maxHookDistance;
+    [Header("Assign GameObjects")]
+    public GameObject mainCamera;
+    public GameObject hook;
+    public GameObject hookHolder;
 
-    float currentHookDistance;
-    float xRotation = 0f;
-
-    bool isGrounded;
-
-    bool hasJumped;
-    bool hasHooked;
-    bool isAimming;
-
-    public bool interact;
-    public bool canGrab;
-    public bool holding;
-    public bool hooked;
-
-    public static bool hookFired;
-
-    public int stateNo;
-
+    [Header("Assign Masks")]
     public LayerMask groundMask;
     public LayerMask grabbableMask;
 
-    Quaternion lastRotation;
-
-    Vector3 velocity;
-    Vector3 movement;
-    Vector3 jumpMovement;
-    Vector3 lastPosition;
-
+    [Header("Player Movement")]
+    public float movementSpeed;
+    public float controllerSensitivity = 50.0f;
+    public float gravity = -9.81f;
+    public float jumpHeight = 3f;
+    float groundDistance = 0.1f;
+    float xRotation = 0f;
+    bool hasJumped;
+    bool isAimming;
+    bool isGrounded;
+    public int stateNo;
     Vector2 controllerInputLeftStick;
     Vector3 controllerInputRightStick;
+    Vector3 jumpMovement;
+    Vector3 lastPosition;
+    Vector3 velocity;
+    Vector3 movement;
+    Quaternion lastRotation;
+    
+
+    [Header("Hook Function")]
+    public float hookTravelSpeed = 15.0f;
+    public float playerHookSpeed = 15.0f;
+    public float maxHookDistance;
+    float currentHookDistance;
+    bool hasHooked;
+    public bool hooked;
+    public static bool hookFired;
+
+    [Header("Interact Function")]
+    public bool interact;
+    public float grabDistance = 0.1f;
+    public float grabTimer = 1.0f;
+    public bool canGrab;
+    public bool holding;
+
+    [Header("Don't Assign")]
+    public GameObject hookedObject;
+
+    #endregion
 
     private void Awake()
     {
@@ -111,7 +115,7 @@ public class CharController : MonoBehaviour
 
     private void Update()
     {
-        //State Switching
+        #region State Switching
 
         //Debug.Log(currentStanceState);
 
@@ -155,9 +159,9 @@ public class CharController : MonoBehaviour
                 break;
         }
 
-        //------------------------------------------------------------------------------------------------------------------------------------
+        #endregion
 
-        //Joystick Controls
+        #region Joystick Controls
 
         mainCamera.transform.LookAt(cameraFocusY);
 
@@ -176,7 +180,7 @@ public class CharController : MonoBehaviour
             controller.Move(movement * movementSpeed * Time.deltaTime);
         }
 
-        //------------------------------------------------------------------------------------------------------------------------------------
+        #endregion
 
         #region Model Rotation
 
@@ -203,8 +207,6 @@ public class CharController : MonoBehaviour
         lastPosition = gameObject.transform.position;
 
         #endregion
-
-        //------------------------------------------------------------------------------------------------------------------------------------
 
         #region Jump Function and Gravity
 
@@ -236,8 +238,6 @@ public class CharController : MonoBehaviour
         }
 
         #endregion
-
-        //------------------------------------------------------------------------------------------------------------------------------------
 
         #region Hook Function
 
@@ -285,9 +285,9 @@ public class CharController : MonoBehaviour
             }
         }
 
-        //------------------------------------------------------------------------------------------------------------------------------------
+        #endregion
 
-        //Push and Pull Function
+        #region Push and Pull Function
 
         canGrab = Physics.CheckSphere(grabCheck.position, grabDistance, grabbableMask);
 
@@ -306,8 +306,6 @@ public class CharController : MonoBehaviour
         }
 
         #endregion
-
-        //------------------------------------------------------------------------------------------------------------------------------------
     }
 
     IEnumerator Climb()
