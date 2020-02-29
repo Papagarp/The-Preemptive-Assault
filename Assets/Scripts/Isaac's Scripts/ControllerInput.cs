@@ -51,7 +51,7 @@ public class @ControllerInput : IInputActionCollection, IDisposable
                     ""interactions"": """"
                 },
                 {
-                    ""name"": ""Hook"",
+                    ""name"": ""Ability"",
                     ""type"": ""Button"",
                     ""id"": ""126b90ce-6c29-4853-acc3-cc2b3e2cc3b1"",
                     ""expectedControlType"": """",
@@ -78,6 +78,14 @@ public class @ControllerInput : IInputActionCollection, IDisposable
                     ""name"": ""Aim"",
                     ""type"": ""Button"",
                     ""id"": ""f3b6ba82-52b4-4116-9008-0a092689c76a"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""Attack"",
+                    ""type"": ""Button"",
+                    ""id"": ""58ca3c1a-1a35-4985-8103-3126a97e87e9"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """"
@@ -131,11 +139,11 @@ public class @ControllerInput : IInputActionCollection, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""11840dac-97f2-4614-a072-d383fe655fed"",
-                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""path"": ""<Gamepad>/buttonWest"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Hook"",
+                    ""action"": ""Ability"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -171,6 +179,17 @@ public class @ControllerInput : IInputActionCollection, IDisposable
                     ""action"": ""Aim"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f70e9c7b-1ccc-4e69-bd8a-9706b6b36761"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Attack"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -183,10 +202,11 @@ public class @ControllerInput : IInputActionCollection, IDisposable
         m_Gameplay_SwitchStatesDown = m_Gameplay.FindAction("Switch States Down", throwIfNotFound: true);
         m_Gameplay_Move = m_Gameplay.FindAction("Move", throwIfNotFound: true);
         m_Gameplay_Camera = m_Gameplay.FindAction("Camera", throwIfNotFound: true);
-        m_Gameplay_Hook = m_Gameplay.FindAction("Hook", throwIfNotFound: true);
+        m_Gameplay_Ability = m_Gameplay.FindAction("Ability", throwIfNotFound: true);
         m_Gameplay_Interact = m_Gameplay.FindAction("Interact", throwIfNotFound: true);
         m_Gameplay_Jump = m_Gameplay.FindAction("Jump", throwIfNotFound: true);
         m_Gameplay_Aim = m_Gameplay.FindAction("Aim", throwIfNotFound: true);
+        m_Gameplay_Attack = m_Gameplay.FindAction("Attack", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -240,10 +260,11 @@ public class @ControllerInput : IInputActionCollection, IDisposable
     private readonly InputAction m_Gameplay_SwitchStatesDown;
     private readonly InputAction m_Gameplay_Move;
     private readonly InputAction m_Gameplay_Camera;
-    private readonly InputAction m_Gameplay_Hook;
+    private readonly InputAction m_Gameplay_Ability;
     private readonly InputAction m_Gameplay_Interact;
     private readonly InputAction m_Gameplay_Jump;
     private readonly InputAction m_Gameplay_Aim;
+    private readonly InputAction m_Gameplay_Attack;
     public struct GameplayActions
     {
         private @ControllerInput m_Wrapper;
@@ -252,10 +273,11 @@ public class @ControllerInput : IInputActionCollection, IDisposable
         public InputAction @SwitchStatesDown => m_Wrapper.m_Gameplay_SwitchStatesDown;
         public InputAction @Move => m_Wrapper.m_Gameplay_Move;
         public InputAction @Camera => m_Wrapper.m_Gameplay_Camera;
-        public InputAction @Hook => m_Wrapper.m_Gameplay_Hook;
+        public InputAction @Ability => m_Wrapper.m_Gameplay_Ability;
         public InputAction @Interact => m_Wrapper.m_Gameplay_Interact;
         public InputAction @Jump => m_Wrapper.m_Gameplay_Jump;
         public InputAction @Aim => m_Wrapper.m_Gameplay_Aim;
+        public InputAction @Attack => m_Wrapper.m_Gameplay_Attack;
         public InputActionMap Get() { return m_Wrapper.m_Gameplay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -277,9 +299,9 @@ public class @ControllerInput : IInputActionCollection, IDisposable
                 @Camera.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnCamera;
                 @Camera.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnCamera;
                 @Camera.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnCamera;
-                @Hook.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnHook;
-                @Hook.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnHook;
-                @Hook.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnHook;
+                @Ability.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnAbility;
+                @Ability.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnAbility;
+                @Ability.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnAbility;
                 @Interact.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnInteract;
                 @Interact.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnInteract;
                 @Interact.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnInteract;
@@ -289,6 +311,9 @@ public class @ControllerInput : IInputActionCollection, IDisposable
                 @Aim.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnAim;
                 @Aim.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnAim;
                 @Aim.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnAim;
+                @Attack.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnAttack;
+                @Attack.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnAttack;
+                @Attack.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnAttack;
             }
             m_Wrapper.m_GameplayActionsCallbackInterface = instance;
             if (instance != null)
@@ -305,9 +330,9 @@ public class @ControllerInput : IInputActionCollection, IDisposable
                 @Camera.started += instance.OnCamera;
                 @Camera.performed += instance.OnCamera;
                 @Camera.canceled += instance.OnCamera;
-                @Hook.started += instance.OnHook;
-                @Hook.performed += instance.OnHook;
-                @Hook.canceled += instance.OnHook;
+                @Ability.started += instance.OnAbility;
+                @Ability.performed += instance.OnAbility;
+                @Ability.canceled += instance.OnAbility;
                 @Interact.started += instance.OnInteract;
                 @Interact.performed += instance.OnInteract;
                 @Interact.canceled += instance.OnInteract;
@@ -317,6 +342,9 @@ public class @ControllerInput : IInputActionCollection, IDisposable
                 @Aim.started += instance.OnAim;
                 @Aim.performed += instance.OnAim;
                 @Aim.canceled += instance.OnAim;
+                @Attack.started += instance.OnAttack;
+                @Attack.performed += instance.OnAttack;
+                @Attack.canceled += instance.OnAttack;
             }
         }
     }
@@ -327,9 +355,10 @@ public class @ControllerInput : IInputActionCollection, IDisposable
         void OnSwitchStatesDown(InputAction.CallbackContext context);
         void OnMove(InputAction.CallbackContext context);
         void OnCamera(InputAction.CallbackContext context);
-        void OnHook(InputAction.CallbackContext context);
+        void OnAbility(InputAction.CallbackContext context);
         void OnInteract(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
         void OnAim(InputAction.CallbackContext context);
+        void OnAttack(InputAction.CallbackContext context);
     }
 }

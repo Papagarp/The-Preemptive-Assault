@@ -188,16 +188,11 @@ public class AiController : MonoBehaviour
                     reloadTime -= Time.deltaTime;
                     if (reloadTime < 0)
                     {
-                        ShootAtPlayer();
+                        boltScript.fired = true;
                     }
                 }
             }
         }
-    }
-
-    void ShootAtPlayer()
-    {
-        crossbowBolt.GetComponent<Bolt>().fired = true;
     }
 
     void MeleeAttack()

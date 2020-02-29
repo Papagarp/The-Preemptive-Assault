@@ -38,7 +38,7 @@
                     "interactions": ""
                 },
                 {
-                    "name": "Hook",
+                    "name": "Ability",
                     "type": "Button",
                     "id": "126b90ce-6c29-4853-acc3-cc2b3e2cc3b1",
                     "expectedControlType": "",
@@ -65,6 +65,14 @@
                     "name": "Aim",
                     "type": "Button",
                     "id": "f3b6ba82-52b4-4116-9008-0a092689c76a",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Attack",
+                    "type": "Button",
+                    "id": "58ca3c1a-1a35-4985-8103-3126a97e87e9",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": ""
@@ -118,11 +126,11 @@
                 {
                     "name": "",
                     "id": "11840dac-97f2-4614-a072-d383fe655fed",
-                    "path": "<Gamepad>/rightTrigger",
+                    "path": "<Gamepad>/buttonWest",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Hook",
+                    "action": "Ability",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -156,6 +164,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Aim",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f70e9c7b-1ccc-4e69-bd8a-9706b6b36761",
+                    "path": "<Gamepad>/rightTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Attack",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -6,11 +6,8 @@ using UnityEngine.InputSystem;
 public class CharController : MonoBehaviour
 {
     #region Variables
-    ControllerInput controls;
 
-    CharacterController controller;
-
-    Animator characterAnimator;
+    MagicBolt magicBoltScript;
 
     public enum StanceState
     {
@@ -26,10 +23,10 @@ public class CharController : MonoBehaviour
     public Transform cameraFocusY;
     public Transform groundCheck;
     public Transform grabCheck;
-    public Transform model;
 
     [Header("Assign GameObjects")]
     public GameObject mainCamera;
+    public GameObject model;
     public GameObject hook;
     public GameObject hookHolder;
 
@@ -38,6 +35,9 @@ public class CharController : MonoBehaviour
     public LayerMask grabbableMask;
 
     [Header("Player Movement")]
+    ControllerInput controls;
+    CharacterController controller;
+    //Animator characterAnimator;
     public float movementSpeed;
     public float controllerSensitivity = 50.0f;
     public float gravity = -9.81f;
@@ -55,14 +55,17 @@ public class CharController : MonoBehaviour
     Vector3 velocity;
     Vector3 movement;
     Quaternion lastRotation;
-    
 
+    [Header("Player Attacks")]
+    public GameObject staff;
+    public GameObject magicBolt;
+    public float reloadTime = 0.0f;
+    
     [Header("Hook Function")]
     public float hookTravelSpeed = 15.0f;
     public float playerHookSpeed = 15.0f;
     public float maxHookDistance;
     float currentHookDistance;
-    bool hasHooked;
     public bool hooked;
     public static bool hookFired;
 
@@ -94,11 +97,13 @@ public class CharController : MonoBehaviour
         controls.Gameplay.Interact.performed += context => interact = true;
         controls.Gameplay.Interact.canceled += context => interact = false;
 
-        controls.Gameplay.Hook.performed += context => hasHooked = true;
-        controls.Gameplay.Hook.canceled += context => hasHooked = false;
+        
 
         controls.Gameplay.Aim.performed += context => isAimming = true;
         controls.Gameplay.Aim.canceled += context => isAimming = false;
+
+        controls.Gameplay.Attack.performed += context => Attack();
+        controls.Gameplay.Ability.performed += context => Ability();
 
         controls.Gameplay.SwitchStatesUp.performed += context => SwitchStateUp();
         controls.Gameplay.SwitchStatesDown.performed += context => SwitchStateDown();
@@ -108,7 +113,9 @@ public class CharController : MonoBehaviour
     {
         controller = GetComponent<CharacterController>();
 
-        characterAnimator = GetComponent<Animator>();
+        //characterAnimator = model.GetComponent<Animator>();
+
+        magicBoltScript = magicBolt.GetComponent<MagicBolt>();
 
         stateNo = 1;
     }
@@ -144,18 +151,26 @@ public class CharController : MonoBehaviour
         switch (currentStanceState)
         {
             case (StanceState.ATTACK):
-                hookHolder.SetActive(false);
-                movementSpeed = 5;
+
+                    hookHolder.SetActive(false);
+                    staff.SetActive(false);
+                    movementSpeed = 5;
                 break;
 
             case (StanceState.DEFENCE):
-                hookHolder.SetActive(false);
-                movementSpeed = 5;
+
+                    hookHolder.SetActive(false);
+                    staff.SetActive(false);
+                    movementSpeed = 5;
                 break;
 
             case (StanceState.UTILITY):
-                hookHolder.SetActive(true);
-                movementSpeed = 10;
+
+                    hookHolder.SetActive(true);
+                    staff.SetActive(true);
+                    movementSpeed = 10;
+
+                    if (reloadTime >= 0) reloadTime -= Time.deltaTime;
                 break;
         }
 
@@ -186,21 +201,16 @@ public class CharController : MonoBehaviour
 
         if (lastPosition != gameObject.transform.position && !hooked && !holding)
         {
-            if (!isGrounded)
-            {
-                lastRotation = model.transform.rotation;
-            }
+            if (!isGrounded) lastRotation = model.transform.rotation;
 
             if (isGrounded)
             {
-                if (movement == Vector3.zero)
-                {
-                    model.transform.rotation = lastRotation;
-                }
+                if (movement == Vector3.zero) model.transform.rotation = lastRotation;
+                
                 model.transform.rotation = Quaternion.LookRotation(movement);
             }
 
-            characterAnimator.SetTrigger("Walk");
+            //characterAnimator.SetTrigger("Walk");
             //right here
         }
 
@@ -212,16 +222,9 @@ public class CharController : MonoBehaviour
 
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
 
-        if (isGrounded && velocity.y < 0)
-        {
-            velocity.y = -2f;
-        }
+        if (isGrounded && velocity.y < 0) velocity.y = -2f;
 
-        if (hasJumped && isGrounded && !holding)
-        {
-            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
-
-        }
+        if (hasJumped && isGrounded && !holding) velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
 
         if (!hooked)
         {
@@ -239,11 +242,60 @@ public class CharController : MonoBehaviour
 
         #endregion
 
-        #region Hook Function
+        #region Push and Pull Function
 
-        if (currentStanceState == StanceState.UTILITY && !holding)
+        canGrab = Physics.CheckSphere(grabCheck.position, grabDistance, grabbableMask);
+
+        if (grabTimer >= 0) grabTimer -= Time.deltaTime;
+
+        if (holding && interact && grabTimer <= 0.0f)
         {
-            if (hasHooked && !hookFired)
+            holding = false;
+            grabTimer = 1.0f;
+        }
+
+        if (canGrab && interact && grabTimer <= 0.0f)
+        {
+            holding = true;
+            grabTimer = 1.0f;
+        }
+
+        #endregion
+    }
+
+    void Attack()
+    {
+        
+        if (currentStanceState == StanceState.ATTACK)
+        {
+
+        }
+        else if (currentStanceState == StanceState.DEFENCE)
+        {
+            //is there ever meant to be an attack in this state?
+        }
+        else if (currentStanceState == StanceState.UTILITY)
+        {
+            if (!magicBoltScript.fired)
+            {
+                if (reloadTime < 0) magicBoltScript.fired = true;
+            }
+        }
+    }
+
+    void Ability()
+    {
+        if (currentStanceState == StanceState.ATTACK)
+        {
+
+        }
+        else if (currentStanceState == StanceState.DEFENCE)
+        {
+
+        }
+        else if (currentStanceState == StanceState.UTILITY && !holding)
+        {
+            if (!hookFired)
             {
                 hookFired = true;
             }
@@ -284,34 +336,6 @@ public class CharController : MonoBehaviour
                 hook.transform.parent = hookHolder.transform;
             }
         }
-
-        #endregion
-
-        #region Push and Pull Function
-
-        canGrab = Physics.CheckSphere(grabCheck.position, grabDistance, grabbableMask);
-
-        grabTimer -= Time.deltaTime;
-
-        if (holding && interact && grabTimer <= 0.0f)
-        {
-            holding = false;
-            grabTimer = 1.0f;
-        }
-
-        if (canGrab && interact && grabTimer <= 0.0f)
-        {
-            holding = true;
-            grabTimer = 1.0f;
-        }
-
-        #endregion
-    }
-
-    IEnumerator Climb()
-    {
-        yield return new WaitForSeconds(0.1f);
-        ReturnHook();
     }
 
     void ReturnHook()
@@ -325,6 +349,12 @@ public class CharController : MonoBehaviour
 
         hookFired = false;
         hooked = false;
+    }
+
+    IEnumerator Climb()
+    {
+        yield return new WaitForSeconds(0.1f);
+        ReturnHook();
     }
 
     void SwitchStateUp()
