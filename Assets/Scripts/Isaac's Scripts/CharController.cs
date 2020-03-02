@@ -8,6 +8,10 @@ public class CharController : MonoBehaviour
     #region Variables
 
     MagicBolt magicBoltScript;
+    ControllerInput controls;
+    CharacterController controller;
+
+    //Animator characterAnimator;
 
     public enum StanceState
     {
@@ -35,9 +39,6 @@ public class CharController : MonoBehaviour
     public LayerMask grabbableMask;
 
     [Header("Player Movement")]
-    ControllerInput controls;
-    CharacterController controller;
-    //Animator characterAnimator;
     public float movementSpeed;
     public float controllerSensitivity = 50.0f;
     public float gravity = -9.81f;
@@ -56,7 +57,9 @@ public class CharController : MonoBehaviour
     Vector3 movement;
     Quaternion lastRotation;
 
-    [Header("Player Attacks")]
+    [Header("Player Stance Components")]
+    public GameObject sword;
+    public GameObject shield;
     public GameObject staff;
     public GameObject magicBolt;
     public float reloadTime = 0.0f;
@@ -152,25 +155,37 @@ public class CharController : MonoBehaviour
         {
             case (StanceState.ATTACK):
 
-                    hookHolder.SetActive(false);
-                    staff.SetActive(false);
-                    movementSpeed = 5;
+                hookHolder.SetActive(false);
+                sword.SetActive(true);
+                shield.SetActive(false);
+                staff.SetActive(false);
+
+                movementSpeed = 7.5f;
+
                 break;
 
             case (StanceState.DEFENCE):
 
-                    hookHolder.SetActive(false);
-                    staff.SetActive(false);
-                    movementSpeed = 5;
+                hookHolder.SetActive(false);
+                sword.SetActive(false);
+                shield.SetActive(true);
+                staff.SetActive(false);
+
+                movementSpeed = 5f;
+
                 break;
 
             case (StanceState.UTILITY):
 
-                    hookHolder.SetActive(true);
-                    staff.SetActive(true);
-                    movementSpeed = 10;
+                hookHolder.SetActive(true);
+                sword.SetActive(false);
+                shield.SetActive(false);
+                staff.SetActive(true);
+                
+                movementSpeed = 10f;
 
-                    if (reloadTime >= 0) reloadTime -= Time.deltaTime;
+                if (reloadTime >= 0) reloadTime -= Time.deltaTime;
+
                 break;
         }
 
@@ -268,7 +283,8 @@ public class CharController : MonoBehaviour
         
         if (currentStanceState == StanceState.ATTACK)
         {
-
+            sword.GetComponent<Sword>().spinAttack = false;
+            //play sword animation
         }
         else if (currentStanceState == StanceState.DEFENCE)
         {
@@ -287,11 +303,12 @@ public class CharController : MonoBehaviour
     {
         if (currentStanceState == StanceState.ATTACK)
         {
-
+            sword.GetComponent<Sword>().spinAttack = true;
+            //play spin animation
         }
         else if (currentStanceState == StanceState.DEFENCE)
         {
-
+            shield.GetComponent<Shield>().stunAttack = true;
         }
         else if (currentStanceState == StanceState.UTILITY && !holding)
         {
@@ -366,6 +383,7 @@ public class CharController : MonoBehaviour
     {
         stateNo--;
     }
+
 
     void OnEnable()
     {

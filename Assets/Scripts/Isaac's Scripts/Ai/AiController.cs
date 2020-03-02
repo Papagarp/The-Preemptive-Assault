@@ -5,6 +5,8 @@ using UnityEngine.AI;
 
 public class AiController : MonoBehaviour
 {
+    NavMeshAgent nav;
+
     public enum aiState
     {
         MELEE,
@@ -15,34 +17,48 @@ public class AiController : MonoBehaviour
 
     public aiState currentAIState;
 
+    [Header("Assign Script")]
     public Bolt boltScript;
 
+    [Header("Assign GameObjects")]
     public GameObject crossbow;
     public GameObject crossbowBolt;
     public GameObject player;
-    public GameObject[] patrolPoints;
 
-    public bool foundPlayer;
+    [Header("Is this a patrolling Ai")]
     public bool patrollingAI;
-    public bool foundPlayerCheck;
 
-    public float distanceToPlayer;
-    public float distanceToPoint;
-    public float distanceToLastKnown;
-    public float meleeRange = 5.0f;
-    public float patrollingMovementSpeed = 3.0f;
-    public float firingMovementSpeed = 0.2f;
-    public float attackingMovementSpeed = 10.0f;
-    public float searchTime = 3.0f;
-    public float reloadTime = 3.0f;
-
+    [Header("Assign Patrol Points")]
+    public GameObject[] patrolPoints;
     int i = 0;
 
-    public Vector3 lastKnownPosition;
+    [Header("Start Point")]
     public Vector3 startAiPoint;
     public Quaternion startAiRotation;
 
-    NavMeshAgent nav;
+    [Header("Searching for player")]
+    public bool foundPlayer;
+    public bool foundPlayerCheck;
+    public float distanceToPlayer;
+    public float distanceToPoint;
+    public float distanceToLastKnown;
+    public float searchTime = 3.0f;
+    public Vector3 lastKnownPosition;
+
+    [Header("Speed")]
+    public float patrollingMovementSpeed = 3.0f;
+    public float firingMovementSpeed = 0.2f;
+    public float staggerMovementSpeed = 0.1f;
+    public float attackingMovementSpeed = 10.0f;
+
+    [Header("other")]
+    public bool stagger;
+    public bool stunned;
+
+    public float meleeRange = 5.0f;
+    public float reloadTime = 3.0f;
+    public float staggerTime = 3.0f;
+    public float stunnedTime = 5.0f;
 
     private void Start()
     {
@@ -59,7 +75,7 @@ public class AiController : MonoBehaviour
 
     private void Update()
     {
-        //state switching
+        #region state switching
 
         switch (currentAIState)
         {
@@ -82,9 +98,42 @@ public class AiController : MonoBehaviour
                 break;
         }
 
-        //------------------------------------------------------------------------------------------------------------------------------------
+        #endregion
 
-        //Patrolling & Search Function & reseting AI position
+        #region Stagger Function
+
+        if (stagger)
+        {
+            nav.speed = staggerMovementSpeed;
+
+            staggerTime -= Time.deltaTime;
+
+            if (staggerTime <= 0)
+            {
+                stagger = false;
+            }
+        }
+
+        #endregion
+
+        #region Stun Function
+
+        if (stunned)
+        {
+            
+            nav.speed = 0;
+
+            stunnedTime -= Time.deltaTime;
+
+            if (stunnedTime <= 0)
+            {
+                stunned = false;
+            }
+        }
+
+        #endregion
+
+        #region Patrolling & Search Function & reseting AI position
 
         if (!foundPlayer)
         {
@@ -151,9 +200,9 @@ public class AiController : MonoBehaviour
             }
         }
 
-        //------------------------------------------------------------------------------------------------------------------------------------
+        #endregion
 
-        //Attacking the player
+        #region Attacking the player
 
         if (foundPlayer)
         {
@@ -193,6 +242,8 @@ public class AiController : MonoBehaviour
                 }
             }
         }
+
+        #endregion
     }
 
     void MeleeAttack()
