@@ -47,7 +47,7 @@ public class AiController : MonoBehaviour
 
     [Header("Speed")]
     public float patrollingMovementSpeed = 3.0f;
-    public float firingMovementSpeed = 0.2f;
+    public float firingMovementSpeed = 1.0f;
     public float staggerMovementSpeed = 0.1f;
     public float attackingMovementSpeed = 10.0f;
 
@@ -58,7 +58,7 @@ public class AiController : MonoBehaviour
     public float meleeRange = 5.0f;
     public float reloadTime = 3.0f;
     public float staggerTime = 3.0f;
-    public float stunnedTime = 5.0f;
+    public float stunnedTime = 0.0f;
 
     private void Start()
     {
@@ -100,6 +100,22 @@ public class AiController : MonoBehaviour
 
         #endregion
 
+        #region Stun Function
+
+        if (stunned)
+        {
+            nav.speed = 0.0f;
+
+            /*stunnedTime -= Time.deltaTime;
+
+            if (stunnedTime <= 0)
+            {
+                stunned = false;
+            }*/
+        }
+
+        #endregion
+
         #region Stagger Function
 
         if (stagger)
@@ -116,22 +132,7 @@ public class AiController : MonoBehaviour
 
         #endregion
 
-        #region Stun Function
-
-        if (stunned)
-        {
-            
-            nav.speed = 0;
-
-            stunnedTime -= Time.deltaTime;
-
-            if (stunnedTime <= 0)
-            {
-                stunned = false;
-            }
-        }
-
-        #endregion
+        
 
         #region Patrolling & Search Function & reseting AI position
 

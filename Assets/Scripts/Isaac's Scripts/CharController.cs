@@ -79,6 +79,9 @@ public class CharController : MonoBehaviour
     public bool canGrab;
     public bool holding;
 
+    [Header("Stun Function")]
+    public bool canStun;
+
     [Header("Don't Assign")]
     public GameObject hookedObject;
 
@@ -308,7 +311,10 @@ public class CharController : MonoBehaviour
         }
         else if (currentStanceState == StanceState.DEFENCE)
         {
-            shield.GetComponent<Shield>().stunAttack = true;
+            if (canStun)
+            {
+                shield.GetComponent<Shield>().stunAttack = true;
+            }
         }
         else if (currentStanceState == StanceState.UTILITY && !holding)
         {
