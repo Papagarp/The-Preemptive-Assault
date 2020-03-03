@@ -132,8 +132,6 @@ public class AiController : MonoBehaviour
 
         #endregion
 
-        
-
         #region Patrolling & Search Function & reseting AI position
 
         if (!foundPlayer)
