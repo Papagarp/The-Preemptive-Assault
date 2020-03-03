@@ -4,25 +4,22 @@ using UnityEngine;
 
 public class Shield : MonoBehaviour
 {
-    public GameObject player;
+    GameObject enemy;
 
     public bool stunAttack;
 
     private void OnTriggerEnter(Collider other)
     {
-        player.GetComponent<CharController>().canStun = true;
-
-        if (stunAttack)
+        Debug.Log("ontriggerenter");
+        if (other.CompareTag("Enemy"))
         {
-            other.GetComponentInParent<AiController>().stunned = true;
-            Debug.Log("stunned attack");
-            stunAttack = false;
+            enemy = other.gameObject;
+            Debug.Log(enemy);
         }
-        
     }
 
-    private void OnTriggerExit(Collider other)
+    public void StunAttack()
     {
-        player.GetComponent<CharController>().canStun = false;
+        enemy.GetComponent<AiController>().stunned = true;
     }
 }

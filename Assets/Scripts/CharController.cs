@@ -85,8 +85,7 @@ public class CharController : MonoBehaviour
     public bool holding;
 
     [Header("Stun Function")]
-    public bool canStun;
-    public float distanceToEnemy;
+    public GameObject stunRangeObject;
 
     [Header("Don't Assign")]
     public GameObject hookedObject;
@@ -128,7 +127,7 @@ public class CharController : MonoBehaviour
         //characterAnimator = model.GetComponent<Animator>();
 
         magicBoltScript = magicBolt.GetComponent<MagicBolt>();
-
+        
         stateNo = 1;
     }
 
@@ -191,7 +190,7 @@ public class CharController : MonoBehaviour
                 sword.SetActive(false);
                 shield.SetActive(false);
                 staff.SetActive(true);
-                
+
                 movementSpeed = 10f;
 
                 if (reloadTime >= 0) reloadTime -= Time.deltaTime;
@@ -231,7 +230,7 @@ public class CharController : MonoBehaviour
             if (isGrounded)
             {
                 if (movement == Vector3.zero) model.transform.rotation = lastRotation;
-                
+
                 model.transform.rotation = Quaternion.LookRotation(movement);
             }
 
@@ -329,7 +328,7 @@ public class CharController : MonoBehaviour
 
         #region Shield Stun
 
-
+        
 
         #endregion
     }
@@ -364,10 +363,7 @@ public class CharController : MonoBehaviour
         }
         else if (currentStanceState == StanceState.DEFENCE)
         {
-            if (canStun)
-            {
-                shield.GetComponent<Shield>().stunAttack = true;
-            }
+            //stunRangeObject.GetComponent<Shield>().StunAttack();
         }
         else if (currentStanceState == StanceState.UTILITY && !holding)
         {
