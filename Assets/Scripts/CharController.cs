@@ -86,6 +86,7 @@ public class CharController : MonoBehaviour
 
     [Header("Stun Function")]
     public bool canStun;
+    public float distanceToEnemy;
 
     [Header("Don't Assign")]
     public GameObject hookedObject;
@@ -286,6 +287,8 @@ public class CharController : MonoBehaviour
 
         #endregion
 
+        #region Hook Function
+
         if (hookFired && !hooked)
         {
             hookHolder.transform.parent = null;
@@ -321,6 +324,14 @@ public class CharController : MonoBehaviour
         {
             hook.transform.parent = hookHolder.transform;
         }
+
+        #endregion
+
+        #region Shield Stun
+
+
+
+        #endregion
     }
 
     void Attack()
