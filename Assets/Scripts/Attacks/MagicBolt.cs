@@ -5,7 +5,7 @@ using UnityEngine;
 public class MagicBolt : MonoBehaviour
 {
     public GameObject staff;
-
+    public GameObject hookHolder;
     public GameObject player;
 
     public float magicBoltFlyingTime = 5.0f;
@@ -30,6 +30,10 @@ public class MagicBolt : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        if (other.gameObject == hookHolder || other.gameObject == player)
+        {
+            return;
+        }
         fired = false;
         ReturnBolt();
     }

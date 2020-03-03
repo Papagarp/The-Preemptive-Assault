@@ -7,6 +7,7 @@ public class CharController : MonoBehaviour
 {
 
     //z locking
+    //health
 
 
     #region Variables
@@ -134,8 +135,7 @@ public class CharController : MonoBehaviour
     {
         #region State Switching
 
-        //Debug.Log(currentStanceState);
-
+        #region StateNo If statements
         if (stateNo == 4)
         {
             stateNo = 1;
@@ -157,6 +157,8 @@ public class CharController : MonoBehaviour
         {
             currentStanceState = StanceState.UTILITY;
         }
+
+        #endregion
 
         switch (currentStanceState)
         {
@@ -283,6 +285,42 @@ public class CharController : MonoBehaviour
         }
 
         #endregion
+
+        if (hookFired && !hooked)
+        {
+            hookHolder.transform.parent = null;
+            hook.transform.Translate(Vector3.forward * Time.deltaTime * hookTravelSpeed);
+            currentHookDistance = Vector3.Distance(transform.position, hook.transform.position);
+
+            if (currentHookDistance >= maxHookDistance)
+            {
+                ReturnHook();
+            }
+        }
+
+        if (hooked && hookFired)
+        {
+            hook.transform.parent = hookedObject.transform;
+
+            transform.position = Vector3.MoveTowards(transform.position, hook.transform.position, Time.deltaTime * playerHookSpeed);
+            float distanceToHook = Vector3.Distance(transform.position, hook.transform.position);
+
+            if (distanceToHook < 2)
+            {
+                if (!isGrounded)
+                {
+                    //personally i dont like this and it should be done better so i will come back to this later
+                    this.transform.Translate(Vector3.forward * Time.deltaTime * 13f);
+                    this.transform.Translate(Vector3.up * Time.deltaTime * 17f);
+                }
+
+                StartCoroutine("Climb");
+            }
+        }
+        else
+        {
+            hook.transform.parent = hookHolder.transform;
+        }
     }
 
     void Attack()
@@ -326,42 +364,6 @@ public class CharController : MonoBehaviour
             {
                 hookFired = true;
             }
-
-            if (hookFired && !hooked)
-            {
-                hookHolder.transform.parent = null;
-                hook.transform.Translate(Vector3.forward * Time.deltaTime * hookTravelSpeed);
-                currentHookDistance = Vector3.Distance(transform.position, hook.transform.position);
-
-                if (currentHookDistance >= maxHookDistance)
-                {
-                    ReturnHook();
-                }
-            }
-
-            if (hooked && hookFired)
-            {
-                hook.transform.parent = hookedObject.transform;
-
-                transform.position = Vector3.MoveTowards(transform.position, hook.transform.position, Time.deltaTime * playerHookSpeed);
-                float distanceToHook = Vector3.Distance(transform.position, hook.transform.position);
-
-                if (distanceToHook < 2)
-                {
-                    if (!isGrounded)
-                    {
-                        //personally i dont like this and it should be done better so i will come back to this later
-                        this.transform.Translate(Vector3.forward * Time.deltaTime * 13f);
-                        this.transform.Translate(Vector3.up * Time.deltaTime * 17f);
-                    }
-
-                    StartCoroutine("Climb");
-                }
-            }
-            else
-            {
-                hook.transform.parent = hookHolder.transform;
-            }
         }
     }
 
@@ -393,7 +395,6 @@ public class CharController : MonoBehaviour
     {
         stateNo--;
     }
-
 
     void OnEnable()
     {
