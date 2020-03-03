@@ -5,6 +5,10 @@ using UnityEngine.InputSystem;
 
 public class CharController : MonoBehaviour
 {
+
+    //z locking
+
+
     #region Variables
 
     MagicBolt magicBoltScript;
