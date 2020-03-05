@@ -1,15 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
-public class CharController : MonoBehaviour
+public class KeyboardController : MonoBehaviour
 {
-
-    //z locking
-    //health
-
-
     #region Variables
 
     MagicBolt magicBoltScript;
@@ -50,8 +44,6 @@ public class CharController : MonoBehaviour
     public float jumpHeight = 3f;
     float groundDistance = 0.1f;
     float xRotation = 0f;
-    bool hasJumped;
-    bool isAimming;
     bool isGrounded;
     public int stateNo;
     Vector2 controllerInputLeftStick;
@@ -68,7 +60,7 @@ public class CharController : MonoBehaviour
     public GameObject staff;
     public GameObject magicBolt;
     public float reloadTime = 0.0f;
-    
+
     [Header("Hook Function")]
     public float hookTravelSpeed = 15.0f;
     public float playerHookSpeed = 15.0f;
@@ -78,7 +70,6 @@ public class CharController : MonoBehaviour
     public static bool hookFired;
 
     [Header("Interact Function")]
-    public bool interact;
     public float grabDistance = 0.1f;
     public float grabTimer = 1.0f;
     public bool canGrab;
@@ -92,40 +83,10 @@ public class CharController : MonoBehaviour
 
     #endregion
 
-    private void Awake()
-    {
-        controls = new ControllerInput();
-
-        controls.Gameplay.Move.performed += context => controllerInputLeftStick = context.ReadValue<Vector2>();
-        controls.Gameplay.Move.canceled += context => controllerInputLeftStick = Vector2.zero;
-
-        controls.Gameplay.Camera.performed += context => controllerInputRightStick = context.ReadValue<Vector2>();
-        controls.Gameplay.Camera.canceled += context => controllerInputRightStick = Vector2.zero;
-
-        controls.Gameplay.Jump.performed += context => hasJumped = true;
-        controls.Gameplay.Jump.canceled += context => hasJumped = false;
-
-        controls.Gameplay.Interact.performed += context => interact = true;
-        controls.Gameplay.Interact.canceled += context => interact = false;
-
-        controls.Gameplay.Aim.performed += context => isAimming = true;
-        controls.Gameplay.Aim.canceled += context => isAimming = false;
-
-        controls.Gameplay.Attack.performed += context => Attack();
-        controls.Gameplay.Ability.performed += context => Ability();
-
-        controls.Gameplay.SwitchStatesUp.performed += context => SwitchStateUp();
-        controls.Gameplay.SwitchStatesDown.performed += context => SwitchStateDown();
-    }
-
     private void Start()
     {
-        controller = GetComponent<CharacterController>();
-
-        //characterAnimator = model.GetComponent<Animator>();
-
         magicBoltScript = magicBolt.GetComponent<MagicBolt>();
-        
+
         stateNo = 1;
     }
 
@@ -198,26 +159,14 @@ public class CharController : MonoBehaviour
 
         #endregion
 
-        #region Joystick Controls
-
-        mainCamera.transform.LookAt(cameraFocusY);
-
-        float rightStickX = controllerInputRightStick.x * controllerSensitivity * Time.deltaTime;
-        float rightStickY = controllerInputRightStick.y * controllerSensitivity * Time.deltaTime;
-
-        xRotation -= rightStickY;
-        xRotation = Mathf.Clamp(xRotation, -25f, 25f);
-
-        cameraFocusY.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-        cameraFocusX.Rotate(Vector3.up * rightStickX);
-
-        if (isGrounded)
+        if (Input.GetMouseButtonDown(1))
         {
-            movement = cameraFocusX.transform.right * controllerInputLeftStick.x + cameraFocusX.transform.forward * controllerInputLeftStick.y;
-            controller.Move(movement * movementSpeed * Time.deltaTime);
+            Attack();
         }
-
-        #endregion
+        else if (Input.GetMouseButtonDown(2))
+        {
+            Ability();
+        }
 
         #region Model Rotation
 
@@ -246,7 +195,7 @@ public class CharController : MonoBehaviour
 
         if (isGrounded && velocity.y < 0) velocity.y = -2f;
 
-        if (hasJumped && isGrounded && !holding) velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+        if (Input.GetKey(KeyCode.Space) && isGrounded && !holding) velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
 
         if (!hooked)
         {
@@ -270,13 +219,13 @@ public class CharController : MonoBehaviour
 
         if (grabTimer >= 0) grabTimer -= Time.deltaTime;
 
-        if (holding && interact && grabTimer <= 0.0f)
+        if (holding && Input.GetKey(KeyCode.F) && grabTimer <= 0.0f)
         {
             holding = false;
             grabTimer = 1.0f;
         }
 
-        if (canGrab && interact && grabTimer <= 0.0f)
+        if (canGrab && Input.GetKey(KeyCode.F) && grabTimer <= 0.0f)
         {
             holding = true;
             grabTimer = 1.0f;
@@ -323,17 +272,11 @@ public class CharController : MonoBehaviour
         }
 
         #endregion
-
-        #region Shield Stun
-
-        
-
-        #endregion
     }
 
     void Attack()
     {
-        
+
         if (currentStanceState == StanceState.ATTACK)
         {
             sword.GetComponent<Sword>().spinAttack = false;
@@ -389,25 +332,5 @@ public class CharController : MonoBehaviour
     {
         yield return new WaitForSeconds(0.1f);
         ReturnHook();
-    }
-
-    void SwitchStateUp()
-    {
-        stateNo++;
-    }
-
-    void SwitchStateDown()
-    {
-        stateNo--;
-    }
-
-    void OnEnable()
-    {
-        controls.Gameplay.Enable();
-    }
-
-    void OnDisable()
-    {
-        controls.Gameplay.Disable();
     }
 }
