@@ -113,6 +113,7 @@ public class CharController : MonoBehaviour
 
         controls.Gameplay.Attack.performed += context => Attack();
         controls.Gameplay.Ability.performed += context => Ability();
+        controls.Gameplay.LockOn.performed += context => LockOn();
 
         controls.Gameplay.SwitchStatesUp.performed += context => SwitchStateUp();
         controls.Gameplay.SwitchStatesDown.performed += context => SwitchStateDown();
@@ -383,6 +384,11 @@ public class CharController : MonoBehaviour
 
         hookFired = false;
         hooked = false;
+    }
+
+    void LockOn()
+    {
+
     }
 
     IEnumerator Climb()
