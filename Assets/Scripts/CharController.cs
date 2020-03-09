@@ -3,6 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+public enum StanceState
+{
+    ATTACK,
+    DEFENCE,
+    UTILITY
+}
+
 public class CharController : MonoBehaviour
 {
 
@@ -16,14 +23,8 @@ public class CharController : MonoBehaviour
     ControllerInput controls;
     CharacterController controller;
 
-    public Animator characterAnimator;
-
-    public enum StanceState
-    {
-        ATTACK,
-        DEFENCE,
-        UTILITY
-    }
+    //public Animator characterAnimator;
+    PlayerAnimator playerAnimator;
 
     public StanceState currentStanceState;
 
@@ -54,7 +55,7 @@ public class CharController : MonoBehaviour
     bool isAimming;
     bool isGrounded;
     public int stateNo;
-    Vector2 controllerInputLeftStick;
+   public Vector2 controllerInputLeftStick;
     Vector3 controllerInputRightStick;
     Vector3 jumpMovement;
     Vector3 lastPosition;
@@ -123,6 +124,7 @@ public class CharController : MonoBehaviour
     private void Start()
     {
         controller = GetComponent<CharacterController>();
+        playerAnimator = GetComponent<PlayerAnimator>();
 
         //characterAnimator = model.GetComponent<Animator>();
 
@@ -136,6 +138,7 @@ public class CharController : MonoBehaviour
         #region State Switching
 
         #region StateNo If statements
+        //TODO: rewrite this to be like 10 lines (maybe use a method?)
         if (stateNo == 4)
         {
             stateNo = 1;
@@ -234,11 +237,11 @@ public class CharController : MonoBehaviour
                 model.transform.rotation = Quaternion.LookRotation(movement);
             }
 
-            characterAnimator.StopPlayback();
+            //characterAnimator.StopPlayback();
         }
         else
         {
-            characterAnimator.StartPlayback();
+            //characterAnimator.StartPlayback();
         }
 
         lastPosition = gameObject.transform.position;
@@ -338,11 +341,12 @@ public class CharController : MonoBehaviour
 
     void Attack()
     {
-        
         if (currentStanceState == StanceState.ATTACK)
         {
             sword.GetComponent<Sword>().spinAttack = false;
             //play sword animation
+
+            playerAnimator.Swing();
         }
         else if (currentStanceState == StanceState.DEFENCE)
         {
