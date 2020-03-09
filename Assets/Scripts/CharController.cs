@@ -16,7 +16,7 @@ public class CharController : MonoBehaviour
     ControllerInput controls;
     CharacterController controller;
 
-    //Animator characterAnimator;
+    public Animator characterAnimator;
 
     public enum StanceState
     {
@@ -86,6 +86,7 @@ public class CharController : MonoBehaviour
 
     [Header("Stun Function")]
     public GameObject stunRangeObject;
+    public bool canStun;
 
     [Header("Don't Assign")]
     public GameObject hookedObject;
@@ -233,8 +234,11 @@ public class CharController : MonoBehaviour
                 model.transform.rotation = Quaternion.LookRotation(movement);
             }
 
-            //characterAnimator.SetTrigger("Walk");
-            //right here
+            characterAnimator.StopPlayback();
+        }
+        else
+        {
+            characterAnimator.StartPlayback();
         }
 
         lastPosition = gameObject.transform.position;
@@ -360,9 +364,9 @@ public class CharController : MonoBehaviour
             sword.GetComponent<Sword>().spinAttack = true;
             //play spin animation
         }
-        else if (currentStanceState == StanceState.DEFENCE)
+        else if (currentStanceState == StanceState.DEFENCE && canStun)
         {
-            //stunRangeObject.GetComponent<Shield>().StunAttack();
+            stunRangeObject.GetComponent<Shield>().stunAttack = true;
         }
         else if (currentStanceState == StanceState.UTILITY && !holding)
         {

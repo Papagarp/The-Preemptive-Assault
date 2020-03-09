@@ -8,18 +8,20 @@ public class Shield : MonoBehaviour
 
     public bool stunAttack;
 
-    private void OnTriggerEnter(Collider other)
+    private void Update()
     {
-        Debug.Log("ontriggerenter");
-        if (other.CompareTag("Enemy"))
+        if (stunAttack)
         {
-            enemy = other.gameObject;
-            Debug.Log(enemy);
+            enemy.GetComponentInParent<AiController>().stunned = true;
         }
     }
 
-    public void StunAttack()
+    public void OnTriggerEnter(Collider other)
     {
-        enemy.GetComponent<AiController>().stunned = true;
+        if (other.GetComponentInParent<AiController>())
+        {
+            gameObject.GetComponentInParent<CharController>().canStun = true;
+            enemy = other.gameObject;
+        }
     }
 }
