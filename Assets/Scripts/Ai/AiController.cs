@@ -3,17 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
+public enum aiState
+{
+    MELEE,
+    RANGED,
+    SEARCH,
+    PATROL
+}
+
 public class AiController : MonoBehaviour
 {
-    NavMeshAgent nav;
-
-    public enum aiState
-    {
-        MELEE,
-        RANGED,
-        SEARCH,
-        PATROL
-    }
+    public NavMeshAgent nav;
+    AiAnimator animator;
 
     public aiState currentAIState;
 
@@ -63,8 +64,9 @@ public class AiController : MonoBehaviour
     private void Start()
     {
         nav = GetComponent<NavMeshAgent>();
+        animator = GetComponent<AiAnimator>();
 
-        boltScript = crossbowBolt.GetComponent<Bolt>();
+        //boltScript = crossbowBolt.GetComponent<Bolt>();
 
         if (!patrollingAI)
         {
@@ -136,6 +138,7 @@ public class AiController : MonoBehaviour
 
         if (!foundPlayer)
         {
+            //Debug.Log("!foundplayer");
             if (foundPlayerCheck)
             {
                 currentAIState = aiState.SEARCH;
@@ -205,6 +208,7 @@ public class AiController : MonoBehaviour
 
         if (foundPlayer)
         {
+            //Debug.Log("foundplayer");
             foundPlayerCheck = true;
             searchTime = 3.0f;
 
@@ -217,6 +221,7 @@ public class AiController : MonoBehaviour
 
             if (distanceToPlayer <= meleeRange)
             {
+                //Debug.Log("melee");
                 currentAIState = aiState.MELEE;
 
                 if (distanceToPlayer < 2.0f)
@@ -227,8 +232,11 @@ public class AiController : MonoBehaviour
                     MeleeAttack();
                 }
             }
-            else if (distanceToPlayer >= meleeRange)
+            /*else if (distanceToPlayer >= meleeRange)
             {
+                Debug.Log("ranged");
+                return;
+
                 currentAIState = aiState.RANGED;
 
                 if (!boltScript.fired)
@@ -239,7 +247,7 @@ public class AiController : MonoBehaviour
                         boltScript.fired = true;
                     }
                 }
-            }
+            }*/
         }
 
         #endregion
@@ -247,6 +255,6 @@ public class AiController : MonoBehaviour
 
     void MeleeAttack()
     {
-
+        animator.Swing();
     }
 }

@@ -68,6 +68,7 @@ public class CharController : MonoBehaviour
     public GameObject shield;
     public GameObject staff;
     public GameObject magicBolt;
+    public bool isAttacking;
     public float reloadTime = 0.0f;
     
     [Header("Hook Function")]
@@ -216,7 +217,7 @@ public class CharController : MonoBehaviour
         cameraFocusY.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
         cameraFocusX.Rotate(Vector3.up * rightStickX);
 
-        if (isGrounded)
+        if (isGrounded && !isAttacking)
         {
             movement = cameraFocusX.transform.right * controllerInputLeftStick.x + cameraFocusX.transform.forward * controllerInputLeftStick.y;
             controller.Move(movement * movementSpeed * Time.deltaTime);
@@ -315,13 +316,15 @@ public class CharController : MonoBehaviour
 
             if (distanceToHook < 2)
             {
+
+                hook.SetActive(false);
                 if (!isGrounded)
                 {
                     //personally i dont like this and it should be done better so i will come back to this later
                     //this.transform.Translate(Vector3.forward * Time.deltaTime * 13f);
                     //this.transform.Translate(Vector3.up * Time.deltaTime * 17f);
 
-                    hook.SetActive(false);
+                    
 
                 }
 
@@ -344,42 +347,48 @@ public class CharController : MonoBehaviour
 
     void Attack()
     {
-        if (currentStanceState == StanceState.ATTACK)
+        if (isGrounded)
         {
-            sword.GetComponent<Sword>().spinAttack = false;
-            //play sword animation
-
-            playerAnimator.Swing();
-        }
-        else if (currentStanceState == StanceState.DEFENCE)
-        {
-            //is there ever meant to be an attack in this state?
-        }
-        else if (currentStanceState == StanceState.UTILITY)
-        {
-            if (!magicBoltScript.fired)
+            if (currentStanceState == StanceState.ATTACK)
             {
-                if (reloadTime < 0) magicBoltScript.fired = true;
+                sword.GetComponent<Sword>().spinAttack = false;
+
+                playerAnimator.Swing();
+            }
+            else if (currentStanceState == StanceState.DEFENCE)
+            {
+                //is there ever meant to be an attack in this state?
+            }
+            else if (currentStanceState == StanceState.UTILITY)
+            {
+                if (!magicBoltScript.fired)
+                {
+                    if (reloadTime < 0) magicBoltScript.fired = true;
+                }
             }
         }
     }
 
     void Ability()
     {
-        if (currentStanceState == StanceState.ATTACK)
+        if (isGrounded)
         {
-            sword.GetComponent<Sword>().spinAttack = true;
-            //play spin animation
-        }
-        else if (currentStanceState == StanceState.DEFENCE && canStun)
-        {
-            stunRangeObject.GetComponent<Shield>().stunAttack = true;
-        }
-        else if (currentStanceState == StanceState.UTILITY && !holding)
-        {
-            if (!hookFired)
+            if (currentStanceState == StanceState.ATTACK)
             {
-                hookFired = true;
+                sword.GetComponent<Sword>().spinAttack = true;
+                //play spin animation
+            }
+            else if (currentStanceState == StanceState.DEFENCE && canStun)
+            {
+                stunRangeObject.GetComponent<Shield>().stunAttack = true;
+            }
+            else if (currentStanceState == StanceState.UTILITY && !holding)
+            {
+                hook.SetActive(true);
+                if (!hookFired)
+                {
+                    hookFired = true;
+                }
             }
         }
     }
@@ -395,7 +404,6 @@ public class CharController : MonoBehaviour
 
         hookFired = false;
         hooked = false;
-        hook.SetActive(true);
     }
 
     void LockOn()

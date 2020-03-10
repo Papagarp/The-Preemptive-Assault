@@ -4,37 +4,36 @@ using UnityEngine;
 
 public class PlayerAnimator : MonoBehaviour
 {
-    Animator anim;
-    CharController boob;
+    Animator playerAnimatorComponent;
+    CharController playerController;
 
     bool hasSwung;
     Coroutine swingCoroutine;
 
     void Awake()
     {
-        anim = GetComponentInChildren<Animator>();
-        boob = GetComponent<CharController>();
+        playerAnimatorComponent = GetComponentInChildren<Animator>();
+        playerController = GetComponent<CharController>();
     }
 
     void Start()
     {
-        anim.SetInteger("State", 1);
+        playerAnimatorComponent.SetInteger("State", 1);
     }
 
-    // Update is called once per frame
     void Update()
     {
         //current player state (atk, def, utl)
-        StanceState stance = boob.currentStanceState;
+        StanceState stance = playerController.currentStanceState;
 
         //check if left controller stick is moved
-        if (boob.controllerInputLeftStick != Vector2.zero)
+        if (playerController.controllerInputLeftStick != Vector2.zero)
         {
-            anim.SetInteger("State", 0);
+            playerAnimatorComponent.SetInteger("State", 0);
         }
         else
         {
-            anim.SetInteger("State", (int)stance + 1);
+            playerAnimatorComponent.SetInteger("State", (int)stance + 1);
         }
         
         //cool guy version
@@ -43,6 +42,7 @@ public class PlayerAnimator : MonoBehaviour
 
     public void Swing()
     {
+        playerController.isAttacking = true;
         hasSwung = true;
 
         //start the attack combo
@@ -54,11 +54,11 @@ public class PlayerAnimator : MonoBehaviour
 
     IEnumerator AttackCombo()
     {
-        anim.SetTrigger("AttackSword1");
+        playerAnimatorComponent.SetTrigger("AttackSword1");
 
         float clipLength = -1;
         float clip2Length = -1;
-        foreach (AnimationClip c in anim.runtimeAnimatorController.animationClips)
+        foreach (AnimationClip c in playerAnimatorComponent.runtimeAnimatorController.animationClips)
         {
             if (c.name == "AttackSword1")
             {
@@ -70,39 +70,48 @@ public class PlayerAnimator : MonoBehaviour
             }
         }
 
-        float timer = clipLength * 0.75f;
+        //prevent a second attack
+        float timer = clipLength * 0.75f;//first 75% of the animation, dont allow the second attack
         while (timer > 0)
         {
             hasSwung = false;
-            anim.SetBool("AttackSword2", hasSwung);
+            playerAnimatorComponent.SetBool("AttackSword2", hasSwung);
 
             timer -= Time.deltaTime;
             yield return new WaitForEndOfFrame();
         }
 
+        //small window for second attack check
         bool swinging = false;
-        float hitWindow = clipLength * 0.25f;
+        float hitWindow = clipLength * 0.25f;//25% of the end of the animation
         while (hitWindow > 0)
         {
+            //if we've pressed the attack button during the window swing into the second attack
             if (hasSwung)
             {
+                //wait for the second animation to end
                 swinging = true;
                 print("swing");
-                anim.SetBool("AttackSword2", hasSwung);
+                playerAnimatorComponent.SetBool("AttackSword2", hasSwung);
             }
 
             hitWindow -= Time.deltaTime;
             yield return new WaitForEndOfFrame();
         }
 
-        //wait longer if true
+        //wait longer for the second animation if true
         if (swinging)
         {
             yield return new WaitForSeconds(clip2Length);
         }
 
         hasSwung = false;
-        if(!swinging) anim.SetBool("AttackSword2", hasSwung);
+        if (!swinging)
+        {
+            playerAnimatorComponent.SetBool("AttackSword2", hasSwung);
+        }
+
         swingCoroutine = null;
+        playerController.isAttacking = false;
     }
 }
