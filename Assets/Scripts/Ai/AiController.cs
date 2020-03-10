@@ -66,7 +66,7 @@ public class AiController : MonoBehaviour
         nav = GetComponent<NavMeshAgent>();
         animator = GetComponent<AiAnimator>();
 
-        //boltScript = crossbowBolt.GetComponent<Bolt>();
+        boltScript = crossbowBolt.GetComponent<Bolt>();
 
         if (!patrollingAI)
         {
@@ -138,7 +138,6 @@ public class AiController : MonoBehaviour
 
         if (!foundPlayer)
         {
-            //Debug.Log("!foundplayer");
             if (foundPlayerCheck)
             {
                 currentAIState = aiState.SEARCH;
@@ -148,6 +147,7 @@ public class AiController : MonoBehaviour
                 currentAIState = aiState.PATROL;
             }
 
+            //if the player was lost then look at the last spot the player was seen
             if (currentAIState == aiState.SEARCH)
             {
                 nav.SetDestination(lastKnownPosition);
@@ -155,10 +155,12 @@ public class AiController : MonoBehaviour
                 distanceToLastKnown = Vector3.Distance(new Vector3(transform.position.x, 0, transform.position.z),
                 new Vector3(lastKnownPosition.x, 0, lastKnownPosition.z));
 
+                //if at the last known spot of the player then search for a few seconds
                 if(distanceToLastKnown < 0.1f)
                 {
                     searchTime -= Time.deltaTime;
 
+                    //if cannot find player then return to patrol
                     if (searchTime <= 0)
                     {
                         currentAIState = aiState.PATROL;
@@ -167,8 +169,10 @@ public class AiController : MonoBehaviour
                 }
             }
             
+            //if the player hasn't been seen then patrol/guard an area
             if(currentAIState == aiState.PATROL)
             {
+                //is this Ai meant to patrol??
                 if (patrollingAI)
                 {
                     nav.SetDestination(patrolPoints[i].transform.position);
@@ -176,6 +180,7 @@ public class AiController : MonoBehaviour
                     distanceToPoint = Vector3.Distance(new Vector3(transform.position.x, 0, transform.position.z),
                     new Vector3(patrolPoints[i].transform.position.x, 0, patrolPoints[i].transform.position.z));
 
+                    //move between patrol points
                     if (i == (patrolPoints.Length - 1) && distanceToPoint <= 0.1f)
                     {
                         i = 0;
@@ -187,6 +192,7 @@ public class AiController : MonoBehaviour
                         nav.SetDestination(patrolPoints[i].transform.position);
                     }
                 }
+                //if not a patrolling ai then its a guarding ai
                 else
                 {
                     nav.SetDestination(startAiPoint);
@@ -208,7 +214,6 @@ public class AiController : MonoBehaviour
 
         if (foundPlayer)
         {
-            //Debug.Log("foundplayer");
             foundPlayerCheck = true;
             searchTime = 3.0f;
 
@@ -221,7 +226,6 @@ public class AiController : MonoBehaviour
 
             if (distanceToPlayer <= meleeRange)
             {
-                //Debug.Log("melee");
                 currentAIState = aiState.MELEE;
 
                 if (distanceToPlayer < 2.0f)
@@ -232,11 +236,8 @@ public class AiController : MonoBehaviour
                     MeleeAttack();
                 }
             }
-            /*else if (distanceToPlayer >= meleeRange)
+            else if (distanceToPlayer >= meleeRange)
             {
-                Debug.Log("ranged");
-                return;
-
                 currentAIState = aiState.RANGED;
 
                 if (!boltScript.fired)
@@ -247,7 +248,7 @@ public class AiController : MonoBehaviour
                         boltScript.fired = true;
                     }
                 }
-            }*/
+            }
         }
 
         #endregion

@@ -4,11 +4,15 @@ using UnityEngine;
 
 public class PlayerAnimator : MonoBehaviour
 {
+    #region Variables
+
     Animator playerAnimatorComponent;
     CharController playerController;
+    Coroutine swingCoroutine;
 
     bool hasSwung;
-    Coroutine swingCoroutine;
+
+    #endregion
 
     void Awake()
     {
@@ -16,28 +20,20 @@ public class PlayerAnimator : MonoBehaviour
         playerController = GetComponent<CharController>();
     }
 
-    void Start()
+    private void Update()
     {
-        playerAnimatorComponent.SetInteger("State", 1);
-    }
+        StanceState currentState = playerController.currentStanceState;
 
-    void Update()
-    {
-        //current player state (atk, def, utl)
-        StanceState stance = playerController.currentStanceState;
+        playerAnimatorComponent.SetInteger("Current State", (int)currentState);
 
-        //check if left controller stick is moved
         if (playerController.controllerInputLeftStick != Vector2.zero)
         {
-            playerAnimatorComponent.SetInteger("State", 0);
+            playerAnimatorComponent.SetBool("Moving", true);
         }
         else
         {
-            playerAnimatorComponent.SetInteger("State", (int)stance + 1);
+            playerAnimatorComponent.SetBool("Moving", false);
         }
-        
-        //cool guy version
-        //anim.SetInteger("State", boob.controllerInputLeftStick != Vector2.zero ? 0 : (int)boob.currentStanceState + 1);
     }
 
     public void Swing()
@@ -54,28 +50,29 @@ public class PlayerAnimator : MonoBehaviour
 
     IEnumerator AttackCombo()
     {
-        playerAnimatorComponent.SetTrigger("AttackSword1");
+        playerAnimatorComponent.SetTrigger("SwordAttack1");
 
-        float clipLength = -1;
-        float clip2Length = -1;
-        foreach (AnimationClip c in playerAnimatorComponent.runtimeAnimatorController.animationClips)
+        float firstAnimationLength = -1;
+        float secondAnimationLength = -1;
+
+        foreach (AnimationClip clip in playerAnimatorComponent.runtimeAnimatorController.animationClips)
         {
-            if (c.name == "AttackSword1")
+            if (clip.name == "AttackSword1")
             {
-                clipLength = c.length;
+                firstAnimationLength = clip.length;
             }
-            if (c.name == "AttackSword2")
+            if (clip.name == "AttackSword2")
             {
-                clip2Length = c.length;
+                secondAnimationLength = clip.length;
             }
         }
 
         //prevent a second attack
-        float timer = clipLength * 0.75f;//first 75% of the animation, dont allow the second attack
+        float timer = firstAnimationLength * 0.75f;//first 75% of the animation, dont allow the second attack
         while (timer > 0)
         {
             hasSwung = false;
-            playerAnimatorComponent.SetBool("AttackSword2", hasSwung);
+            playerAnimatorComponent.SetBool("SwordAttack2", hasSwung);
 
             timer -= Time.deltaTime;
             yield return new WaitForEndOfFrame();
@@ -83,7 +80,7 @@ public class PlayerAnimator : MonoBehaviour
 
         //small window for second attack check
         bool swinging = false;
-        float hitWindow = clipLength * 0.25f;//25% of the end of the animation
+        float hitWindow = firstAnimationLength * 0.25f;//25% of the end of the animation
         while (hitWindow > 0)
         {
             //if we've pressed the attack button during the window swing into the second attack
@@ -91,8 +88,7 @@ public class PlayerAnimator : MonoBehaviour
             {
                 //wait for the second animation to end
                 swinging = true;
-                print("swing");
-                playerAnimatorComponent.SetBool("AttackSword2", hasSwung);
+                playerAnimatorComponent.SetBool("SwordAttack2", hasSwung);
             }
 
             hitWindow -= Time.deltaTime;
@@ -102,13 +98,13 @@ public class PlayerAnimator : MonoBehaviour
         //wait longer for the second animation if true
         if (swinging)
         {
-            yield return new WaitForSeconds(clip2Length);
+            yield return new WaitForSeconds(secondAnimationLength);
         }
 
         hasSwung = false;
         if (!swinging)
         {
-            playerAnimatorComponent.SetBool("AttackSword2", hasSwung);
+            playerAnimatorComponent.SetBool("SwordAttack2", hasSwung);
         }
 
         swingCoroutine = null;

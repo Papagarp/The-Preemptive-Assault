@@ -12,10 +12,7 @@ public enum StanceState
 
 public class CharController : MonoBehaviour
 {
-
-    //z locking
-    //health
-
+    //TODO: health system
 
     #region Variables
 
@@ -23,7 +20,6 @@ public class CharController : MonoBehaviour
     ControllerInput controls;
     CharacterController controller;
 
-    //public Animator characterAnimator;
     PlayerAnimator playerAnimator;
 
     public StanceState currentStanceState;
@@ -126,9 +122,6 @@ public class CharController : MonoBehaviour
     {
         controller = GetComponent<CharacterController>();
         playerAnimator = GetComponent<PlayerAnimator>();
-
-        //characterAnimator = model.GetComponent<Animator>();
-
         magicBoltScript = magicBolt.GetComponent<MagicBolt>();
         
         stateNo = 1;
@@ -408,7 +401,7 @@ public class CharController : MonoBehaviour
 
     void LockOn()
     {
-
+        //TODO: Z-locking from dark souls
     }
 
     IEnumerator Climb()
