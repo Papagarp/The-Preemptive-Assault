@@ -55,7 +55,7 @@ public class CharController : MonoBehaviour
     bool isAimming;
     bool isGrounded;
     public int stateNo;
-   public Vector2 controllerInputLeftStick;
+    public Vector2 controllerInputLeftStick;
     Vector3 controllerInputRightStick;
     Vector3 jumpMovement;
     Vector3 lastPosition;
@@ -318,8 +318,11 @@ public class CharController : MonoBehaviour
                 if (!isGrounded)
                 {
                     //personally i dont like this and it should be done better so i will come back to this later
-                    this.transform.Translate(Vector3.forward * Time.deltaTime * 13f);
-                    this.transform.Translate(Vector3.up * Time.deltaTime * 17f);
+                    //this.transform.Translate(Vector3.forward * Time.deltaTime * 13f);
+                    //this.transform.Translate(Vector3.up * Time.deltaTime * 17f);
+
+                    hook.SetActive(false);
+
                 }
 
                 StartCoroutine("Climb");
@@ -392,6 +395,7 @@ public class CharController : MonoBehaviour
 
         hookFired = false;
         hooked = false;
+        hook.SetActive(true);
     }
 
     void LockOn()
