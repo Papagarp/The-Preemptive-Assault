@@ -24,7 +24,7 @@ public class AiController : MonoBehaviour
     [Header("Assign GameObjects")]
     public GameObject crossbow;
     public GameObject crossbowBolt;
-    public GameObject player;
+    
 
     [Header("Is this a patrolling Ai")]
     public bool patrollingAI;
@@ -38,6 +38,7 @@ public class AiController : MonoBehaviour
     public Quaternion startAiRotation;
 
     [Header("Searching for player")]
+    GameObject player;
     public bool foundPlayer;
     public bool foundPlayerCheck;
     public float distanceToPlayer;
@@ -60,6 +61,11 @@ public class AiController : MonoBehaviour
     public float reloadTime = 3.0f;
     public float staggerTime = 3.0f;
     public float stunnedTime = 0.0f;
+
+    private void Awake()
+    {
+        player = GameObject.FindGameObjectWithTag("Player");
+    }
 
     private void Start()
     {

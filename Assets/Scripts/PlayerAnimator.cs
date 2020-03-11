@@ -26,6 +26,8 @@ public class PlayerAnimator : MonoBehaviour
 
         playerAnimatorComponent.SetInteger("Current State", (int)currentState);
 
+        
+
         if (playerController.controllerInputLeftStick != Vector2.zero)
         {
             playerAnimatorComponent.SetBool("Moving", true);

@@ -41,6 +41,7 @@ public class CharController : MonoBehaviour
     public LayerMask grabbableMask;
 
     [Header("Player Movement")]
+    public float currentSpeed;
     public float movementSpeed;
     public float controllerSensitivity = 50.0f;
     public float gravity = -9.81f;
@@ -129,6 +130,8 @@ public class CharController : MonoBehaviour
 
     private void Update()
     {
+        
+
         #region State Switching
 
         #region StateNo If statements
@@ -222,6 +225,8 @@ public class CharController : MonoBehaviour
 
         if (lastPosition != gameObject.transform.position && !hooked && !holding)
         {
+            currentSpeed = (gameObject.transform.position - lastPosition).magnitude;
+
             if (!isGrounded) lastRotation = model.transform.rotation;
 
             if (isGrounded)
@@ -230,12 +235,6 @@ public class CharController : MonoBehaviour
 
                 model.transform.rotation = Quaternion.LookRotation(movement);
             }
-
-            //characterAnimator.StopPlayback();
-        }
-        else
-        {
-            //characterAnimator.StartPlayback();
         }
 
         lastPosition = gameObject.transform.position;
