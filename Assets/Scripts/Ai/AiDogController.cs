@@ -14,7 +14,7 @@ public class AiDogController : MonoBehaviour
 
     public aiDogState currentAiDogState;
 
-    public GameObject player;
+    GameObject player;
     public GameObject[] patrolPoints;
 
     public bool foundPlayer;
@@ -31,7 +31,12 @@ public class AiDogController : MonoBehaviour
 
     public Vector3 lastKnownPosition;
 
-    NavMeshAgent nav;
+    public NavMeshAgent nav;
+
+    private void Awake()
+    {
+        player = GameObject.FindGameObjectWithTag("Player");
+    }
 
     private void Start()
     {

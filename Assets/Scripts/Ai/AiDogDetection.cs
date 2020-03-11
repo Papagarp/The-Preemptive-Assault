@@ -13,10 +13,15 @@ public class AiDogDetection : MonoBehaviour
     public float viewAngle;
     public float distanceToPlayer;
 
-    public GameObject player;
+    GameObject player;
 
     public LayerMask obstacleMask;
     public LayerMask playerMask;
+
+    private void Awake()
+    {
+        player = GameObject.FindGameObjectWithTag("Player");
+    }
 
     void Start()
     {
