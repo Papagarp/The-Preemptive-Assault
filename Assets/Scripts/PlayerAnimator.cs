@@ -10,6 +10,7 @@ public class PlayerAnimator : MonoBehaviour
     CharController playerController;
     Coroutine swingCoroutine;
 
+    bool jumpAnimPlaying;
     bool hasSwung;
 
     #endregion
@@ -26,7 +27,31 @@ public class PlayerAnimator : MonoBehaviour
 
         playerAnimatorComponent.SetInteger("Current State", (int)currentState);
 
-        
+        if (playerController.hasJumped && !jumpAnimPlaying)
+        {
+            playerAnimatorComponent.SetTrigger("Jumping");
+
+            float jumpAnimationLength = -1;
+
+            foreach (AnimationClip clip in playerAnimatorComponent.runtimeAnimatorController.animationClips)
+            {
+                if(clip.name == "Main_char_jump_test_001")
+                {
+                    jumpAnimationLength = clip.length;
+                }
+                
+            }
+
+            print(jumpAnimationLength);
+
+            while (jumpAnimationLength > 0)
+            {
+                jumpAnimPlaying = true;
+                jumpAnimationLength -= Time.deltaTime;
+            }
+
+            if(playerController.isGrounded && jumpAnimationLength <= 0) jumpAnimPlaying = false;
+        }
 
         if (playerController.controllerInputLeftStick != Vector2.zero)
         {

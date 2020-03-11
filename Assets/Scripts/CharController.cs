@@ -48,9 +48,9 @@ public class CharController : MonoBehaviour
     public float jumpHeight = 3f;
     float groundDistance = 0.1f;
     float xRotation = 0f;
-    bool hasJumped;
+    public bool hasJumped;
     bool isAimming;
-    bool isGrounded;
+    public bool isGrounded;
     public int stateNo;
     public Vector2 controllerInputLeftStick;
     Vector3 controllerInputRightStick;
@@ -247,7 +247,10 @@ public class CharController : MonoBehaviour
 
         if (isGrounded && velocity.y < 0) velocity.y = -2f;
 
-        if (hasJumped && isGrounded && !holding) velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+        if (hasJumped && isGrounded && !holding)
+        {
+            StartCoroutine("Jump");
+        }
 
         if (!hooked)
         {
@@ -262,6 +265,7 @@ public class CharController : MonoBehaviour
 
             controller.Move(velocity * Time.deltaTime);
         }
+
 
         #endregion
 
@@ -321,6 +325,7 @@ public class CharController : MonoBehaviour
                 }
 
                 StartCoroutine("Climb");
+
             }
         }
         else
@@ -401,6 +406,12 @@ public class CharController : MonoBehaviour
     void LockOn()
     {
         //TODO: Z-locking from dark souls
+    }
+
+    IEnumerator Jump()
+    {
+        yield return new WaitForSeconds(1f);
+        velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
     }
 
     IEnumerator Climb()
