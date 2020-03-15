@@ -84,7 +84,6 @@ public class CharController : MonoBehaviour
     public bool holding;
 
     [Header("Stun Function")]
-    public GameObject stunRangeObject;
     public bool canStun;
 
     [Header("Don't Assign")]
@@ -334,12 +333,6 @@ public class CharController : MonoBehaviour
         }
 
         #endregion
-
-        #region Shield Stun
-
-        
-
-        #endregion
     }
 
     void Attack()
@@ -377,7 +370,7 @@ public class CharController : MonoBehaviour
             }
             else if (currentStanceState == StanceState.DEFENCE && canStun)
             {
-                stunRangeObject.GetComponent<Shield>().stunAttack = true;
+
             }
             else if (currentStanceState == StanceState.UTILITY && !holding)
             {

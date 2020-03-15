@@ -15,6 +15,7 @@ public class AiController : MonoBehaviour
 {
     public NavMeshAgent nav;
     AiAnimator animator;
+    CharController charControllerScript;
 
     public aiState currentAIState;
 
@@ -56,6 +57,7 @@ public class AiController : MonoBehaviour
     [Header("other")]
     public bool stagger;
     public bool stunned;
+    public float stunDistance = 5.0f;
 
     public float meleeRange = 5.0f;
     public float reloadTime = 3.0f;
@@ -65,6 +67,7 @@ public class AiController : MonoBehaviour
     private void Awake()
     {
         player = GameObject.FindGameObjectWithTag("Player");
+        charControllerScript = player.GetComponent<CharController>();
     }
 
     private void Start()
@@ -258,10 +261,26 @@ public class AiController : MonoBehaviour
         }
 
         #endregion
+
+        #region Shield Stun
+
+        while(distanceToPlayer <= stunDistance)
+        {
+            charControllerScript.canStun = true;
+        }
+
+        charControllerScript.canStun = false;
+
+        #endregion
     }
 
     void MeleeAttack()
     {
         animator.Swing();
+    }
+
+    public void Stun()
+    {
+
     }
 }
