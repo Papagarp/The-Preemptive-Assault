@@ -6,10 +6,11 @@ public class Boulder : MonoBehaviour
 {
     CharController characterScript;
 
-    public GameObject player;
+    GameObject player;
 
     private void Start()
     {
+        player = GameObject.FindGameObjectWithTag("Player");
         characterScript = player.GetComponent<CharController>();
     }
 

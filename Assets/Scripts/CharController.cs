@@ -138,6 +138,7 @@ public class CharController : MonoBehaviour
         playerAnimatorComponent.SetInteger("Current State", (int)currentStanceState);
 
         #region StateNo If statements
+;
         //TODO: rewrite this to be like 10 lines (maybe use a method?)
         if (stateNo == 4)
         {
@@ -326,9 +327,6 @@ public class CharController : MonoBehaviour
                     //personally i dont like this and it should be done better so i will come back to this later
                     //this.transform.Translate(Vector3.forward * Time.deltaTime * 13f);
                     //this.transform.Translate(Vector3.up * Time.deltaTime * 17f);
-
-                    
-
                 }
 
                 StartCoroutine("Climb");
@@ -478,6 +476,9 @@ public class CharController : MonoBehaviour
             }
         }
 
+        print(firstAnimationLength);
+        print(secondAnimationLength);
+
         //prevent a second attack
         float timer = firstAnimationLength * 0.75f;//first 75% of the animation, dont allow the second attack
         while (timer > 0)
@@ -511,13 +512,14 @@ public class CharController : MonoBehaviour
         if (swinging)
         {
             yield return new WaitForSeconds(secondAnimationLength);
+            print("part4");
         }
 
         hasSwung = false;
         if (!swinging)
         {
             playerAnimatorComponent.SetBool("SwordAttackPart2", hasSwung);
-            print("part4");
+            print("part5");
         }
 
         swingCoroutine = null;
