@@ -5,7 +5,7 @@ ModelImporter:
   internalIDToNameTable:
   - first:
       74: 2152011252098046502
-    second: AttackSword1
+    second: SwordAttackAnim1
   externalObjects: {}
   materials:
     materialImportMode: 1
@@ -35,7 +35,7 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: AttackSword1
+      name: SwordAttackAnim1
       takeName: Main_char_attack_sword_01_test_001
       internalID: 0
       firstFrame: 1

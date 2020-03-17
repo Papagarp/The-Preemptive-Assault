@@ -460,18 +460,19 @@ public class CharController : MonoBehaviour
 
     IEnumerator AttackCombo()
     {
-        playerAnimatorComponent.SetTrigger("SwordAttack1");
+        playerAnimatorComponent.SetTrigger("SwordAttackPart1");
+        print("part1");
 
         float firstAnimationLength = -1;
         float secondAnimationLength = -1;
 
         foreach (AnimationClip clip in playerAnimatorComponent.runtimeAnimatorController.animationClips)
         {
-            if (clip.name == "AttackSword1")
+            if (clip.name == "SwordAttackAnim1")
             {
                 firstAnimationLength = clip.length;
             }
-            if (clip.name == "AttackSword2")
+            if (clip.name == "SwordAttackAnim2")
             {
                 secondAnimationLength = clip.length;
             }
@@ -482,8 +483,8 @@ public class CharController : MonoBehaviour
         while (timer > 0)
         {
             hasSwung = false;
-            playerAnimatorComponent.SetBool("SwordAttack2", hasSwung);
-
+            playerAnimatorComponent.SetBool("SwordAttackPart2", hasSwung);
+            print("part2");
             timer -= Time.deltaTime;
             yield return new WaitForEndOfFrame();
         }
@@ -498,7 +499,8 @@ public class CharController : MonoBehaviour
             {
                 //wait for the second animation to end
                 swinging = true;
-                playerAnimatorComponent.SetBool("SwordAttack2", hasSwung);
+                playerAnimatorComponent.SetBool("SwordAttackPart2", hasSwung);
+                print("part3");
             }
 
             hitWindow -= Time.deltaTime;
@@ -514,7 +516,8 @@ public class CharController : MonoBehaviour
         hasSwung = false;
         if (!swinging)
         {
-            playerAnimatorComponent.SetBool("SwordAttack2", hasSwung);
+            playerAnimatorComponent.SetBool("SwordAttackPart2", hasSwung);
+            print("part4");
         }
 
         swingCoroutine = null;
