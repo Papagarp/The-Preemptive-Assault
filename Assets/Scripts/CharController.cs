@@ -19,8 +19,9 @@ public class CharController : MonoBehaviour
     MagicBolt magicBoltScript;
     ControllerInput controls;
     CharacterController controller;
-
-    PlayerAnimator playerAnimator;
+    Animator playerAnimatorComponent;
+    Coroutine swingCoroutine;
+    Coroutine jumpCoroutine;
 
     public StanceState currentStanceState;
 
@@ -49,6 +50,7 @@ public class CharController : MonoBehaviour
     float groundDistance = 0.1f;
     float xRotation = 0f;
     public bool hasJumped;
+    bool hasSwung;
     bool isAimming;
     public bool isGrounded;
     public int stateNo;
@@ -94,6 +96,8 @@ public class CharController : MonoBehaviour
 
     private void Awake()
     {
+        playerAnimatorComponent = GetComponentInChildren<Animator>();
+
         controls = new ControllerInput();
 
         controls.Gameplay.Move.performed += context => controllerInputLeftStick = context.ReadValue<Vector2>();
@@ -122,7 +126,6 @@ public class CharController : MonoBehaviour
     private void Start()
     {
         controller = GetComponent<CharacterController>();
-        playerAnimator = GetComponent<PlayerAnimator>();
         magicBoltScript = magicBolt.GetComponent<MagicBolt>();
         
         stateNo = 1;
@@ -130,9 +133,9 @@ public class CharController : MonoBehaviour
 
     private void Update()
     {
-        
-
         #region State Switching
+
+        playerAnimatorComponent.SetInteger("Current State", (int)currentStanceState);
 
         #region StateNo If statements
         //TODO: rewrite this to be like 10 lines (maybe use a method?)
@@ -220,8 +223,8 @@ public class CharController : MonoBehaviour
         }
 
         #endregion
-
-        #region Model Rotation
+        
+        #region Model Rotation and Movement Animation
 
         if (lastPosition != gameObject.transform.position && !hooked && !holding)
         {
@@ -235,6 +238,11 @@ public class CharController : MonoBehaviour
 
                 model.transform.rotation = Quaternion.LookRotation(movement);
             }
+            playerAnimatorComponent.SetBool("Moving", true);
+        }
+        else
+        {
+            playerAnimatorComponent.SetBool("Moving", false);
         }
 
         lastPosition = gameObject.transform.position;
@@ -249,9 +257,9 @@ public class CharController : MonoBehaviour
 
         if (hasJumped && isGrounded && !holding)
         {
-            StartCoroutine("Jump");
+            Jump();
         }
-
+        
         if (!hooked)
         {
             if (!isGrounded)
@@ -265,7 +273,6 @@ public class CharController : MonoBehaviour
 
             controller.Move(velocity * Time.deltaTime);
         }
-
 
         #endregion
 
@@ -350,7 +357,7 @@ public class CharController : MonoBehaviour
             {
                 sword.GetComponent<Sword>().spinAttack = false;
 
-                playerAnimator.Swing();
+                Swing();
             }
             else if (currentStanceState == StanceState.DEFENCE)
             {
@@ -408,10 +415,110 @@ public class CharController : MonoBehaviour
         //TODO: Z-locking from dark souls
     }
 
-    IEnumerator Jump()
+    public void Jump()
     {
-        yield return new WaitForSeconds(1f);
+        if (jumpCoroutine == null)
+        {
+            jumpCoroutine = StartCoroutine(JumpAnimation());
+        }
+    }
+
+    IEnumerator JumpAnimation()
+    {
+        playerAnimatorComponent.SetTrigger("Jumping");
+
+        float jumpAnimationLength = -1;
+
+        foreach (AnimationClip clip in playerAnimatorComponent.runtimeAnimatorController.animationClips)
+        {
+            if (clip.name == "Main_char_jump_test_001")
+            {
+                jumpAnimationLength = clip.length;
+            }
+        }
+
+        while (jumpAnimationLength > 0)
+        {
+            jumpAnimationLength -= Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
         velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+        jumpCoroutine = null;
+    }
+
+    public void Swing()
+    {
+        isAttacking = true;
+        hasSwung = true;
+
+        //start the attack combo
+        if (swingCoroutine == null)
+        {
+            swingCoroutine = StartCoroutine(AttackCombo());
+        }
+    }
+
+    IEnumerator AttackCombo()
+    {
+        playerAnimatorComponent.SetTrigger("SwordAttack1");
+
+        float firstAnimationLength = -1;
+        float secondAnimationLength = -1;
+
+        foreach (AnimationClip clip in playerAnimatorComponent.runtimeAnimatorController.animationClips)
+        {
+            if (clip.name == "AttackSword1")
+            {
+                firstAnimationLength = clip.length;
+            }
+            if (clip.name == "AttackSword2")
+            {
+                secondAnimationLength = clip.length;
+            }
+        }
+
+        //prevent a second attack
+        float timer = firstAnimationLength * 0.75f;//first 75% of the animation, dont allow the second attack
+        while (timer > 0)
+        {
+            hasSwung = false;
+            playerAnimatorComponent.SetBool("SwordAttack2", hasSwung);
+
+            timer -= Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+
+        //small window for second attack check
+        bool swinging = false;
+        float hitWindow = firstAnimationLength * 0.25f;//25% of the end of the animation
+        while (hitWindow > 0)
+        {
+            //if we've pressed the attack button during the window swing into the second attack
+            if (hasSwung)
+            {
+                //wait for the second animation to end
+                swinging = true;
+                playerAnimatorComponent.SetBool("SwordAttack2", hasSwung);
+            }
+
+            hitWindow -= Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+
+        //wait longer for the second animation if true
+        if (swinging)
+        {
+            yield return new WaitForSeconds(secondAnimationLength);
+        }
+
+        hasSwung = false;
+        if (!swinging)
+        {
+            playerAnimatorComponent.SetBool("SwordAttack2", hasSwung);
+        }
+
+        swingCoroutine = null;
+        isAttacking = false;
     }
 
     IEnumerator Climb()
@@ -422,11 +529,15 @@ public class CharController : MonoBehaviour
 
     void SwitchStateUp()
     {
+        //currentStanceState++;
+
         stateNo++;
     }
 
     void SwitchStateDown()
     {
+        //currentStanceState--;
+
         stateNo--;
     }
 
