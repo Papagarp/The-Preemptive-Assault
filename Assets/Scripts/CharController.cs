@@ -89,6 +89,11 @@ public class CharController : MonoBehaviour
     public GameObject stunRangeObject;
     public bool canStun;
 
+    [Header("Lock On Function")]
+    public bool locked = false;
+    public GameObject[] enemyLocations;
+    public GameObject closestEnemy;
+
     [Header("Don't Assign")]
     public GameObject hookedObject;
 
@@ -342,7 +347,16 @@ public class CharController : MonoBehaviour
 
         #region Shield Stun
 
-        
+
+
+        #endregion
+
+        #region Lock On
+
+        if (closestEnemy != null && locked)
+        {
+            //TODO: Lock on Ui element turn on
+        }
 
         #endregion
     }
@@ -408,10 +422,38 @@ public class CharController : MonoBehaviour
         hooked = false;
     }
 
+    IEnumerator Climb()
+    {
+        yield return new WaitForSeconds(0.1f);
+        ReturnHook();
+    }
+
     void LockOn()
     {
-        //TODO: Z-locking from dark souls
+        //FindClosestEnemy(enemyLocations);
+        locked = !locked;
     }
+
+    /*public void FindClosestEnemy(GameObject[] go)
+    {
+        enemyLocations = GameObject.FindGameObjectsWithTag("Enemy");
+        float distance = Mathf.Infinity;
+        Vector3 position = transform.position;
+
+        for(enemyLocations)
+        {
+            Vector3 diff = closestEnemy.transform.position - position;
+            float currentDistance = diff.sqrMagnitude;
+
+            if (currentDistance <= distance)
+            {
+                closestEnemy = go;
+                distance = currentDistance;
+            }
+
+        }
+        return closestEnemy;
+    }*/
 
     public void Jump()
     {
@@ -524,12 +566,6 @@ public class CharController : MonoBehaviour
 
         swingCoroutine = null;
         isAttacking = false;
-    }
-
-    IEnumerator Climb()
-    {
-        yield return new WaitForSeconds(0.1f);
-        ReturnHook();
     }
 
     void SwitchStateUp()
