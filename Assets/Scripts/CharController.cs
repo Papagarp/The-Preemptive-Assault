@@ -278,6 +278,11 @@ public class CharController : MonoBehaviour
             velocity.y += gravity * Time.deltaTime;
 
             controller.Move(velocity * Time.deltaTime);
+
+            if(velocity.y < 0 && !isGrounded)
+            {
+                print("falling");
+            }
         }
 
         #endregion
