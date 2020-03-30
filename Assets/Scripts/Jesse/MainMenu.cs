@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 public class MainMenu : MonoBehaviour
 {
     public Animator mainMenu;
+    public Animator sideHo;
 
     public void Start()
     {
@@ -31,6 +32,8 @@ public class MainMenu : MonoBehaviour
         yield return new WaitForSeconds(2);
 
         mainMenu.SetTrigger("Option Gone");
+
+        sideHo.SetTrigger("Conclude");
 
         yield return new WaitForSeconds(3);
 
