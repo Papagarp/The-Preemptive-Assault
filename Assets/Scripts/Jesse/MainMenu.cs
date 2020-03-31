@@ -7,7 +7,7 @@ public class MainMenu : MonoBehaviour
 {
     public Animator mainMenu;
     public Animator sideHo;
-
+    public GameObject blocker;
     public void Start()
     {
         StartCoroutine(GamerIntro());
@@ -15,6 +15,11 @@ public class MainMenu : MonoBehaviour
 
     public IEnumerator GamerIntro()
     {
+        mainMenu.SetTrigger("Begin");
+
+        sideHo.SetTrigger("Begin");
+
+        blocker.SetActive(false);
         yield return new WaitForSeconds(2);
 
         mainMenu.SetTrigger("Title Done");
@@ -34,6 +39,8 @@ public class MainMenu : MonoBehaviour
         mainMenu.SetTrigger("Option Gone");
 
         sideHo.SetTrigger("Conclude");
+
+        blocker.SetActive(true);
 
         yield return new WaitForSeconds(3);
 
