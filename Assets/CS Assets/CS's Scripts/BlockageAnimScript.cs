@@ -7,25 +7,44 @@ public class BlockageAnimScript : MonoBehaviour
 
     public Animator anim;
 
-    void Start()
+    private void Start()
     {
-        anim.SetBool("BlockOn", false);
-        anim.SetBool("MoveBlockage", false);
-        anim.SetBool("ResetBlockage", false); 
+        anim.SetBool("OpenBlockage", false);
     }
 
     public void weightOn()
     {
-        anim.SetBool("MoveBlockage", true);
-        anim.SetBool("ResetBlockage", false);
-        anim.SetBool("BlockOn", true);
+        anim.SetBool("OpenBlockage", true);
     }
 
     public void weightOff()
     {
-        anim.SetBool("MoveBlockage", false);
-        anim.SetBool("ResetBlockage", true);
-        anim.SetBool("BlockOn", false);
+        anim.SetBool("OpenBlockage", false);
     }
+
+
+
+    //Old Animations Script
+
+    //void Start()
+    //{
+    //    anim.SetBool("BlockOn", false);
+    //    anim.SetBool("MoveBlockage", false);
+    //    anim.SetBool("ResetBlockage", false); 
+    //}
+
+    //public void weightOn()
+    //{
+    //    anim.SetBool("MoveBlockage", true);
+    //    anim.SetBool("ResetBlockage", false);
+    //    anim.SetBool("BlockOn", true);
+    //}
+
+    //public void weightOff()
+    //{
+    //    anim.SetBool("MoveBlockage", false);
+    //    anim.SetBool("ResetBlockage", true);
+    //    anim.SetBool("BlockOn", false);
+    //}
 
 }
