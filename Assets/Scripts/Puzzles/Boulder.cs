@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Boulder : MonoBehaviour
 {
+    //TODO: Update the Navmesh when moving the boulder
+
     CharController characterScript;
 
     GameObject player;

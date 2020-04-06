@@ -25,7 +25,6 @@ public class AiController : MonoBehaviour
     public GameObject crossbow;
     public GameObject crossbowBolt;
     
-
     [Header("Is this a patrolling Ai")]
     public bool patrollingAI;
 
@@ -39,6 +38,7 @@ public class AiController : MonoBehaviour
 
     [Header("Searching for player")]
     GameObject player;
+    CharController playerScript;
     public bool foundPlayer;
     public bool foundPlayerCheck;
     public float distanceToPlayer;
@@ -55,7 +55,7 @@ public class AiController : MonoBehaviour
 
     [Header("other")]
     public bool stagger;
-    public bool stunned;
+    public float stunRange = 10.0f;
 
     public float meleeRange = 5.0f;
     public float reloadTime = 3.0f;
@@ -71,7 +71,7 @@ public class AiController : MonoBehaviour
     {
         nav = GetComponent<NavMeshAgent>();
         animator = GetComponent<AiAnimator>();
-
+        playerScript = player.GetComponent<CharController>();
         boltScript = crossbowBolt.GetComponent<Bolt>();
 
         if (!patrollingAI)
@@ -85,6 +85,7 @@ public class AiController : MonoBehaviour
     {
         #region state switching
 
+        //TODO: Clean up state machine of useless code
         switch (currentAIState)
         {
             case (aiState.MELEE):
@@ -110,16 +111,9 @@ public class AiController : MonoBehaviour
 
         #region Stun Function
 
-        if (stunned)
+        if (distanceToPlayer < stunRange && playerScript.stunned)
         {
             nav.speed = 0.0f;
-
-            /*stunnedTime -= Time.deltaTime;
-
-            if (stunnedTime <= 0)
-            {
-                stunned = false;
-            }*/
         }
 
         #endregion
@@ -262,6 +256,7 @@ public class AiController : MonoBehaviour
 
     void MeleeAttack()
     {
+        //TODO: Combine and clean up the animation code with this script
         animator.Swing();
     }
 }

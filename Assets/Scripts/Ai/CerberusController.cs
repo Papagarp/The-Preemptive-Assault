@@ -5,54 +5,21 @@ using UnityEngine.AI;
 
 public class CerberusController : MonoBehaviour
 {
-    public enum cerberusState
-    {
-        WAITING,
-        MELEE,
-        RANGED
-    }
+    GameObject player;
 
-    public cerberusState currentCerberusState;
+    Vector3 playerLocation;
 
-    public GameObject player;
-
-    public bool foundPlayer;
-
-    public float distanceToPlayer;
-    public float meleeRange;
-    public float firingMovementSpeed = 3.0f;
-    public float attackMovementSpeed = 10.0f;
-    public float reloadTime = 3.0f;
-
-    NavMeshAgent nav;
+    float distanceToPlayer;
 
     private void Start()
     {
-        nav = GetComponent<NavMeshAgent>();
+        player = GameObject.FindGameObjectWithTag("Player");
     }
 
     private void Update()
     {
-        //state Switching
+        playerLocation = player.transform.position;
 
-        switch (currentCerberusState)
-        {
-            case (cerberusState.MELEE):
-                nav.speed = attackMovementSpeed;
-                break;
-
-            case (cerberusState.RANGED):
-                nav.speed = firingMovementSpeed;
-                break;
-
-            case (cerberusState.WAITING):
-                break;
-        }
-
-        if (foundPlayer)
-        {
-            Debug.Log("foundplayer");
-        }
+        distanceToPlayer = Vector3.Distance(new Vector3(transform.position.x, 0, transform.position.z), new Vector3(playerLocation.x, 0, playerLocation.z));
     }
 }
-

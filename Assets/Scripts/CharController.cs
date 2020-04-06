@@ -86,8 +86,8 @@ public class CharController : MonoBehaviour
     public bool holding;
 
     [Header("Stun Function")]
-    public GameObject stunRangeObject;
-    public bool canStun;
+    public bool stunned;
+    public float stunnedTime = 3.0f;
 
     [Header("Lock On Function")]
     public bool locked = false;
@@ -144,7 +144,7 @@ public class CharController : MonoBehaviour
 
         #region StateNo If statements
 ;
-        //TODO: rewrite this to be like 10 lines (maybe use a method?)
+        //TODO: rewrite state switching to be like 10 lines (maybe use a method?)
         if (stateNo == 4)
         {
             stateNo = 1;
@@ -281,7 +281,7 @@ public class CharController : MonoBehaviour
 
             if(velocity.y < 0 && !isGrounded)
             {
-                print("falling");
+                //TODO: Falling animation
             }
         }
 
@@ -309,6 +309,7 @@ public class CharController : MonoBehaviour
 
         #region Hook Function
 
+        //TODO: Finish the polish on the hook including the prefabs
         if (hookFired && !hooked)
         {
             hookHolder.transform.parent = null;
@@ -352,7 +353,16 @@ public class CharController : MonoBehaviour
 
         #region Shield Stun
 
+        if (stunned)
+        {
+            stunnedTime -= Time.deltaTime;
 
+            if (stunnedTime <= 0)
+            {
+                stunned = false;
+                stunnedTime = 3.0f;
+            }
+        }
 
         #endregion
 
@@ -399,9 +409,9 @@ public class CharController : MonoBehaviour
                 sword.GetComponent<Sword>().spinAttack = true;
                 //play spin animation
             }
-            else if (currentStanceState == StanceState.DEFENCE && canStun)
+            else if (currentStanceState == StanceState.DEFENCE && !stunned)
             {
-                stunRangeObject.GetComponent<Shield>().stunAttack = true;
+                stunned = true;
             }
             else if (currentStanceState == StanceState.UTILITY && !holding)
             {
