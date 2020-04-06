@@ -47,4 +47,26 @@ public class MainMenu : MonoBehaviour
         SceneManager.LoadScene("JesseTest");
     }
 
+    public IEnumerator ByeByeStinky ()
+    {
+        mainMenu.SetTrigger("Choice Made");
+
+        yield return new WaitForSeconds(2);
+
+        mainMenu.SetTrigger("Option Gone");
+
+        sideHo.SetTrigger("Conclude");
+
+        blocker.SetActive(true);
+
+        yield return new WaitForSeconds(3);
+
+        Application.Quit();
+    }
+
+    public void QuitTime()
+    {
+        StartCoroutine(ByeByeStinky());
+    }
+
 }
