@@ -3,49 +3,75 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
+public enum aiDogState
+{
+    PATROL,
+    SEARCH,
+    ATTACK
+}
+
+//TODO: This entire script needs to be updated
+
 public class AiDogController : MonoBehaviour
 {
-    public enum aiDogState
-    {
-        PATROL,
-        SEARCH,
-        ATTACK
-    }
+    #region Var
 
+    //enum
     public aiDogState currentAiDogState;
 
-    GameObject player;
-    public GameObject[] patrolPoints;
+    //animation
+    Animator aiDogAnimatorComponent;
 
+    //player
+    GameObject player;
+    CharController playerScript;
+    public float distanceToPlayer;
+    public float distanceToLastKnown;
     public bool foundPlayer;
     public bool foundPlayerCheck;
+    public Vector3 lastKnownPosition;
 
-    public float distanceToPlayer;
+    //nav mesh
+
+    [Header("Is this a Patrolling Dog?")]
+    public bool patrollingAiDog;
+
+    //starting point
+    Vector3 startAiDogPoint;
+    Quaternion startAiDogRotation;
+
+    public GameObject[] patrolPoints;
+    NavMeshAgent nav;
     public float distanceToPoint;
-    public float distanceToLastKnown;
     public float patrollingMovementSpeed = 3.0f;
     public float attackingMovementSpeed = 15.0f;
     public float searchTime = 5.0f;
+    int currentPoint = 0;
 
-    int i = 0;
-
-    public Vector3 lastKnownPosition;
-
-    public NavMeshAgent nav;
+    #endregion
 
     private void Awake()
     {
         player = GameObject.FindGameObjectWithTag("Player");
+        playerScript = player.GetComponent<CharController>();
+
+        aiDogAnimatorComponent = GetComponentInChildren<Animator>();
+        
+        nav = GetComponent<NavMeshAgent>();
     }
 
     private void Start()
     {
-        nav = GetComponent<NavMeshAgent>();
+        if (!patrollingAiDog)
+        {
+            startAiDogPoint = gameObject.transform.position;
+            startAiDogRotation = gameObject.transform.rotation;
+        }
     }
 
     private void Update()
     {
-        //state switching
+        #region state switching
 
         switch (currentAiDogState)
         {
@@ -62,9 +88,15 @@ public class AiDogController : MonoBehaviour
                 break;
         }
 
-        //------------------------------------------------------------------------------------------------------------------------------------
+        #endregion
 
-        //Patrol and Search Function
+        #region Animation
+
+        aiDogAnimatorComponent.SetBool("Moving", nav.remainingDistance > 1 ? true : false);
+
+        #endregion
+
+        #region Patrol and Search Function
 
         if (!foundPlayer)
         {
@@ -98,27 +130,27 @@ public class AiDogController : MonoBehaviour
 
             if(currentAiDogState == aiDogState.PATROL)
             {
-                nav.SetDestination(patrolPoints[i].transform.position);
+                nav.SetDestination(patrolPoints[currentPoint].transform.position);
 
                 distanceToPoint = Vector3.Distance(new Vector3(transform.position.x, 0, transform.position.z),
-                    new Vector3(patrolPoints[i].transform.position.x, 0, patrolPoints[i].transform.position.z));
+                    new Vector3(patrolPoints[currentPoint].transform.position.x, 0, patrolPoints[currentPoint].transform.position.z));
 
-                if (i == (patrolPoints.Length - 1) && distanceToPoint <= 0.1f)
+                if (currentPoint == (patrolPoints.Length - 1) && distanceToPoint <= 0.1f)
                 {
-                    i = 0;
-                    nav.SetDestination(patrolPoints[i].transform.position);
+                    currentPoint = 0;
+                    nav.SetDestination(patrolPoints[currentPoint].transform.position);
                 }
                 else if (distanceToPoint <= 0.1f)
                 {
-                    i++;
-                    nav.SetDestination(patrolPoints[i].transform.position);
+                    currentPoint++;
+                    nav.SetDestination(patrolPoints[currentPoint].transform.position);
                 }
             }
         }
 
-        //------------------------------------------------------------------------------------------------------------------------------------
+        #endregion
 
-        //Attacking the player
+        #region Attacking the player
 
         if (foundPlayer)
         {
@@ -143,7 +175,7 @@ public class AiDogController : MonoBehaviour
             }
         }
 
-        //------------------------------------------------------------------------------------------------------------------------------------
+        #endregion
     }
 
     void BiteAttack()

@@ -41,7 +41,9 @@ public class CharController : MonoBehaviour
     public LayerMask groundMask;
     public LayerMask grabbableMask;
 
-    [Header("Player Movement")]
+    [Header("Player")]
+    public float maxHealth;
+    public float currentHealth;
     public float currentSpeed;
     public float movementSpeed;
     public float controllerSensitivity = 50.0f;
@@ -374,6 +376,11 @@ public class CharController : MonoBehaviour
         }
 
         #endregion
+    }
+
+    public void TakeDmg(float dmg)
+    {
+        currentHealth = currentHealth - dmg;
     }
 
     void Attack()

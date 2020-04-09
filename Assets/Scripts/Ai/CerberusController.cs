@@ -11,6 +11,10 @@ public class CerberusController : MonoBehaviour
 
     float distanceToPlayer;
 
+    float normalBiteDmg = 25.0f;
+    float tripleHeadBiteDmg = 50.0f;
+    float fireEyeBeamDmg = 10.0f;
+
     private void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player");

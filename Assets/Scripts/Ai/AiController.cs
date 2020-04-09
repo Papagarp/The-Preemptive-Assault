@@ -13,9 +13,16 @@ public enum aiState
 
 public class AiController : MonoBehaviour
 {
+    #region Var
+    
+    //nav mesh agent
     public NavMeshAgent nav;
-    AiAnimator animator;
 
+    //animation
+    Animator aiAnimatorComponent;
+    Coroutine swingCoroutine;
+    bool hasSwung;
+    
     public aiState currentAIState;
 
     [Header("Assign Script")]
@@ -30,11 +37,11 @@ public class AiController : MonoBehaviour
 
     [Header("Assign Patrol Points")]
     public GameObject[] patrolPoints;
-    int i = 0;
+    int currentPoint = 0;
 
-    [Header("Start Point")]
-    public Vector3 startAiPoint;
-    public Quaternion startAiRotation;
+    //starting point
+    Vector3 startAiPoint;
+    Quaternion startAiRotation;
 
     [Header("Searching for player")]
     GameObject player;
@@ -62,18 +69,20 @@ public class AiController : MonoBehaviour
     public float staggerTime = 3.0f;
     public float stunnedTime = 0.0f;
 
+    #endregion
+
     private void Awake()
     {
         player = GameObject.FindGameObjectWithTag("Player");
+        aiAnimatorComponent = GetComponentInChildren<Animator>();
+        nav = GetComponent<NavMeshAgent>();
+        playerScript = player.GetComponent<CharController>();
+        boltScript = crossbowBolt.GetComponent<Bolt>();
     }
 
     private void Start()
     {
-        nav = GetComponent<NavMeshAgent>();
-        animator = GetComponent<AiAnimator>();
-        playerScript = player.GetComponent<CharController>();
-        boltScript = crossbowBolt.GetComponent<Bolt>();
-
+        //setting the guard's station point
         if (!patrollingAI)
         {
             startAiPoint = gameObject.transform.position;
@@ -106,6 +115,12 @@ public class AiController : MonoBehaviour
                 nav.speed = patrollingMovementSpeed;
                 break;
         }
+
+        #endregion
+
+        #region Animation
+
+        aiAnimatorComponent.SetBool("Moving", nav.remainingDistance > 1 ? true : false);
 
         #endregion
 
@@ -175,21 +190,21 @@ public class AiController : MonoBehaviour
                 //is this Ai meant to patrol??
                 if (patrollingAI)
                 {
-                    nav.SetDestination(patrolPoints[i].transform.position);
+                    nav.SetDestination(patrolPoints[currentPoint].transform.position);
 
                     distanceToPoint = Vector3.Distance(new Vector3(transform.position.x, 0, transform.position.z),
-                    new Vector3(patrolPoints[i].transform.position.x, 0, patrolPoints[i].transform.position.z));
+                    new Vector3(patrolPoints[currentPoint].transform.position.x, 0, patrolPoints[currentPoint].transform.position.z));
 
                     //move between patrol points
-                    if (i == (patrolPoints.Length - 1) && distanceToPoint <= 0.1f)
+                    if (currentPoint == (patrolPoints.Length - 1) && distanceToPoint <= 0.1f)
                     {
-                        i = 0;
-                        nav.SetDestination(patrolPoints[i].transform.position);
+                        currentPoint = 0;
+                        nav.SetDestination(patrolPoints[currentPoint].transform.position);
                     }
                     else if (distanceToPoint <= 0.1f)
                     {
-                        i++;
-                        nav.SetDestination(patrolPoints[i].transform.position);
+                        currentPoint++;
+                        nav.SetDestination(patrolPoints[currentPoint].transform.position);
                     }
                 }
                 //if not a patrolling ai then its a guarding ai
@@ -256,7 +271,59 @@ public class AiController : MonoBehaviour
 
     void MeleeAttack()
     {
-        //TODO: Combine and clean up the animation code with this script
-        animator.Swing();
+        if (swingCoroutine == null)
+        {
+            swingCoroutine = StartCoroutine(AttackCombo());
+        }
+    }
+
+    IEnumerator AttackCombo()
+    {
+        print("BeginAttack");
+        aiAnimatorComponent.SetTrigger("Claw1");
+
+        float clipLength = -1;
+        float clip2Length = -1;
+        foreach (AnimationClip c in aiAnimatorComponent.runtimeAnimatorController.animationClips)
+        {
+            if (c.name == "Claw1")
+            {
+                clipLength = c.length;
+            }
+            if (c.name == "Claw2")
+            {
+                clip2Length = c.length;
+            }
+        }
+
+        //wait for first animation to end
+        yield return new WaitForSeconds(clipLength);
+
+        //check if still in range of player to perform second attack
+
+
+
+        //bool swinging = false;
+        //float hitWindow = clipLength * 0.25f;
+        //while (hitWindow > 0)
+        //{
+        //    if (hasSwung)
+        //    {
+        //        swinging = true;
+        //        print("swing");
+        //        aiAnimatorComponent.SetBool("SecondAttack", hasSwung);
+        //    }
+
+        //    hitWindow -= Time.deltaTime;
+        //    yield return new WaitForEndOfFrame();
+        //}
+
+        //wait longer if true
+        //if (swinging)
+        //{
+        //    yield return new WaitForSeconds(clip2Length);
+        //}
+
+        swingCoroutine = null;
     }
 }
