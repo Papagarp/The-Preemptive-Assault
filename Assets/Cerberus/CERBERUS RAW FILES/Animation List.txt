@@ -1,0 +1,25 @@
+Animation List: 
+
+IdleLookAround: 5-305
+IdleBreathe: 310-370
+Walk: 375-405
+Run: 415-439
+RunBite: 445-469
+Bite: 475-510
+JumpBite: 515-545
+IdleAggressive: 550-610
+BiteAggressive: 615-650
+JumpBiteAggressive: 655-685
+SpreadFireAggressive: 690-775
+Walk_RM: 785-815
+Run_RM: 825-849
+RunBite_RM: 860-884
+JumpBite_RM: 895-925
+JumpBiteAggressive_RM: 935-965
+GetHit: 975-1005
+GetHitAggressive: 1010-1040
+Death: 1045-1115
+DeathAggressive: 1120-1195
+
+
+
