@@ -5,6 +5,7 @@ using UnityEngine;
 public class Checkpoint : MonoBehaviour
 {
     private GameMaster gm;
+    
 
     void Start()
     {
@@ -18,6 +19,9 @@ public class Checkpoint : MonoBehaviour
             gm.lastCheckPoint = transform.position;
             Debug.Log("epep");
         }
-   
+        
+       
     }
+
+    
 }
