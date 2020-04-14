@@ -7,8 +7,8 @@ public class OpenBossGate : MonoBehaviour
 
     public GameObject BossGate;
     
-    [SerializeField]
-    int currentLocks;
+    //[SerializeField]
+    public int currentLocks;
     int maxLocks = 3;
     int key = 1;
 
@@ -19,6 +19,7 @@ public class OpenBossGate : MonoBehaviour
 
     public void Unlock()
     {
+        Debug.Log("Unlocks works");
         currentLocks -= key;
         Debug.Log("currentLocks = " + currentLocks);
 
@@ -27,9 +28,9 @@ public class OpenBossGate : MonoBehaviour
             Debug.Log("currentLocks Destroyed");
             Destroy(BossGate);
         }
-        else
-        {
-            return;
-        }
+        //else
+        //{
+        //    return;
+        //}
     }
 }

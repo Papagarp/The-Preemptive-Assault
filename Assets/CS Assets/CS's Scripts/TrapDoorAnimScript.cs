@@ -14,7 +14,7 @@ public class TrapDoorAnimScript : MonoBehaviour
         anim.SetBool("OpenTD", false);
     }
 
-    public void swapLever()
+    public void SwapLever()
     {
         if (!TDOpen)
         {

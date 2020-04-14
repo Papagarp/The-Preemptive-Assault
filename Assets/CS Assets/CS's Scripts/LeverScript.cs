@@ -18,7 +18,7 @@ public class LeverScript : MonoBehaviour
     {
         if (other.gameObject.tag == "Player")
         {
-            animationController.swapLever();
+            animationController.SwapLever();
             Debug.Log("player Triggered lever");
         }
     }
