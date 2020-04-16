@@ -28,9 +28,5 @@ public class OpenBossGate : MonoBehaviour
             Debug.Log("currentLocks Destroyed");
             Destroy(BossGate);
         }
-        //else
-        //{
-        //    return;
-        //}
     }
 }
