@@ -3,24 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public enum aiDogState
+public enum dogState
 {
     PATROL,
     SEARCH,
     ATTACK
 }
 
-//TODO: This entire script needs to be updated
-
-public class AiDogController : MonoBehaviour
+public class DogController : MonoBehaviour
 {
     #region Var
 
     //enum
-    public aiDogState currentAiDogState;
+    public dogState currentDogState;
 
     //animation
-    Animator aiDogAnimatorComponent;
+    Animator DogAnimatorComponent;
 
     //player
     GameObject player;
@@ -31,23 +29,24 @@ public class AiDogController : MonoBehaviour
     public bool foundPlayerCheck;
     public Vector3 lastKnownPosition;
 
-    //nav mesh
-
-    [Header("Is this a Patrolling Dog?")]
+    //patrol or guard?
     public bool patrollingAiDog;
+    public GameObject[] patrolPoints;
+    int currentPoint = 0;
 
     //starting point
     Vector3 startAiDogPoint;
     Quaternion startAiDogRotation;
 
-    public GameObject[] patrolPoints;
+    //nav mesh
     NavMeshAgent nav;
     public float distanceToPoint;
+
+    //other stats
     public float patrollingMovementSpeed = 3.0f;
     public float attackingMovementSpeed = 15.0f;
     public float searchTime = 5.0f;
-    int currentPoint = 0;
-
+    
     #endregion
 
     private void Awake()
@@ -55,8 +54,8 @@ public class AiDogController : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player");
         playerScript = player.GetComponent<CharController>();
 
-        aiDogAnimatorComponent = GetComponentInChildren<Animator>();
-        
+        DogAnimatorComponent = GetComponentInChildren<Animator>();
+
         nav = GetComponent<NavMeshAgent>();
     }
 
@@ -73,17 +72,17 @@ public class AiDogController : MonoBehaviour
     {
         #region state switching
 
-        switch (currentAiDogState)
+        switch (currentDogState)
         {
-            case (aiDogState.ATTACK):
+            case (dogState.ATTACK):
                 nav.speed = attackingMovementSpeed;
                 break;
 
-            case (aiDogState.PATROL):
+            case (dogState.PATROL):
                 nav.speed = patrollingMovementSpeed;
                 break;
 
-            case (aiDogState.SEARCH):
+            case (dogState.SEARCH):
                 nav.speed = attackingMovementSpeed;
                 break;
         }
@@ -92,7 +91,7 @@ public class AiDogController : MonoBehaviour
 
         #region Animation
 
-        aiDogAnimatorComponent.SetBool("Moving", nav.remainingDistance > 1 ? true : false);
+        DogAnimatorComponent.SetBool("Moving", nav.remainingDistance > 1 ? true : false);
 
         #endregion
 
@@ -102,14 +101,14 @@ public class AiDogController : MonoBehaviour
         {
             if (foundPlayerCheck)
             {
-                currentAiDogState = aiDogState.SEARCH;
+                currentDogState = dogState.SEARCH;
             }
             else
             {
-                currentAiDogState = aiDogState.PATROL;
+                currentDogState = dogState.PATROL;
             }
 
-            if(currentAiDogState == aiDogState.SEARCH)
+            if (currentDogState == dogState.SEARCH)
             {
                 nav.SetDestination(lastKnownPosition);
 
@@ -122,13 +121,13 @@ public class AiDogController : MonoBehaviour
 
                     if (searchTime <= 0)
                     {
-                        currentAiDogState = aiDogState.PATROL;
+                        currentDogState = dogState.PATROL;
                         foundPlayerCheck = false;
                     }
                 }
             }
 
-            if(currentAiDogState == aiDogState.PATROL)
+            if (currentDogState == dogState.PATROL)
             {
                 nav.SetDestination(patrolPoints[currentPoint].transform.position);
 
@@ -154,7 +153,7 @@ public class AiDogController : MonoBehaviour
 
         if (foundPlayer)
         {
-            currentAiDogState = aiDogState.ATTACK;
+            currentDogState = dogState.ATTACK;
 
             foundPlayerCheck = true;
             searchTime = 3.0f;
@@ -180,6 +179,11 @@ public class AiDogController : MonoBehaviour
 
     void BiteAttack()
     {
+        //TODO:Bite Attack
+    }
 
+    public void TakeDmg(int damage)
+    {
+        //TODO:Take Damage
     }
 }

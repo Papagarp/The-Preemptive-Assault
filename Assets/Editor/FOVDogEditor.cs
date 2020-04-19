@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-[CustomEditor(typeof(AiDogDetection))]
+[CustomEditor(typeof(DogDetection))]
 public class FOVEDogditor : Editor
 {
     private void OnSceneGUI()
     {
-        AiDogDetection FOV = (AiDogDetection)target;
+        DogDetection FOV = (DogDetection)target;
 
         Handles.color = Color.white;
         Handles.DrawWireArc(FOV.transform.position, Vector3.up, Vector3.forward, 360, FOV.viewRadius);

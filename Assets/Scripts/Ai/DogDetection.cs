@@ -1,12 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
-using UnityEngine.UI;
 
-public class AiDogDetection : MonoBehaviour
+public class DogDetection : MonoBehaviour
 {
-    public AiDogController aiDogControllerScript;
+    DogController DogControllerScript;
 
     public float viewRadius;
     [Range(0, 360)]
@@ -27,7 +25,7 @@ public class AiDogDetection : MonoBehaviour
     {
         StartCoroutine("FindTargetsWithDelay", .2f);
 
-        aiDogControllerScript = GetComponent<AiDogController>();
+        DogControllerScript = GetComponent<DogController>();
     }
 
     void Update()
@@ -36,7 +34,7 @@ public class AiDogDetection : MonoBehaviour
 
         if (distanceToPlayer > viewRadius)
         {
-            aiDogControllerScript.foundPlayer = false;
+            DogControllerScript.foundPlayer = false;
         }
     }
 
@@ -64,11 +62,11 @@ public class AiDogDetection : MonoBehaviour
 
                 if (!Physics.Raycast(transform.position, dirToTarget, disToTarget, obstacleMask))
                 {
-                    aiDogControllerScript.foundPlayer = true;
+                    DogControllerScript.foundPlayer = true;
                 }
                 else if (disToTarget >= viewRadius)
                 {
-                    aiDogControllerScript.foundPlayer = false;
+                    DogControllerScript.foundPlayer = false;
                 }
             }
         }

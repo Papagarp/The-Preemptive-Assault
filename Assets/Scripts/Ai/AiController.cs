@@ -269,6 +269,11 @@ public class AiController : MonoBehaviour
         #endregion
     }
 
+    public void TakeDmg(int damage)
+    {
+        //TODO:Take Damage
+    }
+
     void MeleeAttack()
     {
         if (swingCoroutine == null)

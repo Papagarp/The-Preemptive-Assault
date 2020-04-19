@@ -5,10 +5,14 @@ using UnityEngine.AI;
 
 public class CerberusController : MonoBehaviour
 {
-    //animation
+    #region Var
+
+    //coroutines
     Coroutine normalBiteCo;
     Coroutine tripleBiteCo;
-    Coroutine fireEyeBeamCo;
+    Coroutine FireBallCo;
+
+    //animation
     Animator cerberusAnim;
 
     //nav mesh
@@ -29,8 +33,10 @@ public class CerberusController : MonoBehaviour
     bool isAttacking;
     float attackTimer = 0.1f;
     float normalBiteDmg = 25.0f;
-    float tripleHeadBiteDmg = 50.0f;
-    float fireEyeBeamDmg = 10.0f;
+    float tripleBiteDmg = 50.0f;
+    float FireBallDmg = 10.0f;
+
+    #endregion
 
     private void Awake()
     {
@@ -55,6 +61,9 @@ public class CerberusController : MonoBehaviour
         distanceToPlayer = Vector3.Distance(new Vector3(transform.position.x, 0, transform.position.z), 
                            new Vector3(playerLocation.x, 0, playerLocation.z));
 
+        #region Choose the attack
+        //every few seconds cerberus attacks. the attacks are random
+
         if (distanceToPlayer < roomSize && !isAttacking)
         {
             attackTimer -= Time.deltaTime;
@@ -68,16 +77,23 @@ public class CerberusController : MonoBehaviour
                 }
                 else if (i == 1)
                 {
-                    TripleHeadBite();
+                    TripleBite();
                 }
                 else if (i == 2)
                 {
-                    FireEyeBeam();
+                    FireBall();
                 }
 
                 isAttacking = true;
             }
         }
+
+        #endregion
+    }
+
+    public void TakeDmg(int damage)
+    {
+        //TODO:Take Damage
     }
 
     public void NormalBite()
@@ -106,11 +122,11 @@ public class CerberusController : MonoBehaviour
         }
 
         yield return new WaitForSeconds(clipLength);
-
+        attackTimer = 3.0f;
         isAttacking = false;
     }
 
-    public void TripleHeadBite()
+    public void TripleBite()
     {
         if (distanceToPlayer < 2.0f)
         {
@@ -136,12 +152,37 @@ public class CerberusController : MonoBehaviour
         }
 
         yield return new WaitForSeconds(clipLength);
-
+        attackTimer = 3.0f;
         isAttacking = false;
     }
 
-    public void FireEyeBeam()
+    public void FireBall()
     {
+        if (distanceToPlayer > 10.0f)
+        {
+            if (FireBallCo == null) FireBallCo = StartCoroutine(FireBallAnim());
+        }
+        else
+        {
+            //nav.SetDestination(10 meters away from the player)
+        }
+    }
 
+    IEnumerator FireBallAnim()
+    {
+        cerberusAnim.SetTrigger("");
+
+        float clipLength = -1;
+        foreach (AnimationClip c in cerberusAnim.runtimeAnimatorController.animationClips)
+        {
+            if (c.name == "")
+            {
+                clipLength = c.length;
+            }
+        }
+
+        yield return new WaitForSeconds(clipLength);
+        attackTimer = 3.0f;
+        isAttacking = false;
     }
 }
