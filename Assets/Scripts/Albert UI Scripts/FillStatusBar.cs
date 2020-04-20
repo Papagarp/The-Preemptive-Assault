@@ -21,7 +21,7 @@ public class FillStatusBar : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (slider.value < slider.minValue)
+        if (slider.value <= slider.minValue)
         {
             fillImage.enabled = false;
         }
