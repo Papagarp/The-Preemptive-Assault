@@ -17,7 +17,7 @@ public class CharController : MonoBehaviour
 
     #region Variables
 
-    //JesseAudioManager jesseAudioManager;
+    JesseAudioManager jesseAudioManager;
     MagicBolt magicBoltScript;
     ControllerInput controls;
     CharacterController controller;
@@ -44,8 +44,8 @@ public class CharController : MonoBehaviour
     public LayerMask grabbableMask;
 
     [Header("Player")]
-    //public float stepTimer;
-   // float stepTimerCount;
+    public float stepTimer;
+    float stepTimerCount;
     public float maxHealth;
     public float currentHealth;
     public float currentSpeed;
@@ -141,9 +141,9 @@ public class CharController : MonoBehaviour
         
         stateNo = 1;
 
-       // jesseAudioManager = FindObjectOfType<JesseAudioManager>();
+       jesseAudioManager = FindObjectOfType<JesseAudioManager>();
 
-        //stepTimerCount = stepTimer;
+        stepTimerCount = stepTimer;
     }
 
     private void Update()
@@ -262,19 +262,19 @@ public class CharController : MonoBehaviour
             }
             playerAnimatorComponent.SetBool("Moving", true);
 
-           // if (stepTimer > 0)
-          //  {
-               // stepTimer -= Time.deltaTime;
-           // }
-          //  else {
-                //stepTimer = stepTimerCount;
-                //jesseAudioManager.PlaySound("Stepping");
-           // }
+           if (stepTimerCount > 0)
+           {
+                stepTimerCount -= Time.deltaTime;
+            }
+           else {
+                stepTimerCount = stepTimer;
+                jesseAudioManager.PlaySound("Stepping");
+           }
         }
         else
         {
             playerAnimatorComponent.SetBool("Moving", false);
-            //stepTimer = stepTimerCount;
+            stepTimerCount = stepTimer;
         }
 
         lastPosition = gameObject.transform.position;
@@ -286,7 +286,7 @@ public class CharController : MonoBehaviour
         if (currentHealth >= 0)
         {
             //Might Make a coroutine for death on this one but this works for barebone stuff
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
 
         #endregion
@@ -557,6 +557,7 @@ public class CharController : MonoBehaviour
     IEnumerator AttackCombo()
     {
         playerAnimatorComponent.SetTrigger("SwordAttackPart1");
+        jesseAudioManager.PlaySoundWithDelay("Sword Swing", 0.3f);
         print("part1");
 
         float firstAnimationLength = -1;

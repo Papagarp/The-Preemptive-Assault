@@ -14,6 +14,7 @@ public class JesseAudioManager : MonoBehaviour
 	}
 	
 	public AudioClass[] sources;
+    Coroutine delayedSound;
 
 	public void PlaySound(string Name)
 	{
@@ -39,7 +40,30 @@ public class JesseAudioManager : MonoBehaviour
 		}
 	}
 
-	public void StopSound(string Name)
+    public void PlaySoundWithDelay(string Name, float delay)
+    {
+        if (delayedSound != null)
+        {
+            StopCoroutine(delayedSound);
+            delayedSound = null;
+        }
+        delayedSound = StartCoroutine(DelayedSound(Name, delay));
+    }
+
+    IEnumerator DelayedSound(string Name, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        foreach (AudioClass c in sources)
+        {
+            if (c.name == Name)
+            {
+                c.source.Play();
+            }
+        }
+    }
+
+    public void StopSound(string Name)
 	{
 		foreach(AudioClass c in sources)
 		{
