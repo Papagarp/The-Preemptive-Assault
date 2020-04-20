@@ -1,0 +1,22 @@
+When using the audio manager
+- Add an item to the list on the prefab
+- Assign a name to the type of sound it is
+- Create an empty as a child and add the Audio Source component
+
+To play a main sound
+- If the sound is something that is played and is always heard by the player e.g (gunshots, footsteps)
+- Use the PlaySound function
+
+To play a distant sound
+- If the sound is something that has a drop off e.g when a bullet impacts
+- Use the PlayOneShot function
+
+PlaySound(string Name, AudioClip Clip)
+- this function will play the input audio clip(Clip) at the assigned audio source(Name)
+- if you do not need to change this sound you can also call the overload PlaySound(string Name)
+
+PlayOneShot(Vector3 position, AudioClip clip, float blend)
+- this is very similar to the above function only that it will create an AudioSource that will auto destroy after it is done
+- the blend(float) value will adjust the amount of 3D spacial audio it has. so 1 is completely 3d and 0 is completely 2d
+- 2d = can be heard constantly in ear, 3d = needs to be withing a certain radius to hear.
+- more 3d is useful for enemy footsteps or an explosion as you wont always be able to hear them.
