@@ -8,7 +8,7 @@ public class FillStatusBar : MonoBehaviour
 
     
 {
-    //public PlayerHealth playerHealth;
+    public CharController playerHealth;
     public Image fillImage;
     private Slider slider;
 
@@ -32,8 +32,8 @@ public class FillStatusBar : MonoBehaviour
         }
 
 
-        //float fillValue = playerHealth.currentHealth / playerHealth.maxHealth;
+        float fillValue = playerHealth.currentHealth / playerHealth.maxHealth;
 
-        //slider.value = fillValue;
+        slider.value = fillValue;
     }
 }

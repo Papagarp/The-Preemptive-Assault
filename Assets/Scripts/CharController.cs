@@ -42,8 +42,8 @@ public class CharController : MonoBehaviour
     public LayerMask grabbableMask;
 
     [Header("Player")]
-    public int maxHealth;
-    public int currentHealth;
+    public float maxHealth;
+    public float currentHealth;
     public float currentSpeed;
     public float movementSpeed;
     public float controllerSensitivity = 50.0f;
