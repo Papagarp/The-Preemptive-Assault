@@ -14,23 +14,22 @@ public enum aiState
 public class AiController : MonoBehaviour
 {
     #region Var
-    
+
+    aiState currentAIState;
+
     //nav mesh agent
-    public NavMeshAgent nav;
+    NavMeshAgent nav;
 
     //animation
     Animator aiAnimatorComponent;
     Coroutine swingCoroutine;
-    bool hasSwung;
     
-    public aiState currentAIState;
-
-    [Header("Assign Script")]
-    public Bolt boltScript;
+    //scripts
+    FireBall fireBallScript;
 
     [Header("Assign GameObjects")]
-    public GameObject crossbow;
-    public GameObject crossbowBolt;
+    public GameObject anchorPoint;
+    public GameObject fireBall;
     
     [Header("Is this a patrolling Ai")]
     public bool patrollingAI;
@@ -43,7 +42,7 @@ public class AiController : MonoBehaviour
     Vector3 startAiPoint;
     Quaternion startAiRotation;
 
-    [Header("Searching for player")]
+    //player
     GameObject player;
     CharController playerScript;
     public bool foundPlayer;
@@ -54,11 +53,11 @@ public class AiController : MonoBehaviour
     public float searchTime = 3.0f;
     public Vector3 lastKnownPosition;
 
-    [Header("Speed")]
-    public float patrollingMovementSpeed = 3.0f;
-    public float firingMovementSpeed = 1.0f;
-    public float staggerMovementSpeed = 0.1f;
-    public float attackingMovementSpeed = 10.0f;
+    //speed
+    float patrollingMovementSpeed = 3.0f;
+    float firingMovementSpeed = 0.0f;
+    float staggerMovementSpeed = 0.1f;
+    float attackingMovementSpeed = 8.0f;
 
     [Header("other")]
     public bool stagger;
@@ -74,10 +73,13 @@ public class AiController : MonoBehaviour
     private void Awake()
     {
         player = GameObject.FindGameObjectWithTag("Player");
-        aiAnimatorComponent = GetComponentInChildren<Animator>();
-        nav = GetComponent<NavMeshAgent>();
         playerScript = player.GetComponent<CharController>();
-        boltScript = crossbowBolt.GetComponent<Bolt>();
+
+        aiAnimatorComponent = GetComponentInChildren<Animator>();
+        
+        fireBallScript = GetComponentInChildren<FireBall>();
+
+        nav = GetComponent<NavMeshAgent>();
     }
 
     private void Start()
@@ -94,33 +96,33 @@ public class AiController : MonoBehaviour
     {
         #region state switching
 
-        //TODO: Clean up state machine of useless code
         switch (currentAIState)
         {
             case (aiState.MELEE):
-                crossbow.SetActive(false);
+                anchorPoint.SetActive(false);
+                nav.isStopped = false;
+                nav.SetDestination(player.transform.position);
+                aiAnimatorComponent.SetBool("Moving", true);
                 nav.speed = attackingMovementSpeed;
                 break;
 
             case (aiState.RANGED):
-                crossbow.SetActive(true);
+                anchorPoint.SetActive(true);
+                aiAnimatorComponent.SetBool("Moving", false);
+                nav.isStopped = true;
                 nav.speed = firingMovementSpeed;
                 break;
 
             case (aiState.SEARCH):
                 nav.speed = patrollingMovementSpeed;
+                nav.isStopped = false;
                 break;
 
             case (aiState.PATROL):
                 nav.speed = patrollingMovementSpeed;
+                nav.isStopped = false;
                 break;
         }
-
-        #endregion
-
-        #region Animation
-
-        aiAnimatorComponent.SetBool("Moving", nav.remainingDistance > 1 ? true : false);
 
         #endregion
 
@@ -153,6 +155,15 @@ public class AiController : MonoBehaviour
 
         if (!foundPlayer)
         {
+            if (!fireBallScript.fired)
+            {
+                fireBallScript.ReturnFireBall();
+                fireBall.SetActive(false);
+            }
+
+            //animation
+            aiAnimatorComponent.SetBool("Moving", nav.remainingDistance > 1 ? true : false);
+
             if (foundPlayerCheck)
             {
                 currentAIState = aiState.SEARCH;
@@ -229,16 +240,16 @@ public class AiController : MonoBehaviour
 
         if (foundPlayer)
         {
+            gameObject.transform.eulerAngles = new Vector3(0, Quaternion.LookRotation(player.transform.position - gameObject.transform.position, Vector3.up).eulerAngles.y, 0);
+
             foundPlayerCheck = true;
             searchTime = 3.0f;
 
-            nav.SetDestination(player.transform.position);
-
             lastKnownPosition = player.transform.position;
 
-            distanceToPlayer = Vector3.Distance(new Vector3(transform.position.x, 0, transform.position.z),
-                new Vector3(player.transform.position.x, 0, player.transform.position.z));
+            distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
 
+            //if the player is within melee range, hit the player
             if (distanceToPlayer <= meleeRange)
             {
                 currentAIState = aiState.MELEE;
@@ -251,16 +262,24 @@ public class AiController : MonoBehaviour
                     MeleeAttack();
                 }
             }
+            //if the player is outside melee range, fireball the player
             else if (distanceToPlayer >= meleeRange)
             {
                 currentAIState = aiState.RANGED;
 
-                if (!boltScript.fired)
+                //if the fireball hasnt been fired then fire
+                if (!fireBallScript.fired)
                 {
                     reloadTime -= Time.deltaTime;
                     if (reloadTime < 0)
                     {
-                        boltScript.fired = true;
+                        fireBall.SetActive(true);
+                        fireBallScript.fired = true;
+                    }
+                    else
+                    {
+                        
+                        fireBall.SetActive(false);
                     }
                 }
             }
@@ -284,7 +303,6 @@ public class AiController : MonoBehaviour
 
     IEnumerator AttackCombo()
     {
-        print("BeginAttack");
         aiAnimatorComponent.SetTrigger("Claw1");
 
         float clipLength = -1;
@@ -304,31 +322,15 @@ public class AiController : MonoBehaviour
         //wait for first animation to end
         yield return new WaitForSeconds(clipLength);
 
-        //check if still in range of player to perform second attack
+        //TODO:Claw 2
 
-
-
-        //bool swinging = false;
-        //float hitWindow = clipLength * 0.25f;
-        //while (hitWindow > 0)
-        //{
-        //    if (hasSwung)
-        //    {
-        //        swinging = true;
-        //        print("swing");
-        //        aiAnimatorComponent.SetBool("SecondAttack", hasSwung);
-        //    }
-
-        //    hitWindow -= Time.deltaTime;
-        //    yield return new WaitForEndOfFrame();
-        //}
-
-        //wait longer if true
-        //if (swinging)
-        //{
-        //    yield return new WaitForSeconds(clip2Length);
-        //}
-
-        swingCoroutine = null;
+        if(distanceToPlayer < 1.0f)
+        {
+            print("claw 2");
+        }
+        else
+        {
+            swingCoroutine = null;
+        }
     }
 }

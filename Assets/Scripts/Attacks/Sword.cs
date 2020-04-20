@@ -17,7 +17,7 @@ public class Sword : MonoBehaviour
             }
             else
             {
-                Debug.Log("basic attack");
+                //Debug.Log("basic attack");
             }
         }
     }
