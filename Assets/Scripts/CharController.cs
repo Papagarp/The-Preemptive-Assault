@@ -17,6 +17,7 @@ public class CharController : MonoBehaviour
 
     #region Variables
 
+    //JesseAudioManager jesseAudioManager;
     MagicBolt magicBoltScript;
     ControllerInput controls;
     CharacterController controller;
@@ -43,6 +44,8 @@ public class CharController : MonoBehaviour
     public LayerMask grabbableMask;
 
     [Header("Player")]
+    //public float stepTimer;
+   // float stepTimerCount;
     public float maxHealth;
     public float currentHealth;
     public float currentSpeed;
@@ -137,6 +140,10 @@ public class CharController : MonoBehaviour
         magicBoltScript = magicBolt.GetComponent<MagicBolt>();
         
         stateNo = 1;
+
+       // jesseAudioManager = FindObjectOfType<JesseAudioManager>();
+
+        //stepTimerCount = stepTimer;
     }
 
     private void Update()
@@ -254,10 +261,20 @@ public class CharController : MonoBehaviour
                 model.transform.rotation = Quaternion.LookRotation(movement);
             }
             playerAnimatorComponent.SetBool("Moving", true);
+
+           // if (stepTimer > 0)
+          //  {
+               // stepTimer -= Time.deltaTime;
+           // }
+          //  else {
+                //stepTimer = stepTimerCount;
+                //jesseAudioManager.PlaySound("Stepping");
+           // }
         }
         else
         {
             playerAnimatorComponent.SetBool("Moving", false);
+            //stepTimer = stepTimerCount;
         }
 
         lastPosition = gameObject.transform.position;

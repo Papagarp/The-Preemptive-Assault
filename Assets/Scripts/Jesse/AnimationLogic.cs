@@ -4,9 +4,16 @@ using UnityEngine;
 
 public class AnimationLogic : MonoBehaviour
 {
-   public void Step()
+    JesseAudioManager jesseAudioManager;
+    void start()
     {
-        PlaySound(Stepping, Stepping);
+        jesseAudioManager = FindObjectOfType<JesseAudioManager>();
+        
+    }
+
+    public void Step()
+    {
+        jesseAudioManager.PlaySound("Stepping");
     }
 
     public void SwordSwing()
