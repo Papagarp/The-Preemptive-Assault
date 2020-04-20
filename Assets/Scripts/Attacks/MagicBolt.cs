@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class MagicBolt : MonoBehaviour
 {
+    JesseAudioManager jesseAudioManager;
     public GameObject staff;
     public GameObject hookHolder;
     public GameObject player;
@@ -12,6 +13,12 @@ public class MagicBolt : MonoBehaviour
 
     public bool fired = false;
 
+    void start()
+    {
+        jesseAudioManager = FindObjectOfType<JesseAudioManager>();
+        jesseAudioManager.PlaySound("Music");
+    }
+
     private void Update()
     {
         if (fired)
@@ -19,6 +26,8 @@ public class MagicBolt : MonoBehaviour
             gameObject.transform.Translate(Vector3.forward * Time.deltaTime * 20.0f);
 
             magicBoltFlyingTime -= Time.deltaTime;
+
+            jesseAudioManager.PlaySound("Shoot");
 
             if (magicBoltFlyingTime < 0)
             {

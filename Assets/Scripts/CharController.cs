@@ -183,6 +183,7 @@ public class CharController : MonoBehaviour
         {
             case (StanceState.ATTACK):
 
+                
                 hookHolder.SetActive(false);
                 sword.SetActive(true);
                 shield.SetActive(false);
@@ -194,6 +195,7 @@ public class CharController : MonoBehaviour
 
             case (StanceState.DEFENCE):
 
+                
                 hookHolder.SetActive(false);
                 sword.SetActive(false);
                 shield.SetActive(true);
@@ -205,6 +207,7 @@ public class CharController : MonoBehaviour
 
             case (StanceState.UTILITY):
 
+                
                 hookHolder.SetActive(true);
                 sword.SetActive(false);
                 shield.SetActive(false);
