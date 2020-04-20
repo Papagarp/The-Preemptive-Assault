@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public enum StanceState
 {
@@ -267,7 +268,8 @@ public class CharController : MonoBehaviour
 
         if (currentHealth >= 0)
         {
-            //JESSE RIGHT HERE
+            //Might Make a coroutine for death on this one but this works for barebone stuff
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
 
         #endregion
