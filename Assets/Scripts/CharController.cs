@@ -231,7 +231,13 @@ public class CharController : MonoBehaviour
         }
 
         #endregion
-        
+
+        #region Health Bar
+
+        //ALBERT RIGHT HERE!!!
+
+        #endregion
+
         #region Model Rotation and Movement Animation
 
         if (lastPosition != gameObject.transform.position && !hooked && !holding)
@@ -254,6 +260,15 @@ public class CharController : MonoBehaviour
         }
 
         lastPosition = gameObject.transform.position;
+
+        #endregion
+
+        #region Death
+
+        if (currentHealth >= 0)
+        {
+            //JESSE RIGHT HERE
+        }
 
         #endregion
 
