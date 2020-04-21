@@ -278,7 +278,6 @@ public class AiController : MonoBehaviour
                     }
                     else
                     {
-                        
                         fireBall.SetActive(false);
                     }
                 }
