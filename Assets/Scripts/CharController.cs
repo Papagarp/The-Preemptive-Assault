@@ -95,10 +95,10 @@ public class CharController : MonoBehaviour
     public bool stunned;
     public float stunnedTime = 3.0f;
 
-    [Header("Lock On Function")]
+    /*[Header("Lock On Function")]
     public bool locked = false;
     public GameObject[] enemyLocations;
-    public GameObject closestEnemy;
+    public GameObject closestEnemy;*/
 
     [Header("Don't Assign")]
     public GameObject hookedObject;
@@ -128,7 +128,7 @@ public class CharController : MonoBehaviour
 
         controls.Gameplay.Attack.performed += context => Attack();
         controls.Gameplay.Ability.performed += context => Ability();
-        controls.Gameplay.LockOn.performed += context => LockOn();
+        //controls.Gameplay.LockOn.performed += context => LockOn();
 
         controls.Gameplay.SwitchStatesUp.performed += context => SwitchStateUp();
         controls.Gameplay.SwitchStatesDown.performed += context => SwitchStateDown();
@@ -141,7 +141,7 @@ public class CharController : MonoBehaviour
         
         stateNo = 1;
 
-       jesseAudioManager = FindObjectOfType<JesseAudioManager>();
+        jesseAudioManager = FindObjectOfType<JesseAudioManager>();
 
         stepTimerCount = stepTimer;
     }
@@ -405,17 +405,17 @@ public class CharController : MonoBehaviour
 
         #endregion
 
-        #region Lock On
+        /*#region Lock On
 
         if (closestEnemy != null && locked)
         {
             //TODO: Lock on Ui element turn on
         }
 
-        #endregion
+        #endregion*/
     }
 
-    public void TakeDmg(int damage)
+    public void TakeDmg(float damage)
     {
         currentHealth = currentHealth - damage;
     }
@@ -486,14 +486,14 @@ public class CharController : MonoBehaviour
         yield return new WaitForSeconds(0.1f);
         ReturnHook();
     }
-
-    void LockOn()
+    
+    /*void LockOn()
     {
         //FindClosestEnemy(enemyLocations);
         locked = !locked;
     }
 
-    /*public void FindClosestEnemy(GameObject[] go)
+    public void FindClosestEnemy(GameObject[] go)
     {
         enemyLocations = GameObject.FindGameObjectsWithTag("Enemy");
         float distance = Mathf.Infinity;

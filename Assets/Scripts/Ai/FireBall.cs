@@ -5,16 +5,23 @@ using UnityEngine;
 public class FireBall : MonoBehaviour
 {
     AiController aiScript;
+    CharController playerScript;
 
     public GameObject anchorPoint;
+    private GameObject player;
 
     float flyingTime = 5.0f;
 
     public bool fired = false;
 
+    float fireBallDmg = 10.0f;
+
     private void Awake()
     {
+        player = GameObject.FindGameObjectWithTag("Player");
+
         aiScript = GetComponentInParent<AiController>();
+        playerScript = player.GetComponent<CharController>();
     }
 
     private void Update()
@@ -40,6 +47,11 @@ public class FireBall : MonoBehaviour
         {
             fired = false;
             ReturnFireBall();
+
+            if (other.tag == "Player")
+            {
+                playerScript.TakeDmg(fireBallDmg);
+            }
         }
     }
 
