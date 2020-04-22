@@ -17,6 +17,7 @@ public class AiController : MonoBehaviour
 
     aiState currentAIState;
 
+  
     //nav mesh agent
     NavMeshAgent nav;
 
@@ -26,6 +27,7 @@ public class AiController : MonoBehaviour
     
     //scripts
     FireBall fireBallScript;
+    JesseAudioManager jesseAudioManager;
 
     [Header("Assign GameObjects")]
     public GameObject anchorPoint;
@@ -90,6 +92,7 @@ public class AiController : MonoBehaviour
             startAiPoint = gameObject.transform.position;
             startAiRotation = gameObject.transform.rotation;
         }
+        jesseAudioManager = FindObjectOfType<JesseAudioManager>(); 
     }
 
     private void Update()
@@ -163,6 +166,7 @@ public class AiController : MonoBehaviour
 
             //animation
             aiAnimatorComponent.SetBool("Moving", nav.remainingDistance > 1 ? true : false);
+            jesseAudioManager.PlaySoundWithDelay("Cultist Moving", 0.4f);
 
             if (foundPlayerCheck)
             {
@@ -275,6 +279,7 @@ public class AiController : MonoBehaviour
                     {
                         fireBall.SetActive(true);
                         fireBallScript.fired = true;
+                        jesseAudioManager.PlaySound("Shoot");
                     }
                     else
                     {

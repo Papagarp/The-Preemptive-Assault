@@ -16,7 +16,7 @@ public class MagicBolt : MonoBehaviour
     void start()
     {
         jesseAudioManager = FindObjectOfType<JesseAudioManager>();
-        jesseAudioManager.PlaySound("Music");
+        
     }
 
     private void Update()

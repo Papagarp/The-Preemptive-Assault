@@ -144,6 +144,7 @@ public class CharController : MonoBehaviour
         jesseAudioManager = FindObjectOfType<JesseAudioManager>();
 
         stepTimerCount = stepTimer;
+        jesseAudioManager.PlaySound("Music");
     }
 
     private void Update()

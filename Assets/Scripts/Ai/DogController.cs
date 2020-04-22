@@ -46,6 +46,9 @@ public class DogController : MonoBehaviour
     public float patrollingMovementSpeed = 3.0f;
     public float attackingMovementSpeed = 15.0f;
     public float searchTime = 5.0f;
+
+    //Scripts
+    JesseAudioManager jesseAudioManager;
     
     #endregion
 
@@ -66,6 +69,7 @@ public class DogController : MonoBehaviour
             startAiDogPoint = gameObject.transform.position;
             startAiDogRotation = gameObject.transform.rotation;
         }
+        jesseAudioManager = FindObjectOfType<JesseAudioManager>();
     }
 
     private void Update()
@@ -164,6 +168,8 @@ public class DogController : MonoBehaviour
 
             distanceToPlayer = Vector3.Distance(new Vector3(transform.position.x, 0, transform.position.z),
                 new Vector3(player.transform.position.x, 0, player.transform.position.z));
+
+            jesseAudioManager.PlaySound("Hellhound Moving");
 
             if (distanceToPlayer < 2.0f)
             {
