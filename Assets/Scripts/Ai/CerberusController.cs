@@ -34,7 +34,6 @@ public class CerberusController : MonoBehaviour
     float attackTimer = 0.1f;
     float normalBiteDmg = 25.0f;
     float tripleBiteDmg = 50.0f;
-    float FireBallDmg = 10.0f;
 
     #endregion
 
