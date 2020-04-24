@@ -38,6 +38,9 @@ public class CharController : MonoBehaviour
     public GameObject model;
     public GameObject hook;
     public GameObject hookHolder;
+    public GameObject sword;
+    public GameObject shield;
+    public GameObject staff;
 
     [Header("Assign Masks")]
     public LayerMask groundMask;
@@ -69,9 +72,9 @@ public class CharController : MonoBehaviour
     Quaternion lastRotation;
 
     [Header("Player Stance Components")]
-    public GameObject sword;
-    public GameObject shield;
-    public GameObject staff;
+    public GameObject mSword;
+    public GameObject mShield;
+    public GameObject mStaff;
     public GameObject magicBolt;
     public bool isAttacking;
     public float reloadTime = 0.0f;
@@ -284,14 +287,23 @@ public class CharController : MonoBehaviour
             if (currentStanceState == StanceState.ATTACK)
             {
                 //SWORD APPEARS
+                mSword.SetActive(true);
+                mShield.SetActive(false);
+                mStaff.SetActive(false);
             }
             else if (currentStanceState == StanceState.DEFENCE)
             {
                 //SHIELD APPEARS
+                mShield.SetActive(true);
+                mStaff.SetActive(false);
+                mSword.SetActive(false);
             }
             else if (currentStanceState == StanceState.UTILITY)
             {
                 //STAFF APPEARS
+                mStaff.SetActive(true);
+                mShield.SetActive(false);
+                mSword.SetActive(false);
             }
 
             stepTimerCount = stepTimer;
