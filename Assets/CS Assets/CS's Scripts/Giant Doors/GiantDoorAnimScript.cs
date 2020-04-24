@@ -9,23 +9,24 @@ public class GiantDoorAnimScript : MonoBehaviour
 
     private void Start()
     {
-        anim.SetBool("OpenDoorsOutward", false);
-        anim.SetBool("OpenDoorsInward", false);
+        anim.SetBool("OpenDoorsOutwards", false);
+        anim.SetBool("OpenDoorsInwards", false);
     }
 
     public void DoorInward()
     {
-        anim.SetBool("OpenDoorsInward", true);
+        Debug.Log("door inward being called");
+        anim.SetBool("OpenDoorsInwards", true);
     }
 
     public void DoorOutward()
     {
-        anim.SetBool("OpenDoorsOutward", true);
+        anim.SetBool("OpenDoorsOutwards", true);
     }
 
     public void DoorClose()
     {
-        anim.SetBool("OpenDoorsOutward", false);
-        anim.SetBool("OpenDoorsInward", false);
+        anim.SetBool("OpenDoorsOutwards", false);
+        anim.SetBool("OpenDoorsInwards", false);
     }
 }

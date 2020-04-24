@@ -17,8 +17,10 @@ public class OutsideDoorScript : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log("outDoor onTrig Works");
         if(other.gameObject.tag == "Player")
         {
+            Debug.Log("if works");
             animationController.DoorInward();
             insideDoorTrigger.SetActive(false);
         }

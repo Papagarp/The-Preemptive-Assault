@@ -44,7 +44,7 @@ public class MainMenu : MonoBehaviour
 
         yield return new WaitForSeconds(3);
 
-        SceneManager.LoadScene("JesseTest");
+        SceneManager.LoadScene(2);
     }
 
     public IEnumerator ByeByeStinky ()
