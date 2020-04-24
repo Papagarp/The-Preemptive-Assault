@@ -69,7 +69,7 @@ public class AiController : MonoBehaviour
     public float reloadTime = 3.0f;
     public float staggerTime = 3.0f;
     public float stunnedTime = 0.0f;
-
+    public AudioClip walking;
     #endregion
 
     private void Awake()
@@ -166,7 +166,7 @@ public class AiController : MonoBehaviour
 
             //animation
             aiAnimatorComponent.SetBool("Moving", nav.remainingDistance > 1 ? true : false);
-            jesseAudioManager.PlaySoundWithDelay("Cultist Moving", 0.4f);
+            jesseAudioManager.PlayOneShot(transform.position, walking , 0.4f);
 
             if (foundPlayerCheck)
             {

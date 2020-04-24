@@ -419,6 +419,7 @@ public class CharController : MonoBehaviour
     public void TakeDmg(float damage)
     {
         currentHealth = currentHealth - damage;
+        jesseAudioManager.PlaySound("Hit");
     }
 
     void Attack()
@@ -632,14 +633,14 @@ public class CharController : MonoBehaviour
     void SwitchStateUp()
     {
         //currentStanceState++;
-
+        jesseAudioManager.PlaySound("Stance Swap");
         stateNo++;
     }
 
     void SwitchStateDown()
     {
         //currentStanceState--;
-
+        jesseAudioManager.PlaySound("Stance Swap");
         stateNo--;
     }
 
