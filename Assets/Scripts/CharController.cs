@@ -184,7 +184,6 @@ public class CharController : MonoBehaviour
         {
             case (StanceState.ATTACK):
 
-                
                 hookHolder.SetActive(false);
                 sword.SetActive(true);
                 shield.SetActive(false);
@@ -196,7 +195,6 @@ public class CharController : MonoBehaviour
 
             case (StanceState.DEFENCE):
 
-                
                 hookHolder.SetActive(false);
                 sword.SetActive(false);
                 shield.SetActive(true);
@@ -208,7 +206,6 @@ public class CharController : MonoBehaviour
 
             case (StanceState.UTILITY):
 
-                
                 hookHolder.SetActive(true);
                 sword.SetActive(false);
                 shield.SetActive(false);
@@ -220,6 +217,8 @@ public class CharController : MonoBehaviour
 
                 break;
         }
+
+        
 
         #endregion
 
@@ -269,8 +268,9 @@ public class CharController : MonoBehaviour
            if (stepTimerCount > 0)
            {
                 stepTimerCount -= Time.deltaTime;
-            }
-           else {
+           }
+           else 
+           {
                 stepTimerCount = stepTimer;
                 jesseAudioManager.PlaySound("Stepping");
            }
@@ -278,6 +278,22 @@ public class CharController : MonoBehaviour
         else
         {
             playerAnimatorComponent.SetBool("Moving", false);
+
+            //TODO: JESSE RIGHT HERE
+
+            if (currentStanceState == StanceState.ATTACK)
+            {
+                //SWORD APPEARS
+            }
+            else if (currentStanceState == StanceState.DEFENCE)
+            {
+                //SHIELD APPEARS
+            }
+            else if (currentStanceState == StanceState.UTILITY)
+            {
+                //STAFF APPEARS
+            }
+
             stepTimerCount = stepTimer;
         }
 
@@ -405,15 +421,6 @@ public class CharController : MonoBehaviour
         }
 
         #endregion
-
-        /*#region Lock On
-
-        if (closestEnemy != null && locked)
-        {
-            //TODO: Lock on Ui element turn on
-        }
-
-        #endregion*/
     }
 
     public void TakeDmg(float damage)
