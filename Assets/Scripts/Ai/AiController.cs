@@ -69,6 +69,8 @@ public class AiController : MonoBehaviour
     public float reloadTime = 3.0f;
     public float staggerTime = 3.0f;
     public float stunnedTime = 0.0f;
+    public float stepTimer;
+    float stepTimerCount;
     public AudioClip walking;
     #endregion
 
@@ -92,7 +94,8 @@ public class AiController : MonoBehaviour
             startAiPoint = gameObject.transform.position;
             startAiRotation = gameObject.transform.rotation;
         }
-        jesseAudioManager = FindObjectOfType<JesseAudioManager>(); 
+        jesseAudioManager = FindObjectOfType<JesseAudioManager>();
+        stepTimerCount = stepTimer;
     }
 
     private void Update()
@@ -164,9 +167,23 @@ public class AiController : MonoBehaviour
                 fireBall.SetActive(false);
             }
 
+           
+           //ISAAC THIS ONE ITS THIS LINE OF CODE
+               /* if (stepTimerCount > 0)
+                {
+                    stepTimerCount -= Time.deltaTime;
+                }
+                else
+                {
+                    stepTimerCount = stepTimer;
+                    jesseAudioManager.PlayOneShot(transform.position, walking, 1f);
+                }
+
+           */
+
             //animation
             aiAnimatorComponent.SetBool("Moving", nav.remainingDistance > 1 ? true : false);
-            jesseAudioManager.PlayOneShot(transform.position, walking , 0.4f);
+            
 
             if (foundPlayerCheck)
             {
