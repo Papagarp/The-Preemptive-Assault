@@ -72,6 +72,9 @@ public class AiController : MonoBehaviour
     public float stepTimer;
     float stepTimerCount;
     public AudioClip walking;
+
+    Vector3 lastPosition;
+
     #endregion
 
     private void Awake()
@@ -157,6 +160,28 @@ public class AiController : MonoBehaviour
 
         #endregion
 
+        #region Movement Animation
+
+        if (lastPosition != gameObject.transform.position)
+        {
+            //animation
+            aiAnimatorComponent.SetBool("Moving", nav.remainingDistance > 1 ? true : false);
+
+            if (stepTimerCount > 0)
+            {
+                stepTimerCount -= Time.deltaTime;
+            }
+            else
+            {
+                stepTimerCount = stepTimer;
+                jesseAudioManager.PlayOneShot(transform.position, walking, 1f);
+            }
+        }
+
+        lastPosition = gameObject.transform.position;
+
+        #endregion
+
         #region Patrolling & Search Function & reseting AI position
 
         if (!foundPlayer)
@@ -166,25 +191,7 @@ public class AiController : MonoBehaviour
                 fireBallScript.ReturnFireBall();
                 fireBall.SetActive(false);
             }
-
-           
-           //ISAAC THIS ONE ITS THIS LINE OF CODE
-               /* if (stepTimerCount > 0)
-                {
-                    stepTimerCount -= Time.deltaTime;
-                }
-                else
-                {
-                    stepTimerCount = stepTimer;
-                    jesseAudioManager.PlayOneShot(transform.position, walking, 1f);
-                }
-
-           */
-
-            //animation
-            aiAnimatorComponent.SetBool("Moving", nav.remainingDistance > 1 ? true : false);
             
-
             if (foundPlayerCheck)
             {
                 currentAIState = aiState.SEARCH;
