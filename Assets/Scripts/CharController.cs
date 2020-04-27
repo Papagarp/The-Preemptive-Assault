@@ -267,8 +267,11 @@ public class CharController : MonoBehaviour
                 model.transform.rotation = Quaternion.LookRotation(movement);
             }
             playerAnimatorComponent.SetBool("Moving", true);
+            mShield.SetActive(false);
+            mStaff.SetActive(false);
+            mSword.SetActive(false);
 
-           if (stepTimerCount > 0)
+            if (stepTimerCount > 0)
            {
                 stepTimerCount -= Time.deltaTime;
            }
