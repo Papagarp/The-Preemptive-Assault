@@ -27,7 +27,7 @@ public class MagicBolt : MonoBehaviour
 
             magicBoltFlyingTime -= Time.deltaTime;
 
-            jesseAudioManager.PlaySound("Shoot");
+            //jesseAudioManager.PlaySound("Shoot");
 
             if (magicBoltFlyingTime < 0)
             {

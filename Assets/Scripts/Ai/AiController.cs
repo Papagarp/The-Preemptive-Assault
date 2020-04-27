@@ -65,13 +65,18 @@ public class AiController : MonoBehaviour
     public bool stagger;
     public float stunRange = 10.0f;
 
-    public float meleeRange = 5.0f;
+    public float meleeRange = 30.0f;
     public float reloadTime = 3.0f;
     public float staggerTime = 3.0f;
     public float stunnedTime = 0.0f;
     public float stepTimer;
     float stepTimerCount;
     public AudioClip walking;
+
+    bool isAttacking = false;
+
+    float maxHp = 10;
+    float currentHp = 10;
 
     Vector3 lastPosition;
 
@@ -162,23 +167,32 @@ public class AiController : MonoBehaviour
 
         #region Movement Animation
 
-        if (lastPosition != gameObject.transform.position)
+        if (isAttacking)
         {
-            //animation
-            aiAnimatorComponent.SetBool("Moving", nav.remainingDistance > 1 ? true : false);
-
-            if (stepTimerCount > 0)
-            {
-                stepTimerCount -= Time.deltaTime;
-            }
-            else
-            {
-                stepTimerCount = stepTimer;
-                jesseAudioManager.PlayOneShot(transform.position, walking, 1f);
-            }
+            nav.isStopped = true;
         }
+        else
+        {
+            nav.isStopped = false;
 
-        lastPosition = gameObject.transform.position;
+            if (lastPosition != gameObject.transform.position)
+            {
+                //animation
+                aiAnimatorComponent.SetBool("Moving", nav.remainingDistance > 1 ? true : false);
+
+                if (stepTimerCount > 0)
+                {
+                    stepTimerCount -= Time.deltaTime;
+                }
+                else
+                {
+                    stepTimerCount = stepTimer;
+                    jesseAudioManager.PlayOneShot(transform.position, walking, 1f);
+                }
+            }
+
+            lastPosition = gameObject.transform.position;
+        }
 
         #endregion
 
@@ -284,9 +298,6 @@ public class AiController : MonoBehaviour
 
                 if (distanceToPlayer < 2.0f)
                 {
-                    gameObject.transform.LookAt(player.transform);
-                    Vector3 currentLocation = gameObject.transform.position;
-                    nav.SetDestination(currentLocation);
                     MeleeAttack();
                 }
             }
@@ -314,15 +325,22 @@ public class AiController : MonoBehaviour
         }
 
         #endregion
+
+        if (currentHp <= 0)
+        {
+            Destroy(gameObject);
+        }
     }
 
-    public void TakeDmg(int damage)
+    public void TakeDmg(float damage)
     {
-        //TODO:Take Damage
+        currentHp = currentHp - damage;
     }
 
     void MeleeAttack()
     {
+        isAttacking = true;
+
         if (swingCoroutine == null)
         {
             swingCoroutine = StartCoroutine(AttackCombo());
@@ -351,6 +369,8 @@ public class AiController : MonoBehaviour
         yield return new WaitForSeconds(clipLength);
 
         //TODO:Claw 2
+
+        isAttacking = false;
 
         if(distanceToPlayer < 1.0f)
         {

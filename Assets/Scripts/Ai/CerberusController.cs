@@ -35,6 +35,10 @@ public class CerberusController : MonoBehaviour
     float normalBiteDmg = 25.0f;
     float tripleBiteDmg = 50.0f;
 
+    //health
+    float maxHp = 100;
+    float currentHp = 100;
+
     #endregion
 
     private void Awake()
@@ -55,6 +59,12 @@ public class CerberusController : MonoBehaviour
 
     private void Update()
     {
+        //death
+        if (currentHp <= 0)
+        {
+            Destroy(gameObject);
+        }
+
         playerLocation = player.transform.position;
 
         distanceToPlayer = Vector3.Distance(new Vector3(transform.position.x, 0, transform.position.z), 
@@ -90,9 +100,9 @@ public class CerberusController : MonoBehaviour
         #endregion
     }
 
-    public void TakeDmg(int damage)
+    public void TakeDmg(float damage)
     {
-        //TODO:Take Damage
+        currentHp = currentHp - damage;
     }
 
     public void NormalBite()

@@ -582,7 +582,6 @@ public class CharController : MonoBehaviour
     {
         playerAnimatorComponent.SetTrigger("SwordAttackPart1");
         jesseAudioManager.PlaySoundWithDelay("Sword Swing", 0.3f);
-        print("part1");
 
         float firstAnimationLength = -1;
         float secondAnimationLength = -1;
@@ -599,16 +598,12 @@ public class CharController : MonoBehaviour
             }
         }
 
-        print(firstAnimationLength);
-        print(secondAnimationLength);
-
         //prevent a second attack
         float timer = firstAnimationLength * 0.75f;//first 75% of the animation, dont allow the second attack
         while (timer > 0)
         {
             hasSwung = false;
             playerAnimatorComponent.SetBool("SwordAttackPart2", hasSwung);
-            print("part2");
             timer -= Time.deltaTime;
             yield return new WaitForEndOfFrame();
         }
@@ -624,7 +619,6 @@ public class CharController : MonoBehaviour
                 //wait for the second animation to end
                 swinging = true;
                 playerAnimatorComponent.SetBool("SwordAttackPart2", hasSwung);
-                print("part3");
             }
 
             hitWindow -= Time.deltaTime;
@@ -635,14 +629,12 @@ public class CharController : MonoBehaviour
         if (swinging)
         {
             yield return new WaitForSeconds(secondAnimationLength);
-            print("part4");
         }
 
         hasSwung = false;
         if (!swinging)
         {
             playerAnimatorComponent.SetBool("SwordAttackPart2", hasSwung);
-            print("part5");
         }
 
         swingCoroutine = null;
