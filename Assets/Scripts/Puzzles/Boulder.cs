@@ -10,6 +10,8 @@ public class Boulder : MonoBehaviour
 
     GameObject player;
 
+    GameObject currentObject;
+
     private void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player");
@@ -18,14 +20,25 @@ public class Boulder : MonoBehaviour
 
     private void Update()
     {
-        if (!characterScript.holding)
+        if (currentObject != null)
         {
-            gameObject.transform.parent = null;
+            if (!characterScript.holding)
+            {
+                currentObject.transform.parent = null;
+            }
+
+            if (characterScript.holding)
+            {
+                currentObject.transform.parent = player.transform;
+            }
         }
-        
-        if (characterScript.holding)
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if(other.CompareTag("Box"))
         {
-            gameObject.transform.parent = player.transform;
+            currentObject = other.gameObject;
         }
     }
 }
