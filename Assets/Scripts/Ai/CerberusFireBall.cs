@@ -29,6 +29,11 @@ public class CerberusFireBall : MonoBehaviour
         cerberusScript = GetComponentInParent<CerberusController>();
     }
 
+    private void Start()
+    {
+        
+    }
+
     private void Update()
     {
         if (leftHeadFired)
