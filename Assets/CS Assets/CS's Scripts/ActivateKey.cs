@@ -17,7 +17,7 @@ public class ActivateKey : MonoBehaviour
     {
         if (other.gameObject.tag == "Player")
         {
-            Debug.Log("it triggers doesn't call");
+            Debug.Log("something is happeneing");
             unlockGate.Unlock();
             Destroy(gameObject);
         }

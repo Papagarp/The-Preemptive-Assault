@@ -15,7 +15,7 @@ public class PressurePlateV2 : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Heavy" || other.gameObject.tag == "Player")
+        if (other.gameObject.tag == "Heavy")
         {
             animationController.weightOn();
         }
@@ -23,7 +23,7 @@ public class PressurePlateV2 : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.tag == "Heavy" || other.gameObject.tag == "Player")
+        if (other.gameObject.tag == "Heavy")
         {
             animationController.weightOff();
         }
