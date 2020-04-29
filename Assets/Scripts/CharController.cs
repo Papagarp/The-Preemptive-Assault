@@ -19,12 +19,29 @@ public class CharController : MonoBehaviour
     #region Variables
 
     JesseAudioManager jesseAudioManager;
-    MagicBolt magicBoltScript;
+    
+    //Controller
     ControllerInput controls;
     CharacterController controller;
+
+    //Script
+    MagicBolt magicBoltScript;
+
+    //Material
+    public Material deathEffect;
+
+    //Animator
     Animator playerAnimatorComponent;
+
+    //Coroutines
     Coroutine swingCoroutine;
     Coroutine jumpCoroutine;
+    Coroutine deathCo;
+
+    //UI
+    public Image attackUI;
+    public Image defenseUI;
+    public Image utilityUI;
 
     public StanceState currentStanceState;
 
@@ -42,12 +59,7 @@ public class CharController : MonoBehaviour
     public GameObject sword;
     public GameObject shield;
     public GameObject staff;
-
-    //ALBERT'S UI STUFF
-
-    public Image attackUI;
-    public Image defenseUI;
-    public Image utilityUI;
+    public GameObject mainMeshObject;
 
     [Header("Assign Masks")]
     public LayerMask groundMask;
@@ -105,11 +117,6 @@ public class CharController : MonoBehaviour
     public bool stunned;
     public float stunnedTime = 3.0f;
 
-    /*[Header("Lock On Function")]
-    public bool locked = false;
-    public GameObject[] enemyLocations;
-    public GameObject closestEnemy;*/
-
     [Header("Don't Assign")]
     public GameObject hookedObject;
 
@@ -159,296 +166,297 @@ public class CharController : MonoBehaviour
 
     private void Update()
     {
-        #region State Switching
-
-        playerAnimatorComponent.SetInteger("Current State", (int)currentStanceState);
-
-        #region StateNo If statements
-;
-        //TODO: rewrite state switching to be like 10 lines (maybe use a method?)
-        if (stateNo == 4)
-        {
-            stateNo = 1;
-        }
-        if (stateNo == 0)
-        {
-            stateNo = 3;
-        }
-
-        if (stateNo == 1)
-        {
-            currentStanceState = StanceState.ATTACK;
-        }
-        if (stateNo == 2)
-        {
-            currentStanceState = StanceState.DEFENCE;
-        }
-        if (stateNo == 3)
-        {
-            currentStanceState = StanceState.UTILITY;
-        }
-
-        #endregion
-
-        switch (currentStanceState)
-        {
-            case (StanceState.ATTACK):
-
-                hookHolder.SetActive(false);
-                sword.SetActive(true);
-                shield.SetActive(false);
-                staff.SetActive(false);
-
-                attackUI.enabled = true;
-                defenseUI.enabled = false;
-                utilityUI.enabled = false;
-
-                movementSpeed = 7.5f;
-
-                break;
-
-            case (StanceState.DEFENCE):
-
-                hookHolder.SetActive(false);
-                sword.SetActive(false);
-                shield.SetActive(true);
-                staff.SetActive(false);
-
-                attackUI.enabled = false;
-                defenseUI.enabled = true;
-                utilityUI.enabled = false;
-
-                movementSpeed = 5f;
-
-                break;
-
-            case (StanceState.UTILITY):
-
-                hookHolder.SetActive(true);
-                sword.SetActive(false);
-                shield.SetActive(false);
-                staff.SetActive(true);
-                attackUI.enabled = false;
-                defenseUI.enabled = false;
-                utilityUI.enabled = true;
-
-                movementSpeed = 10f;
-
-                if (reloadTime >= 0) reloadTime -= Time.deltaTime;
-
-                break;
-        }
-
-        #endregion
-
-        #region Joystick Controls
-
-        mainCamera.transform.LookAt(cameraFocusY);
-
-        float rightStickX = controllerInputRightStick.x * controllerSensitivity * Time.deltaTime;
-        float rightStickY = controllerInputRightStick.y * controllerSensitivity * Time.deltaTime;
-
-        xRotation -= rightStickY;
-        xRotation = Mathf.Clamp(xRotation, -25f, 25f);
-
-        cameraFocusY.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-        cameraFocusX.Rotate(Vector3.up * rightStickX);
-
-        if (isGrounded && !isAttacking)
-        {
-            movement = cameraFocusX.transform.right * controllerInputLeftStick.x + cameraFocusX.transform.forward * controllerInputLeftStick.y;
-            controller.Move(movement * movementSpeed * Time.deltaTime);
-        }
-
-        #endregion
-
-        #region Health Bar
-
-        //ALBERT RIGHT HERE!!!
-
-        #endregion
-
-        #region Model Rotation and Movement Animation
-
-        if (lastPosition != gameObject.transform.position && !hooked && !holding)
-        {
-            currentSpeed = (gameObject.transform.position - lastPosition).magnitude;
-
-            if (!isGrounded) lastRotation = model.transform.rotation;
-
-            if (isGrounded)
-            {
-                if (movement == Vector3.zero) model.transform.rotation = lastRotation;
-
-                model.transform.rotation = Quaternion.LookRotation(movement);
-            }
-            playerAnimatorComponent.SetBool("Moving", true);
-            mShield.SetActive(false);
-            mStaff.SetActive(false);
-            mSword.SetActive(false);
-
-            if (stepTimerCount > 0)
-           {
-                stepTimerCount -= Time.deltaTime;
-           }
-           else 
-           {
-                stepTimerCount = stepTimer;
-                jesseAudioManager.PlaySound("Stepping");
-           }
-        }
-        else
-        {
-            playerAnimatorComponent.SetBool("Moving", false);
-
-            //TODO: JESSE RIGHT HERE
-
-            if (currentStanceState == StanceState.ATTACK)
-            {
-                //SWORD APPEARS
-                mSword.SetActive(true);
-                mShield.SetActive(false);
-                mStaff.SetActive(false);
-            }
-            else if (currentStanceState == StanceState.DEFENCE)
-            {
-                //SHIELD APPEARS
-                mShield.SetActive(true);
-                mStaff.SetActive(false);
-                mSword.SetActive(false);
-            }
-            else if (currentStanceState == StanceState.UTILITY)
-            {
-                //STAFF APPEARS
-                mStaff.SetActive(true);
-                mShield.SetActive(false);
-                mSword.SetActive(false);
-            }
-
-            stepTimerCount = stepTimer;
-        }
-
-        lastPosition = gameObject.transform.position;
-
-        #endregion
-
         #region Death
 
-        if (currentHealth >= 0)
+        if (currentHealth <= 0)
         {
-            //Might Make a coroutine for death on this one but this works for barebone stuff
-            //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        }
-
-        #endregion
-
-        #region Jump Function and Gravity
-
-        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
-
-        if (isGrounded && velocity.y < 0) velocity.y = -2f;
-
-        if (hasJumped && isGrounded && !holding)
-        {
-            Jump();
-        }
-        
-        if (!hooked)
-        {
-            if (!isGrounded)
-            {
-                jumpMovement = new Vector3(movement.x, 0f, movement.z);
-
-                controller.Move(jumpMovement * movementSpeed * Time.deltaTime);
-            }
-
-            velocity.y += gravity * Time.deltaTime;
-
-            controller.Move(velocity * Time.deltaTime);
-
-            if(velocity.y < 0 && !isGrounded)
-            {
-                //TODO: Falling animation
-            }
-        }
-
-        #endregion
-
-        #region Push and Pull Function
-
-        canGrab = Physics.CheckSphere(grabCheck.position, grabDistance, grabbableMask);
-
-        if (grabTimer >= 0) grabTimer -= Time.deltaTime;
-
-        if (holding && interact && grabTimer <= 0.0f)
-        {
-            holding = false;
-            grabTimer = 1.0f;
-        }
-
-        if (canGrab && interact && grabTimer <= 0.0f)
-        {
-            holding = true;
-            grabTimer = 1.0f;
-        }
-
-        #endregion
-
-        #region Hook Function
-
-        //TODO: Finish the polish on the hook including the prefabs
-        if (hookFired && !hooked)
-        {
-            hookHolder.transform.parent = null;
-            hook.transform.Translate(Vector3.forward * Time.deltaTime * hookTravelSpeed);
-            currentHookDistance = Vector3.Distance(transform.position, hook.transform.position);
-
-            if (currentHookDistance >= maxHookDistance)
-            {
-                ReturnHook();
-            }
-        }
-
-        if (hooked && hookFired)
-        {
-            hook.transform.parent = hookedObject.transform;
-
-            transform.position = Vector3.MoveTowards(transform.position, hook.transform.position, Time.deltaTime * playerHookSpeed);
-            float distanceToHook = Vector3.Distance(transform.position, hook.transform.position);
-
-            if (distanceToHook < 2)
-            {
-
-                hook.SetActive(false);
-                if (!isGrounded)
-                {
-                    //personally i dont like this and it should be done better so i will come back to this later
-                    //this.transform.Translate(Vector3.forward * Time.deltaTime * 13f);
-                    //this.transform.Translate(Vector3.up * Time.deltaTime * 17f);
-                }
-
-                StartCoroutine("Climb");
-
-            }
+            Death();
         }
         else
         {
-            hook.transform.parent = hookHolder.transform;
-        }
+            #region State Switching
 
-        #endregion
+            playerAnimatorComponent.SetInteger("Current State", (int)currentStanceState);
 
-        #region Shield Stun
-
-        if (stunned)
-        {
-            stunnedTime -= Time.deltaTime;
-
-            if (stunnedTime <= 0)
+            #region StateNo If statements
+            ;
+            //TODO: rewrite state switching to be like 10 lines (maybe use a method?)
+            if (stateNo == 4)
             {
-                stunned = false;
-                stunnedTime = 3.0f;
+                stateNo = 1;
             }
+            if (stateNo == 0)
+            {
+                stateNo = 3;
+            }
+
+            if (stateNo == 1)
+            {
+                currentStanceState = StanceState.ATTACK;
+            }
+            if (stateNo == 2)
+            {
+                currentStanceState = StanceState.DEFENCE;
+            }
+            if (stateNo == 3)
+            {
+                currentStanceState = StanceState.UTILITY;
+            }
+
+            #endregion
+
+            switch (currentStanceState)
+            {
+                case (StanceState.ATTACK):
+
+                    hookHolder.SetActive(false);
+                    sword.SetActive(true);
+                    shield.SetActive(false);
+                    staff.SetActive(false);
+
+                    attackUI.enabled = true;
+                    defenseUI.enabled = false;
+                    utilityUI.enabled = false;
+
+                    movementSpeed = 7.5f;
+
+                    break;
+
+                case (StanceState.DEFENCE):
+
+                    hookHolder.SetActive(false);
+                    sword.SetActive(false);
+                    shield.SetActive(true);
+                    staff.SetActive(false);
+
+                    attackUI.enabled = false;
+                    defenseUI.enabled = true;
+                    utilityUI.enabled = false;
+
+                    movementSpeed = 5f;
+
+                    break;
+
+                case (StanceState.UTILITY):
+
+                    hookHolder.SetActive(true);
+                    sword.SetActive(false);
+                    shield.SetActive(false);
+                    staff.SetActive(true);
+                    attackUI.enabled = false;
+                    defenseUI.enabled = false;
+                    utilityUI.enabled = true;
+
+                    movementSpeed = 10f;
+
+                    if (reloadTime >= 0) reloadTime -= Time.deltaTime;
+
+                    break;
+            }
+
+            #endregion
+
+            #region Joystick Controls
+
+            mainCamera.transform.LookAt(cameraFocusY);
+
+            float rightStickX = controllerInputRightStick.x * controllerSensitivity * Time.deltaTime;
+            float rightStickY = controllerInputRightStick.y * controllerSensitivity * Time.deltaTime;
+
+            xRotation -= rightStickY;
+            xRotation = Mathf.Clamp(xRotation, -25f, 25f);
+
+            cameraFocusY.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+            cameraFocusX.Rotate(Vector3.up * rightStickX);
+
+            if (isGrounded && !isAttacking)
+            {
+                movement = cameraFocusX.transform.right * controllerInputLeftStick.x + cameraFocusX.transform.forward * controllerInputLeftStick.y;
+                controller.Move(movement * movementSpeed * Time.deltaTime);
+            }
+
+            #endregion
+
+            #region Health Bar
+
+            //ALBERT RIGHT HERE!!!
+
+            #endregion
+
+            #region Model Rotation and Movement Animation
+
+            if (lastPosition != gameObject.transform.position && !hooked && !holding)
+            {
+                currentSpeed = (gameObject.transform.position - lastPosition).magnitude;
+
+                if (!isGrounded) lastRotation = model.transform.rotation;
+
+                if (isGrounded)
+                {
+                    if (movement == Vector3.zero) model.transform.rotation = lastRotation;
+
+                    model.transform.rotation = Quaternion.LookRotation(movement);
+                }
+                playerAnimatorComponent.SetBool("Moving", true);
+                mShield.SetActive(false);
+                mStaff.SetActive(false);
+                mSword.SetActive(false);
+
+                if (stepTimerCount > 0)
+                {
+                    stepTimerCount -= Time.deltaTime;
+                }
+                else
+                {
+                    stepTimerCount = stepTimer;
+                    jesseAudioManager.PlaySound("Stepping");
+                }
+            }
+            else
+            {
+                playerAnimatorComponent.SetBool("Moving", false);
+
+                //TODO: JESSE RIGHT HERE
+
+                if (currentStanceState == StanceState.ATTACK)
+                {
+                    //SWORD APPEARS
+                    mSword.SetActive(true);
+                    mShield.SetActive(false);
+                    mStaff.SetActive(false);
+                }
+                else if (currentStanceState == StanceState.DEFENCE)
+                {
+                    //SHIELD APPEARS
+                    mShield.SetActive(true);
+                    mStaff.SetActive(false);
+                    mSword.SetActive(false);
+                }
+                else if (currentStanceState == StanceState.UTILITY)
+                {
+                    //STAFF APPEARS
+                    mStaff.SetActive(true);
+                    mShield.SetActive(false);
+                    mSword.SetActive(false);
+                }
+
+                stepTimerCount = stepTimer;
+            }
+
+            lastPosition = gameObject.transform.position;
+
+            #endregion
+
+            #region Jump Function and Gravity
+
+            isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+
+            if (isGrounded && velocity.y < 0) velocity.y = -2f;
+
+            if (hasJumped && isGrounded && !holding)
+            {
+                Jump();
+            }
+
+            if (!hooked)
+            {
+                if (!isGrounded)
+                {
+                    jumpMovement = new Vector3(movement.x, 0f, movement.z);
+
+                    controller.Move(jumpMovement * movementSpeed * Time.deltaTime);
+                }
+
+                velocity.y += gravity * Time.deltaTime;
+
+                controller.Move(velocity * Time.deltaTime);
+
+                if (velocity.y < 0 && !isGrounded)
+                {
+                    //TODO: Falling animation
+                }
+            }
+
+            #endregion
+
+            #region Push and Pull Function
+
+            canGrab = Physics.CheckSphere(grabCheck.position, grabDistance, grabbableMask);
+
+            if (grabTimer >= 0) grabTimer -= Time.deltaTime;
+
+            if (holding && interact && grabTimer <= 0.0f)
+            {
+                holding = false;
+                grabTimer = 1.0f;
+            }
+
+            if (canGrab && interact && grabTimer <= 0.0f)
+            {
+                holding = true;
+                grabTimer = 1.0f;
+            }
+
+            #endregion
+
+            #region Hook Function
+
+            //TODO: Finish the polish on the hook including the prefabs
+            if (hookFired && !hooked)
+            {
+                hookHolder.transform.parent = null;
+                hook.transform.Translate(Vector3.forward * Time.deltaTime * hookTravelSpeed);
+                currentHookDistance = Vector3.Distance(transform.position, hook.transform.position);
+
+                if (currentHookDistance >= maxHookDistance)
+                {
+                    ReturnHook();
+                }
+            }
+
+            if (hooked && hookFired)
+            {
+                hook.transform.parent = hookedObject.transform;
+
+                transform.position = Vector3.MoveTowards(transform.position, hook.transform.position, Time.deltaTime * playerHookSpeed);
+                float distanceToHook = Vector3.Distance(transform.position, hook.transform.position);
+
+                if (distanceToHook < 2)
+                {
+
+                    hook.SetActive(false);
+                    if (!isGrounded)
+                    {
+                        //personally i dont like this and it should be done better so i will come back to this later
+                        //this.transform.Translate(Vector3.forward * Time.deltaTime * 13f);
+                        //this.transform.Translate(Vector3.up * Time.deltaTime * 17f);
+                    }
+
+                    StartCoroutine("Climb");
+
+                }
+            }
+            else
+            {
+                hook.transform.parent = hookHolder.transform;
+            }
+
+            #endregion
+
+            #region Shield Stun
+
+            if (stunned)
+            {
+                stunnedTime -= Time.deltaTime;
+
+                if (stunnedTime <= 0)
+                {
+                    stunned = false;
+                    stunnedTime = 3.0f;
+                }
+            }
+
+            #endregion
         }
 
         #endregion
@@ -658,6 +666,24 @@ public class CharController : MonoBehaviour
 
         swingCoroutine = null;
         isAttacking = false;
+    }
+
+    public void Death()
+    {
+        if (deathCo == null) deathCo = StartCoroutine(DeathAnim());
+    }
+
+    IEnumerator DeathAnim()
+    {
+        //start the particle effect
+
+        float timeOfEffect = 1;
+
+        mainMeshObject.GetComponent<SkinnedMeshRenderer>().material = deathEffect;
+
+        yield return new WaitForSeconds(timeOfEffect);
+
+        //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     void SwitchStateUp()
