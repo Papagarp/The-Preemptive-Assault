@@ -5,7 +5,7 @@ using UnityEngine;
 public class MagicBolt : MonoBehaviour
 {
     JesseAudioManager jesseAudioManager;
-    public GameObject staff;
+    public GameObject anchorPoint;
     public GameObject hookHolder;
     public GameObject player;
 
@@ -49,7 +49,7 @@ public class MagicBolt : MonoBehaviour
 
     void ReturnBolt()
     {
-        gameObject.transform.position = staff.transform.position;
+        gameObject.transform.position = anchorPoint.transform.position;
         player.GetComponent<CharController>().reloadTime = 3.0f;
         magicBoltFlyingTime = 5.0f;
     }
