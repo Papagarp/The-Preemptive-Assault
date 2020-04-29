@@ -15,7 +15,7 @@ public class Puzzle3Key : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Heavy" || other.gameObject.tag == "Player")
+        if (other.gameObject.tag == "Heavy")
         {
             Debug.Log("OpenDoorActivated");
             Puzzle3Gate.OpenDoor();
@@ -25,7 +25,7 @@ public class Puzzle3Key : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.tag == "Heavy" || other.gameObject.tag == "Player")
+        if (other.gameObject.tag == "Heavy")
         {
             Debug.Log("CloseDoorActivated");
             Puzzle3Gate.CloseDoor();

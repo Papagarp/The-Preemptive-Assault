@@ -7,6 +7,8 @@ public class OpenPuzzle3Gate : MonoBehaviour
 
     public GameObject cageDoor;
 
+    CageDoorOpenScript animationController;
+
     [SerializeField]
     int currentL;
     int maxL = 3;
@@ -15,6 +17,7 @@ public class OpenPuzzle3Gate : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        animationController = cageDoor.GetComponent<CageDoorOpenScript>();
         currentL = maxL;
     }
 
@@ -28,7 +31,7 @@ public class OpenPuzzle3Gate : MonoBehaviour
         if (currentL == 0)
         {
             Debug.Log("currentLocks Destroyed");
-            cageDoor.SetActive(false);
+            animationController.OpenCage();
         }
         else
         {
@@ -44,7 +47,7 @@ public class OpenPuzzle3Gate : MonoBehaviour
         if (currentL >= 0)
         {
             Debug.Log("currentLocks Destroyed");
-            cageDoor.SetActive(true);
+            animationController.CloseCage();
         }
         else
         {
