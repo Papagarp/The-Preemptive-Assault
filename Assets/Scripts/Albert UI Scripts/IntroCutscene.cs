@@ -14,7 +14,7 @@ public class IntroCutscene : MonoBehaviour
     public IEnumerator Splash()
     {
 
-        yield return new WaitForSeconds(60);
+        yield return new WaitForSeconds(30);
 
         SceneManager.LoadScene("CS_GBv3");
 
