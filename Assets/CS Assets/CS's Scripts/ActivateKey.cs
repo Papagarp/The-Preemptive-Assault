@@ -6,6 +6,7 @@ public class ActivateKey : MonoBehaviour
 {
 
     public GameObject scriptHolder;
+    public GameObject sLight;
     OpenBossGate unlockGate;
 
     private void Start()
@@ -19,6 +20,7 @@ public class ActivateKey : MonoBehaviour
         {
             Debug.Log("something is happeneing");
             unlockGate.Unlock();
+            Destroy(sLight);
             Destroy(gameObject);
         }
     }
