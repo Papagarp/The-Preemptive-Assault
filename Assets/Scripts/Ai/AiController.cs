@@ -187,7 +187,7 @@ public class AiController : MonoBehaviour
                 else
                 {
                     stepTimerCount = stepTimer;
-                    jesseAudioManager.PlayOneShot(transform.position, walking, 1f);
+                    jesseAudioManager.PlaySound("Cultist Moving");
                 }
             }
 
