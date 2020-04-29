@@ -36,6 +36,7 @@ public class CerberusController : MonoBehaviour
     //health
     float maxHp = 1000;
     public float currentHp = 1000;
+    public bool startFight = false;
 
     #endregion
 
@@ -58,7 +59,7 @@ public class CerberusController : MonoBehaviour
         {
             Death();
         }
-        else
+        else if (startFight)
         {
             playerLocation = player.transform.position;
 
@@ -234,6 +235,8 @@ public class CerberusController : MonoBehaviour
     public void Death()
     {
         if (deathCo == null) deathCo = StartCoroutine(DeathAnim());
+
+        startFight = false;
 
         nav.isStopped = true;
     }
