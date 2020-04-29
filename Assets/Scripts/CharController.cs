@@ -683,7 +683,7 @@ public class CharController : MonoBehaviour
 
         yield return new WaitForSeconds(timeOfEffect);
 
-        //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     void SwitchStateUp()
