@@ -56,8 +56,8 @@ public class CharController : MonoBehaviour
     [Header("Player")]
     public float stepTimer;
     float stepTimerCount;
-    public float maxHealth;
-    public float currentHealth;
+    public float maxHealth = 100;
+    public float currentHealth = 100;
     public float currentSpeed;
     public float movementSpeed;
     public float controllerSensitivity = 50.0f;
@@ -198,9 +198,10 @@ public class CharController : MonoBehaviour
                 sword.SetActive(true);
                 shield.SetActive(false);
                 staff.SetActive(false);
-                attackUI.SetActive(true);
-                defenseUI.SetActive(false);
-                utilityUI.SetActive(false);
+
+                attackUI.enabled = true;
+                defenseUI.enabled = false;
+                utilityUI.enabled = false;
 
                 movementSpeed = 7.5f;
 
@@ -212,9 +213,10 @@ public class CharController : MonoBehaviour
                 sword.SetActive(false);
                 shield.SetActive(true);
                 staff.SetActive(false);
-                attackUI.SetActive(false);
-                defenseUI.SetActive(true);
-                utilityUI.SetActive(false);
+
+                attackUI.enabled = false;
+                defenseUI.enabled = true;
+                utilityUI.enabled = false;
 
                 movementSpeed = 5f;
 
@@ -226,9 +228,9 @@ public class CharController : MonoBehaviour
                 sword.SetActive(false);
                 shield.SetActive(false);
                 staff.SetActive(true);
-                attackUI.SetActive(false);
-                defenseUI.SetActive(false);
-                utilityUI.SetActive(true);
+                attackUI.enabled = false;
+                defenseUI.enabled = false;
+                utilityUI.enabled = true;
 
                 movementSpeed = 10f;
 
@@ -236,8 +238,6 @@ public class CharController : MonoBehaviour
 
                 break;
         }
-
-        
 
         #endregion
 

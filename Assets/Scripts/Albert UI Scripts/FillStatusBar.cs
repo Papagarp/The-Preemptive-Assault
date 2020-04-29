@@ -3,18 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-
 public class FillStatusBar : MonoBehaviour
-
-    
 {
-    public CharController playerHealth;
+    CharController playerHealth;
+    GameObject player;
+
     public Image fillImage;
     private Slider slider;
 
-    // Start is called before the first frame update
     void Awake()
     {
+        player = GameObject.FindGameObjectWithTag("Player");
+
+        playerHealth = player.GetComponent<CharController>();
+
         slider = GetComponent<Slider>();
     }
 
@@ -32,7 +34,7 @@ public class FillStatusBar : MonoBehaviour
         }
 
 
-        float fillValue = playerHealth.currentHealth / playerHealth.maxHealth;
+        float fillValue = (playerHealth.currentHealth / playerHealth.maxHealth) * 100;
 
         slider.value = fillValue;
     }
