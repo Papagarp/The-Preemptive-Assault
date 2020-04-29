@@ -17,13 +17,18 @@ public class AiController : MonoBehaviour
 
     aiState currentAIState;
 
-  
     //nav mesh agent
     NavMeshAgent nav;
 
     //animation
     Animator aiAnimatorComponent;
+
+    //Coroutine
     Coroutine swingCoroutine;
+    Coroutine deathCo;
+
+    //Material
+    public Material deathEffect;
     
     //scripts
     FireBall fireBallScript;
@@ -32,6 +37,7 @@ public class AiController : MonoBehaviour
     [Header("Assign GameObjects")]
     public GameObject anchorPoint;
     public GameObject fireBall;
+    public GameObject mesh;
     
     [Header("Is this a patrolling Ai")]
     public bool patrollingAI;
@@ -108,227 +114,229 @@ public class AiController : MonoBehaviour
 
     private void Update()
     {
-        #region state switching
-
-        switch (currentAIState)
+        if (currentHp <= 0)
         {
-            case (aiState.MELEE):
-                anchorPoint.SetActive(false);
-                nav.isStopped = false;
-                nav.SetDestination(player.transform.position);
-                aiAnimatorComponent.SetBool("Moving", true);
-                nav.speed = attackingMovementSpeed;
-                break;
-
-            case (aiState.RANGED):
-                anchorPoint.SetActive(true);
-                aiAnimatorComponent.SetBool("Moving", false);
-                nav.isStopped = true;
-                nav.speed = firingMovementSpeed;
-                break;
-
-            case (aiState.SEARCH):
-                nav.speed = patrollingMovementSpeed;
-                nav.isStopped = false;
-                break;
-
-            case (aiState.PATROL):
-                nav.speed = patrollingMovementSpeed;
-                nav.isStopped = false;
-                break;
-        }
-
-        #endregion
-
-        #region Stun Function
-
-        if (distanceToPlayer < stunRange && playerScript.stunned)
-        {
-            nav.speed = 0.0f;
-        }
-
-        #endregion
-
-        #region Stagger Function
-
-        if (stagger)
-        {
-            nav.speed = staggerMovementSpeed;
-
-            staggerTime -= Time.deltaTime;
-
-            if (staggerTime <= 0)
-            {
-                stagger = false;
-            }
-        }
-
-        #endregion
-
-        #region Movement Animation
-
-        if (isAttacking)
-        {
-            nav.isStopped = true;
+            Death();
         }
         else
         {
-            nav.isStopped = false;
+            #region state switching
 
-            if (lastPosition != gameObject.transform.position)
+            switch (currentAIState)
             {
-                //animation
-                aiAnimatorComponent.SetBool("Moving", nav.remainingDistance > 1 ? true : false);
+                case (aiState.MELEE):
+                    anchorPoint.SetActive(false);
+                    nav.isStopped = false;
+                    nav.SetDestination(player.transform.position);
+                    aiAnimatorComponent.SetBool("Moving", true);
+                    nav.speed = attackingMovementSpeed;
+                    break;
 
-                if (stepTimerCount > 0)
+                case (aiState.RANGED):
+                    anchorPoint.SetActive(true);
+                    aiAnimatorComponent.SetBool("Moving", false);
+                    nav.isStopped = true;
+                    nav.speed = firingMovementSpeed;
+                    break;
+
+                case (aiState.SEARCH):
+                    nav.speed = patrollingMovementSpeed;
+                    nav.isStopped = false;
+                    break;
+
+                case (aiState.PATROL):
+                    nav.speed = patrollingMovementSpeed;
+                    nav.isStopped = false;
+                    break;
+            }
+
+            #endregion
+
+            #region Stun Function
+
+            if (distanceToPlayer < stunRange && playerScript.stunned)
+            {
+                nav.speed = 0.0f;
+            }
+
+            #endregion
+
+            #region Stagger Function
+
+            if (stagger)
+            {
+                nav.speed = staggerMovementSpeed;
+
+                staggerTime -= Time.deltaTime;
+
+                if (staggerTime <= 0)
                 {
-                    stepTimerCount -= Time.deltaTime;
-                }
-                else
-                {
-                    stepTimerCount = stepTimer;
-                    jesseAudioManager.PlaySound("Cultist Moving");
+                    stagger = false;
                 }
             }
 
-            lastPosition = gameObject.transform.position;
-        }
+            #endregion
 
-        #endregion
+            #region Movement Animation
 
-        #region Patrolling & Search Function & reseting AI position
-
-        if (!foundPlayer)
-        {
-            if (!fireBallScript.fired)
+            if (isAttacking)
             {
-                fireBallScript.ReturnFireBall();
-                fireBall.SetActive(false);
-            }
-            
-            if (foundPlayerCheck)
-            {
-                currentAIState = aiState.SEARCH;
+                nav.isStopped = true;
             }
             else
             {
-                currentAIState = aiState.PATROL;
-            }
+                nav.isStopped = false;
 
-            //if the player was lost then look at the last spot the player was seen
-            if (currentAIState == aiState.SEARCH)
-            {
-                nav.SetDestination(lastKnownPosition);
-
-                distanceToLastKnown = Vector3.Distance(new Vector3(transform.position.x, 0, transform.position.z),
-                new Vector3(lastKnownPosition.x, 0, lastKnownPosition.z));
-
-                //if at the last known spot of the player then search for a few seconds
-                if(distanceToLastKnown < 0.1f)
+                if (lastPosition != gameObject.transform.position)
                 {
-                    searchTime -= Time.deltaTime;
+                    //animation
+                    aiAnimatorComponent.SetBool("Moving", nav.remainingDistance > 1 ? true : false);
 
-                    //if cannot find player then return to patrol
-                    if (searchTime <= 0)
+                    if (stepTimerCount > 0)
                     {
-                        currentAIState = aiState.PATROL;
-                        foundPlayerCheck = false;
-                    }
-                }
-            }
-            
-            //if the player hasn't been seen then patrol/guard an area
-            if(currentAIState == aiState.PATROL)
-            {
-                //is this Ai meant to patrol??
-                if (patrollingAI)
-                {
-                    nav.SetDestination(patrolPoints[currentPoint].transform.position);
-
-                    distanceToPoint = Vector3.Distance(new Vector3(transform.position.x, 0, transform.position.z),
-                    new Vector3(patrolPoints[currentPoint].transform.position.x, 0, patrolPoints[currentPoint].transform.position.z));
-
-                    //move between patrol points
-                    if (currentPoint == (patrolPoints.Length - 1) && distanceToPoint <= 0.1f)
-                    {
-                        currentPoint = 0;
-                        nav.SetDestination(patrolPoints[currentPoint].transform.position);
-                    }
-                    else if (distanceToPoint <= 0.1f)
-                    {
-                        currentPoint++;
-                        nav.SetDestination(patrolPoints[currentPoint].transform.position);
-                    }
-                }
-                //if not a patrolling ai then its a guarding ai
-                else
-                {
-                    nav.SetDestination(startAiPoint);
-
-                    float distanceToStart = Vector3.Distance(new Vector3(transform.position.x, 0, transform.position.z),
-                        new Vector3(startAiPoint.x, 0, startAiPoint.z));
-
-                    if (distanceToStart < 1.0f)
-                    {
-                        gameObject.transform.rotation = startAiRotation;
-                    }
-                }
-            }
-        }
-
-        #endregion
-
-        #region Attacking the player
-
-        if (foundPlayer)
-        {
-            gameObject.transform.eulerAngles = new Vector3(0, Quaternion.LookRotation(player.transform.position - gameObject.transform.position, Vector3.up).eulerAngles.y, 0);
-
-            foundPlayerCheck = true;
-            searchTime = 3.0f;
-
-            lastKnownPosition = player.transform.position;
-
-            distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
-
-            //if the player is within melee range, hit the player
-            if (distanceToPlayer <= meleeRange)
-            {
-                currentAIState = aiState.MELEE;
-
-                if (distanceToPlayer < 2.0f)
-                {
-                    MeleeAttack();
-                }
-            }
-            //if the player is outside melee range, fireball the player
-            else if (distanceToPlayer >= meleeRange)
-            {
-                currentAIState = aiState.RANGED;
-
-                //if the fireball hasnt been fired then fire
-                if (!fireBallScript.fired)
-                {
-                    reloadTime -= Time.deltaTime;
-                    if (reloadTime < 0)
-                    {
-                        fireBall.SetActive(true);
-                        fireBallScript.fired = true;
-                        jesseAudioManager.PlaySound("Shoot");
+                        stepTimerCount -= Time.deltaTime;
                     }
                     else
                     {
-                        fireBall.SetActive(false);
+                        stepTimerCount = stepTimer;
+                        jesseAudioManager.PlaySound("Cultist Moving");
+                    }
+                }
+
+                lastPosition = gameObject.transform.position;
+            }
+
+            #endregion
+
+            #region Patrolling & Search Function & reseting AI position
+
+            if (!foundPlayer)
+            {
+                if (!fireBallScript.fired)
+                {
+                    fireBallScript.ReturnFireBall();
+                    fireBall.SetActive(false);
+                }
+
+                if (foundPlayerCheck)
+                {
+                    currentAIState = aiState.SEARCH;
+                }
+                else
+                {
+                    currentAIState = aiState.PATROL;
+                }
+
+                //if the player was lost then look at the last spot the player was seen
+                if (currentAIState == aiState.SEARCH)
+                {
+                    nav.SetDestination(lastKnownPosition);
+
+                    distanceToLastKnown = Vector3.Distance(new Vector3(transform.position.x, 0, transform.position.z),
+                    new Vector3(lastKnownPosition.x, 0, lastKnownPosition.z));
+
+                    //if at the last known spot of the player then search for a few seconds
+                    if (distanceToLastKnown < 0.1f)
+                    {
+                        searchTime -= Time.deltaTime;
+
+                        //if cannot find player then return to patrol
+                        if (searchTime <= 0)
+                        {
+                            currentAIState = aiState.PATROL;
+                            foundPlayerCheck = false;
+                        }
+                    }
+                }
+
+                //if the player hasn't been seen then patrol/guard an area
+                if (currentAIState == aiState.PATROL)
+                {
+                    //is this Ai meant to patrol??
+                    if (patrollingAI)
+                    {
+                        nav.SetDestination(patrolPoints[currentPoint].transform.position);
+
+                        distanceToPoint = Vector3.Distance(new Vector3(transform.position.x, 0, transform.position.z),
+                        new Vector3(patrolPoints[currentPoint].transform.position.x, 0, patrolPoints[currentPoint].transform.position.z));
+
+                        //move between patrol points
+                        if (currentPoint == (patrolPoints.Length - 1) && distanceToPoint <= 0.1f)
+                        {
+                            currentPoint = 0;
+                            nav.SetDestination(patrolPoints[currentPoint].transform.position);
+                        }
+                        else if (distanceToPoint <= 0.1f)
+                        {
+                            currentPoint++;
+                            nav.SetDestination(patrolPoints[currentPoint].transform.position);
+                        }
+                    }
+                    //if not a patrolling ai then its a guarding ai
+                    else
+                    {
+                        nav.SetDestination(startAiPoint);
+
+                        float distanceToStart = Vector3.Distance(new Vector3(transform.position.x, 0, transform.position.z),
+                            new Vector3(startAiPoint.x, 0, startAiPoint.z));
+
+                        if (distanceToStart < 1.0f)
+                        {
+                            gameObject.transform.rotation = startAiRotation;
+                        }
                     }
                 }
             }
-        }
 
-        #endregion
+            #endregion
 
-        if (currentHp <= 0)
-        {
-            Destroy(gameObject);
+            #region Attacking the player
+
+            if (foundPlayer)
+            {
+                gameObject.transform.eulerAngles = new Vector3(0, Quaternion.LookRotation(player.transform.position - gameObject.transform.position, Vector3.up).eulerAngles.y, 0);
+
+                foundPlayerCheck = true;
+                searchTime = 3.0f;
+
+                lastKnownPosition = player.transform.position;
+
+                distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
+
+                //if the player is within melee range, hit the player
+                if (distanceToPlayer <= meleeRange)
+                {
+                    currentAIState = aiState.MELEE;
+
+                    if (distanceToPlayer < 2.0f)
+                    {
+                        MeleeAttack();
+                    }
+                }
+                //if the player is outside melee range, fireball the player
+                else if (distanceToPlayer >= meleeRange)
+                {
+                    currentAIState = aiState.RANGED;
+
+                    //if the fireball hasnt been fired then fire
+                    if (!fireBallScript.fired)
+                    {
+                        reloadTime -= Time.deltaTime;
+                        if (reloadTime < 0)
+                        {
+                            fireBall.SetActive(true);
+                            fireBallScript.fired = true;
+                            jesseAudioManager.PlaySound("Shoot");
+                        }
+                        else
+                        {
+                            fireBall.SetActive(false);
+                        }
+                    }
+                }
+            }
+
+            #endregion
         }
     }
 
@@ -380,5 +388,24 @@ public class AiController : MonoBehaviour
         {
             swingCoroutine = null;
         }
+    }
+
+    void Death()
+    {
+        if (deathCo == null)
+        {
+            deathCo = StartCoroutine(DeathAnim());
+        }
+    }
+
+    IEnumerator DeathAnim()
+    {
+        float timeOfEffect = 1;
+
+        mesh.GetComponent<SkinnedMeshRenderer>().material = deathEffect;
+
+        yield return new WaitForSeconds(timeOfEffect);
+
+        Destroy(gameObject);
     }
 }
