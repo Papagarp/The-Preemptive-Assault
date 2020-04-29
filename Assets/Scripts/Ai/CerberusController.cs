@@ -114,7 +114,7 @@ public class CerberusController : MonoBehaviour
 
     public void NormalBite()
     {
-        if (nav.remainingDistance < 5.0f)
+        if (nav.remainingDistance < 10.0f)
         {
             nav.isStopped = true;
             nav.SetDestination(transform.position);
@@ -150,7 +150,7 @@ public class CerberusController : MonoBehaviour
 
     public void TripleBite()
     {
-        if (nav.remainingDistance < 5.0f)
+        if (nav.remainingDistance < 10.0f)
         {
             nav.isStopped = true;
             nav.SetDestination(transform.position);
@@ -186,7 +186,7 @@ public class CerberusController : MonoBehaviour
 
     public void FireBall()
     {
-        if (nav.remainingDistance > 5.0f)
+        if (nav.remainingDistance > 10.0f)
         {
             nav.isStopped = true;
             nav.SetDestination(transform.position);
